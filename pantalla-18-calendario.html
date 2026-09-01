@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Calendario académico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f; --navy-900:#1b2a4a; --navy-800:#26375c; --navy-600:#4a5c82; --navy-100:#e8ecf5;
+    --gold-500:#c9a24b; --gold-600:#ab8437; --gold-100:#f4ead2;
+    --bg:#f6f7fa; --surface:#ffffff;
+    --text-900:#16213a; --text-600:#5b6472; --text-400:#8992a3;
+    --border:#dde2ea;
+    --error-600:#b3392c; --error-100:#fbeae7;
+    --success-600:#2f7a4f; --success-100:#e7f4ec;
+    --info-600:#3a5a99; --info-100:#eaf0fb;
+    --warn-600:#a06a1a; --warn-100:#fdf1e2;
+    --clase-c:#3a5a99; --clase-bg:#eaf0fb;
+    --examen-c:#b3392c; --examen-bg:#fbeae7;
+    --evento-c:#ab8437; --evento-bg:#f4ead2;
+    --institucional-c:#6b4fa0; --institucional-bg:#efe9f9;
+    --feriado-c:#2f7a4f; --feriado-bg:#e7f4ec;
+    --comedor-c:#c05a1f; --comedor-bg:#fdece0;
+    --radius-lg:16px; --radius-md:10px; --radius-sm:7px;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-h:64px; --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font-body);color:var(--text-900);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ============ HEADER (shared) ============ */
+  .app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;color:var(--navy-900);}
+  .hamburger:hover{background:var(--navy-100);}
+  .brand-mark{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:2px;}
+  .brand-glyph{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg, var(--navy-900), var(--navy-950));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .brand-glyph svg{width:16px;height:16px;}
+  .brand-word{font-family:var(--font-display);font-weight:600;font-size:18.5px;color:var(--navy-950);white-space:nowrap;}
+  .brand-word .accent{color:var(--gold-600);}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:9px;cursor:pointer;color:var(--navy-900);}
+  .icon-btn:hover{background:var(--navy-100);}
+  .icon-btn svg{width:19px;height:19px;}
+  .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--error-600);border:1.5px solid var(--surface);}
+  .balance-chip{display:flex;align-items:center;gap:7px;background:var(--gold-100);border:1px solid rgba(201,162,75,0.4);border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;color:var(--navy-950);}
+  .balance-chip:hover{background:#efe1bb;}
+  .balance-chip svg{width:15px;height:15px;color:var(--gold-600);}
+  .balance-chip .amount{font-size:13px;font-weight:700;}
+  .balance-chip .label{font-size:11px;color:var(--text-600);font-weight:500;}
+  .user-menu{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:4px 6px 4px 4px;border-radius:999px;}
+  .user-menu:hover{background:var(--navy-100);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;}
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;text-align:left;}
+  .user-meta .name{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .user-meta .role{font-size:11px;color:var(--text-400);}
+  @media (max-width:900px){.user-meta{display:none;} .balance-chip .label{display:none;}}
+
+  /* ============ SIDEBAR (shared) ============ */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 12px 20px;z-index:40;transition:transform .2s ease;}
+  .nav-group{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--text-600);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:var(--navy-100);color:var(--navy-900);}
+  .nav-item.active{background:var(--navy-900);color:#fff;font-weight:600;}
+  .nav-divider{height:1px;background:var(--border);margin:10px 4px;}
+  .nav-item.logout{color:var(--error-600);}
+  .nav-item.logout:hover{background:var(--error-100);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;top:var(--header-h);background:rgba(16,25,47,0.35);z-index:39;}
+
+  /* ============ MAIN LAYOUT ============ */
+  .app-body{padding-top:var(--header-h);}
+  .main{margin-left:var(--sidebar-w);padding:28px 32px 70px;max-width:1360px;}
+
+  .breadcrumb{font-size:12.5px;color:var(--text-400);margin:0 0 14px;font-weight:500;}
+  .breadcrumb a{color:var(--text-400);text-decoration:none;cursor:pointer;}
+  .breadcrumb a:hover{color:var(--navy-800);text-decoration:underline;}
+
+  .page-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
+  .page-title{font-family:var(--font-display);font-size:25px;font-weight:600;color:var(--navy-950);margin:0 0 5px;}
+  .page-desc{font-size:13.5px;color:var(--text-600);margin:0;}
+
+  .btn-primary{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:var(--radius-md);padding:9px 16px;cursor:pointer;white-space:nowrap;}
+  .btn-primary:hover{background:var(--navy-800);}
+  .btn-secondary{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:8px 14px;cursor:pointer;white-space:nowrap;}
+  .btn-secondary:hover{border-color:var(--navy-800);background:var(--navy-100);}
+  .btn-secondary svg{width:15px;height:15px;}
+
+  /* ============ TOOLBAR ============ */
+  .cal-toolbar{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:12px 16px;margin-bottom:14px;
+  }
+  .month-nav{display:flex;align-items:center;gap:10px;}
+  .nav-arrow{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:none;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-600);}
+  .nav-arrow:hover{border-color:var(--navy-800);color:var(--navy-900);background:var(--navy-100);}
+  .nav-arrow svg{width:15px;height:15px;}
+  .month-label{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--navy-950);min-width:150px;text-align:center;text-transform:capitalize;}
+
+  .view-switch{display:none;display:flex;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px;}
+  .view-btn{font-size:12.5px;font-weight:600;color:var(--text-600);background:none;border:none;border-radius:7px;padding:7px 13px;cursor:pointer;}
+  .view-btn:hover{color:var(--navy-900);}
+  .view-btn.active{background:var(--surface);color:var(--navy-900);box-shadow:0 1px 3px rgba(16,25,47,0.12);}
+
+  .toolbar-right{display:none;display:flex;align-items:center;gap:8px;}
+
+  /* ============ FILTERS ROW ============ */
+  .filters-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .filter-select{
+    font-size:12.5px;font-weight:500;color:var(--text-900);background:var(--surface);
+    border:1.5px solid var(--border);border-radius:var(--radius-md);padding:8px 30px 8px 12px;cursor:pointer;outline:none;
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5 7.5L10 12.5L15 7.5' stroke='%235b6472' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 9px center;
+  }
+  .filter-select:focus{border-color:var(--navy-800);box-shadow:0 0 0 3.5px rgba(27,42,74,0.12);}
+
+  .filters-wrap{position:relative;}
+  .filters-panel{
+    display:none;position:absolute;top:40px;left:0;z-index:20;min-width:250px;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    box-shadow:0 16px 40px -12px rgba(16,25,47,0.25);padding:14px;
+  }
+  .filters-panel.open{display:block;}
+  .filters-panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-400);margin:0 0 10px;}
+  .filter-check{display:flex;align-items:center;gap:9px;padding:6px 4px;font-size:13px;font-weight:500;color:var(--text-900);cursor:pointer;}
+  .filter-check input{width:15px;height:15px;accent-color:var(--navy-900);cursor:pointer;}
+  .filter-check .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+  /* ============ LEGEND ============ */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px;padding:0 2px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-600);}
+  .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+  /* ============ MONTH GRID ============ */
+  .cal-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .weekday-row{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border);}
+  .weekday-cell{padding:10px 8px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-400);}
+  .month-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+  .day-cell{
+    height:112px;min-height:112px;max-height:112px;box-sizing:border-box;
+    border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+    padding:7px;display:flex;flex-direction:column;gap:4px;overflow:hidden;
+  }
+  .day-cell:nth-child(7n){border-right:none;}
+  .day-cell.other-month{background:#fbfbfc;}
+  .day-cell.other-month .day-num{color:var(--text-400);}
+  .day-num-row{display:flex;justify-content:flex-start;}
+  .day-num{font-size:12.5px;font-weight:600;color:var(--text-900);width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+  .day-num.today{background:var(--navy-900);color:#fff;}
+  .day-events{display:flex;flex-direction:column;gap:3px;overflow:hidden;min-height:0;}
+  .ev-chip{
+    display:flex;align-items:flex-start;gap:5px;font-size:10px;line-height:1.1;font-weight:600;
+    padding:3px 6px;border-radius:5px;cursor:pointer;white-space:normal;overflow:hidden;
+    border-left:2.5px solid transparent;min-height:0;max-height:30px;box-sizing:border-box;
+  }
+  .ev-chip.past{opacity:1;}
+  .ev-chip .ev-label{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+  .ev-chip svg{width:10px;height:10px;flex-shrink:0;}
+  .ev-chip.clase{background:var(--clase-bg);color:var(--clase-c);border-left-color:var(--clase-c);}
+  .ev-chip.examen{background:var(--examen-bg);color:var(--examen-c);border-left-color:var(--examen-c);}
+  .ev-chip.evento{background:var(--evento-bg);color:var(--evento-c);border-left-color:var(--evento-c);}
+  .ev-chip.institucional{background:var(--institucional-bg);color:var(--institucional-c);border-left-color:var(--institucional-c);}
+  .ev-chip.feriado{background:var(--feriado-bg);color:var(--feriado-c);border-left-color:var(--feriado-c);}
+  .ev-chip.comedor{background:var(--comedor-bg);color:var(--comedor-c);border-left-color:var(--comedor-c);}
+  .ev-more{font-size:10.5px;font-weight:700;color:var(--navy-800);background:none;border:none;cursor:pointer;text-align:left;padding:2px 6px;}
+  .ev-more:hover{text-decoration:underline;}
+  .no-activities-tag{font-size:10px;color:var(--text-400);font-style:italic;padding:2px 6px;}
+
+  /* ============ NEXT EVENT CARD ============ */
+  .next-event-card{display:none;
+    display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:14px;
+  }
+  .next-event-icon{width:38px;height:38px;border-radius:10px;background:var(--examen-bg);color:var(--examen-c);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .next-event-icon svg{width:18px;height:18px;}
+  .next-event-main{flex:1;min-width:0;}
+  .next-event-eyebrow{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-400);margin:0 0 2px;}
+  .next-event-title{font-size:13.5px;font-weight:700;color:var(--text-900);margin:0 0 2px;}
+  .next-event-meta{font-size:12px;color:var(--text-600);}
+
+  /* ============ AGENDA VIEW ============ */
+  .agenda-day{margin-bottom:20px;}
+  .agenda-day-title{font-size:13px;font-weight:700;color:var(--navy-950);margin:0 0 10px;text-transform:capitalize;}
+  .agenda-items{display:flex;flex-direction:column;gap:8px;}
+  .agenda-item{
+    display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);
+    border-left:3px solid transparent;border-radius:var(--radius-md);padding:12px 16px;cursor:pointer;
+  }
+  .agenda-item:hover{border-color:var(--navy-600);}
+  .agenda-item.clase{border-left-color:var(--clase-c);}
+  .agenda-item.examen{border-left-color:var(--examen-c);}
+  .agenda-item.evento{border-left-color:var(--evento-c);}
+  .agenda-item.institucional{border-left-color:var(--institucional-c);}
+  .agenda-item.feriado{border-left-color:var(--feriado-c);}
+  .agenda-item.comedor{border-left-color:var(--comedor-c);}
+  .agenda-time{font-size:13px;font-weight:700;color:var(--text-900);min-width:48px;}
+  .agenda-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .agenda-icon svg{width:15px;height:15px;}
+  .agenda-icon.clase{background:var(--clase-bg);color:var(--clase-c);}
+  .agenda-icon.examen{background:var(--examen-bg);color:var(--examen-c);}
+  .agenda-icon.evento{background:var(--evento-bg);color:var(--evento-c);}
+  .agenda-icon.institucional{background:var(--institucional-bg);color:var(--institucional-c);}
+  .agenda-icon.feriado{background:var(--feriado-bg);color:var(--feriado-c);}
+  .agenda-icon.comedor{background:var(--comedor-bg);color:var(--comedor-c);}
+  .agenda-main{flex:1;min-width:0;}
+  .agenda-item-title{font-size:13.5px;font-weight:700;color:var(--text-900);margin:0 0 2px;}
+  .agenda-item-sub{font-size:12px;color:var(--text-600);}
+
+  /* ============ WEEK / DAY TIMELINE ============ */
+  .timeline-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .week-head{display:grid;grid-template-columns:56px repeat(7,1fr);border-bottom:1px solid var(--border);}
+  .week-head-cell{padding:10px 6px;text-align:center;border-left:1px solid var(--border);}
+  .week-head-cell:first-child{border-left:none;}
+  .week-head-day{font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--text-400);}
+  .week-head-num{font-size:14px;font-weight:700;color:var(--text-900);margin-top:2px;}
+  .week-head-num.today{color:var(--navy-900);}
+  .week-body{display:grid;grid-template-columns:56px repeat(7,1fr);}
+  .hour-label{padding:8px 6px;font-size:10.5px;color:var(--text-400);text-align:right;border-top:1px solid var(--border);}
+  .hour-cell{border-top:1px solid var(--border);border-left:1px solid var(--border);min-height:44px;padding:2px;position:relative;}
+  .week-ev{
+    font-size:9.5px;font-weight:700;padding:3px 5px;border-radius:5px;cursor:pointer;line-height:1.25;
+    border-left:2px solid transparent;
+  }
+  .week-ev.clase{background:var(--clase-bg);color:var(--clase-c);border-left-color:var(--clase-c);}
+  .week-ev.examen{background:var(--examen-bg);color:var(--examen-c);border-left-color:var(--examen-c);}
+  .week-ev.comedor{background:var(--comedor-bg);color:var(--comedor-c);border-left-color:var(--comedor-c);}
+  .week-ev.institucional{background:var(--institucional-bg);color:var(--institucional-c);border-left-color:var(--institucional-c);}
+
+  .day-view-title{padding:16px 20px;border-bottom:1px solid var(--border);font-size:14.5px;font-weight:700;color:var(--text-900);text-transform:capitalize;}
+  .day-timeline{padding:6px 0;}
+  .day-hour-row{display:flex;border-top:1px solid var(--bg);min-height:52px;}
+  .day-hour-label{width:64px;flex-shrink:0;padding:8px 10px;font-size:11px;color:var(--text-400);text-align:right;}
+  .day-hour-body{flex:1;padding:6px 14px 6px 0;display:flex;flex-direction:column;gap:6px;}
+  .day-ev{
+    display:flex;align-items:center;gap:10px;background:var(--bg);border-left:3px solid transparent;
+    border-radius:8px;padding:8px 12px;cursor:pointer;
+  }
+  .day-ev.clase{border-left-color:var(--clase-c);}
+  .day-ev.examen{border-left-color:var(--examen-c);}
+  .day-ev.comedor{border-left-color:var(--comedor-c);}
+  .day-ev.institucional{border-left-color:var(--institucional-c);}
+  .day-ev-title{font-size:13px;font-weight:700;color:var(--text-900);}
+  .day-ev-sub{font-size:11.5px;color:var(--text-600);}
+
+  /* ============ EMPTY / ERROR ============ */
+  .cal-state{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 20px;gap:12px;}
+  .cal-state .icon{width:52px;height:52px;border-radius:14px;background:var(--navy-100);color:var(--navy-800);display:flex;align-items:center;justify-content:center;}
+  .cal-state.error .icon{background:var(--error-100);color:var(--error-600);}
+  .cal-state .icon svg{width:24px;height:24px;}
+  .cal-state p{margin:0;font-size:13.5px;font-weight:600;color:var(--text-900);}
+  .cal-state .retry-btn{font-size:12.5px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-top:2px;}
+  .cal-state .retry-btn:hover{background:var(--navy-800);}
+
+  /* skeleton */
+  .skel{background:linear-gradient(90deg,#eceef2 25%,#f4f5f8 37%,#eceef2 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;}
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+  /* ============ MODALS ============ */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(16,25,47,0.45);z-index:90;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--surface);border-radius:var(--radius-lg);max-width:420px;width:100%;box-shadow:0 30px 70px -20px rgba(16,25,47,0.4);overflow:hidden;max-height:86vh;overflow-y:auto;}
+  .modal-header{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .modal-header-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:10px;}
+  .modal-header-icon svg{width:18px;height:18px;}
+  .modal-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;margin:0 0 4px;}
+  .modal-title{font-size:16.5px;font-weight:700;color:var(--text-900);margin:0;}
+  .modal-close{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:8px;cursor:pointer;color:var(--text-400);}
+  .modal-close:hover{background:var(--navy-100);color:var(--navy-900);}
+  .modal-close svg{width:17px;height:17px;}
+  .modal-body{padding:18px 22px;}
+  .modal-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bg);font-size:13px;}
+  .modal-row:last-child{border-bottom:none;}
+  .modal-row .lbl{color:var(--text-600);font-weight:500;}
+  .modal-row .val{color:var(--text-900);font-weight:600;text-align:right;}
+  .modal-desc{font-size:13px;color:var(--text-600);line-height:1.55;margin-top:4px;}
+  .modal-footer{padding:14px 22px 20px;display:flex;justify-content:flex-end;gap:10px;}
+
+  .menu-section{margin-bottom:14px;}
+  .menu-section:last-child{margin-bottom:0;}
+  .menu-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-400);margin:0 0 3px;}
+  .menu-value{font-size:13.5px;color:var(--text-900);font-weight:500;}
+
+  /* day-events list modal */
+  .day-list-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--bg);cursor:pointer;}
+  .day-list-item:last-child{border-bottom:none;}
+  .day-list-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .day-list-icon svg{width:15px;height:15px;}
+
+  /* state controls */
+  .state-controls{position:fixed;bottom:14px;left:calc(50% + var(--sidebar-w)/2);transform:translateX(-50%);z-index:60;display:flex;gap:6px;background:rgba(16,25,47,0.94);padding:8px;border-radius:10px;flex-wrap:wrap;justify-content:center;max-width:84vw;}
+  .state-controls button{font-size:11.5px;font-weight:600;color:#e8ecf5;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;cursor:pointer;}
+  .state-controls button:hover{background:rgba(255,255,255,0.18);}
+  .state-controls span{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(232,236,245,0.55);align-self:center;padding-right:2px;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    .day-cell{min-height:92px;}
+  }
+  @media (max-width:900px){
+    :root{--sidebar-w:0px;}
+    .hamburger{display:flex;}
+    .sidebar{width:264px;transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:16px 0 40px rgba(16,25,47,0.18);}
+    .sidebar-backdrop.open{display:block;}
+    .main{margin-left:0;padding:22px 16px 90px;}
+    .state-controls{left:50%;max-width:92vw;bottom:10px;}
+    .cal-toolbar{flex-direction:column;align-items:stretch;}
+    .toolbar-right{display:none;justify-content:space-between;}
+  }
+  @media (max-width:760px){
+    .week-body, .week-head{grid-template-columns:40px repeat(7,1fr);}
+    .day-cell{min-height:76px;padding:5px;}
+    .ev-chip span.ev-label{display:none;}
+    .page-title{font-size:21px;}
+    .filters-row{gap:8px;}
+  }
+  @media (max-width:520px){
+    .month-grid .day-cell .day-events{gap:2px;}
+    .day-cell{min-height:68px;}
+  }
+
+
+/* Ajuste global de selectores: flechas compactas, centradas y proporcionadas */
+select,
+.filter-select,
+.filter-select-full,
+.sort-select,
+.estado-select,
+.field select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 11px center !important;
+  background-size: 13px 13px !important;
+  padding-right: 34px !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12L14.5 7.5' stroke='%235b6472' stroke-width='1.45' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+}
+
+/* En selectores compactos, mantener la flecha todavía más cerca del borde */
+.filters-panel select,
+select.filter-select,
+select.filter-select-full,
+select.sort-select,
+select.estado-select {
+  background-position: right 10px center !important;
+  background-size: 12px 12px !important;
+  padding-right: 32px !important;
+}
+
+
+.user-menu-wrap{position:relative;}
+  .user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 34px -10px rgba(16,25,47,0.28);min-width:200px;padding:6px;z-index:60;}
+  .user-dropdown.open{display:block;}
+  .user-dropdown button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;cursor:pointer;}
+  .user-dropdown button:hover{background:var(--navy-100);}
+  .user-dropdown button.logout{color:var(--error-600);}
+  .user-dropdown button.logout:hover{background:var(--error-100);}
+  .user-dropdown button svg{width:16px;height:16px;color:var(--text-600);flex-shrink:0;}
+  .user-dropdown button.logout svg{color:var(--error-600);}
+  .user-dropdown .dd-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  
+/* FINAL CALENDAR OVERRIDES */
+  .view-switch, .toolbar-right, #nextEventCard { display:none !important; }
+</style>
+
+<style id="calendar-consistent-exam-layout">
+/* Todos los exámenes pertenecen a una única categoría visual. */
+.ev-chip.examen,
+.ev-chip.examen.past {
+  background: var(--examen-bg) !important;
+  color: var(--examen-c) !important;
+  border-left-color: var(--examen-c) !important;
+}
+/* Las filas del calendario conservan siempre la misma altura. */
+.month-grid { grid-auto-rows: 112px; }
+.day-cell { min-height: 112px; height: 112px; box-sizing: border-box; overflow: hidden; }
+.day-events { min-height: 0; overflow: hidden; }
+.ev-chip { white-space: normal; line-height: 1.15; max-height: 28px; overflow: hidden; }
+</style>
+
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5H17.5M2.5 10H17.5M2.5 14.5H17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="brand-mark" aria-label="UADEnet — ir a Inicio" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <span class="brand-glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/></svg></span>
+      <span class="brand-word">UADE<span class="accent">net</span></span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Notificaciones" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <button class="balance-chip" aria-label="Saldo institucional — ir a Cuenta institucional" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/></svg>
+      <span class="amount">$18.400</span><span class="label">Saldo</span>
+    </button>
+    <div class="user-menu-wrap"><button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu(this)">
+      <span class="avatar">MG</span>
+      <span class="user-meta"><span class="name">Mariana Gómez</span><span class="role">Docente</span></span>
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+      <div class="user-dropdown" id="userDropdown">
+        <button onclick="__uadenetGo('pantalla-27-perfil-docente')">
+          <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Mi perfil
+        </button>
+        <button onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+          Cuenta institucional
+        </button>
+        <div class="dd-divider"></div>
+        <button class="logout" onclick="uadenetLogout()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8V16.5H15V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-03-mis-cursos')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/><path d="M17.5 5.5V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Mis cursos
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-15-actas')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Actas
+    </a>
+    <a class="nav-item active" aria-current="page" onclick="__uadenetGo('pantalla-18-calendario')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Calendario académico
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Notificaciones
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-22-mis-compras')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 6L10 2.5L17 6L10 9.5L3 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8.2V12.5L10 14.5L14 12.5V8.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Mis compras
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+      Cuenta institucional
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-27-perfil-docente')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil
+    </a>
+    <a class="nav-item logout" onclick="uadenetLogout()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cerrar sesión
+    </a>
+  </div>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<div class="app-body">
+  <main class="main">
+
+    <p class="breadcrumb"><a onclick="__uadenetGo('pantalla-02-dashboard')">Inicio</a> / Calendario académico</p>
+
+    <div class="page-head-row">
+      <div>
+        <h1 class="page-title">Calendario académico</h1>
+        <p class="page-desc">Consultá los turnos de comedor, eventos y exámenes.</p>
+      </div>
+    </div>
+
+    <!-- ============ NEXT EVENT ============ -->
+    <div class="next-event-card" id="nextEventCard">
+      <span class="next-event-icon"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/></svg></span>
+      <div class="next-event-main">
+        <p class="next-event-eyebrow">Próximo evento</p>
+        <p class="next-event-title">Examen final — Desarrollo de Aplicaciones II</p>
+        <p class="next-event-meta">Mañana · 18:00 · Aula 304</p>
+      </div>
+      <button class="btn-secondary" onclick="openEventModal('examen-27')">Ver detalle</button>
+    </div>
+
+    <!-- ============ TOOLBAR ============ -->
+    <div class="cal-toolbar">
+      <div class="month-nav">
+        <button class="nav-arrow" aria-label="Mes anterior" onclick="changeMonth(-1)"><svg viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="month-label" id="monthLabel">Agosto 2026</span>
+        <button class="nav-arrow" aria-label="Mes siguiente" onclick="changeMonth(1)"><svg viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="toolbar-right">
+        <div class="view-switch" id="viewSwitch">
+          <button class="view-btn active" data-view="month">Mes</button>
+          <button class="view-btn" data-view="week">Semana</button>
+          <button class="view-btn" data-view="day">Día</button>
+          <button class="view-btn" data-view="agenda">Agenda</button>
+        </div>
+        <button class="btn-secondary" onclick="goToday()">Hoy</button>
+      </div>
+    </div>
+
+    <!-- ============ FILTERS ============ -->
+    <div class="filters-row">
+      <div class="filters-wrap">
+        <button class="btn-secondary" id="filtersBtn">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M3 5H17M6 10H14M8.5 15H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Categorías
+        </button>
+        <div class="filters-panel" id="filtersPanel">
+          <p class="filters-panel-title">Categorías</p>
+          <label class="filter-check"><input type="checkbox" checked data-cat="examen"><span class="dot" style="background:var(--examen-c)"></span>Exámenes</label>
+          <label class="filter-check"><input type="checkbox" checked data-cat="evento"><span class="dot" style="background:var(--evento-c)"></span>Eventos académicos</label>
+          <label class="filter-check"><input type="checkbox" checked data-cat="feriado"><span class="dot" style="background:var(--feriado-c)"></span>Feriados</label>
+          <label class="filter-check"><input type="checkbox" checked data-cat="comedor"><span class="dot" style="background:var(--comedor-c)"></span>Comedor</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ LEGEND ============ -->
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--examen-c)"></span>Exámenes</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--evento-c)"></span>Eventos académicos</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--feriado-c)"></span>Feriados</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--comedor-c)"></span>Comedor</span>
+    </div>
+
+    <!-- ============ VIEWS ============ -->
+    <div id="viewContainer">
+
+      <!-- MONTH VIEW -->
+      <div class="cal-panel" id="monthView">
+        <div class="weekday-row">
+          <div class="weekday-cell">Lun</div><div class="weekday-cell">Mar</div><div class="weekday-cell">Mié</div>
+          <div class="weekday-cell">Jue</div><div class="weekday-cell">Vie</div><div class="weekday-cell">Sáb</div><div class="weekday-cell">Dom</div>
+        </div>
+        <div class="month-grid" id="monthGrid"><!-- injected --></div>
+      </div>
+
+      <!-- WEEK VIEW -->
+      <div class="timeline-panel" id="weekView" style="display:none;">
+        <div class="week-head" id="weekHead"></div>
+        <div class="week-body" id="weekBody"></div>
+      </div>
+
+      <!-- DAY VIEW -->
+      <div class="timeline-panel" id="dayView" style="display:none;">
+        <div class="day-view-title" id="dayViewTitle">Lunes 24 de agosto de 2026</div>
+        <div class="day-timeline" id="dayTimeline"></div>
+      </div>
+
+      <!-- AGENDA VIEW -->
+      <div id="agendaView" style="display:none;"></div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ EVENT DETAIL MODAL ============ -->
+<div class="modal-backdrop" id="eventModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <span class="modal-header-icon" id="modalIcon"></span>
+        <p class="modal-eyebrow" id="modalEyebrow">Examen</p>
+        <p class="modal-title" id="modalTitle">Examen final</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('eventModal')"><svg viewBox="0 0 20 20" fill="none"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body" id="modalBody"><!-- injected --></div>
+    <div class="modal-footer" id="modalFooter"><!-- injected --></div>
+  </div>
+</div>
+
+<!-- ============ DAY EVENTS LIST MODAL ============ -->
+<div class="modal-backdrop" id="dayListModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><p class="modal-title" id="dayListTitle">24 de agosto</p></div>
+      <button class="modal-close" onclick="closeModal('dayListModal')"><svg viewBox="0 0 20 20" fill="none"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body" id="dayListBody"><!-- injected --></div>
+  </div>
+</div>
+
+
+<script>
+  /* ============ SIDEBAR DRAWER ============ */
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  function toggleSidebar(open){
+    sidebar.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    hamburgerBtn.setAttribute('aria-expanded', String(open));
+  }
+  hamburgerBtn.addEventListener('click', () => toggleSidebar(!sidebar.classList.contains('open')));
+  backdrop.addEventListener('click', () => toggleSidebar(false));
+
+  /* ============ DATA MODEL ============ */
+  const TODAY = new Date();
+  TODAY.setHours(0,0,0,0);
+  let viewDate = new Date(TODAY);
+  let currentView = 'month';
+
+  const MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const WEEKDAY_NAMES = ['dom','lun','mar','mié','jué','vie','sáb'];
+  const WEEKDAY_LONG = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+  const CATEGORY_META = {
+    clase:{label:'Clase', eyebrow:'Clase'},
+    examen:{label:'Examen', eyebrow:'Examen'},
+    evento:{label:'Evento académico', eyebrow:'Evento académico'},
+    institucional:{label:'Institucional', eyebrow:'Evento institucional'},
+    feriado:{label:'Feriado', eyebrow:'Feriado nacional'},
+    comedor:{label:'Comedor', eyebrow:'Comedor'},
+  };
+
+  const fixedExams = [
+    {id:0,name:'Parcial 1',course:'Desarrollo de Aplicaciones II',type:'parcial1',date:'31 de agosto de 2026',time:'18:00 – 20:00',status:'proximo'},
+    {id:1,name:'Parcial 2',course:'Desarrollo de Aplicaciones II',type:'parcial2',date:'14 de octubre de 2026',time:'18:00 – 20:00',status:'proximo'},
+    {id:2,name:'Recuperatorio Parcial 1',course:'Desarrollo de Aplicaciones II',type:'recup1',date:'21 de octubre de 2026',time:'18:00 – 19:30',status:'proximo'},
+    {id:3,name:'Recuperatorio Parcial 2',course:'Desarrollo de Aplicaciones II',type:'recup2',date:'28 de octubre de 2026',time:'18:00 – 19:30',status:'proximo'},
+    {id:4,name:'TP1',course:'Desarrollo de Aplicaciones II',type:'tp1',date:'15 de septiembre de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:5,name:'TP2',course:'Desarrollo de Aplicaciones II',type:'tp2',date:'10 de noviembre de 2026',time:'18:00 – 20:00',status:'proximo'},
+
+    {id:6,name:'Parcial 1',course:'Ingeniería de Software',type:'parcial1',date:'7 de septiembre de 2026',time:'19:00 – 21:00',status:'proximo'},
+    {id:7,name:'Recuperatorio Parcial 1',course:'Ingeniería de Software',type:'recup1',date:'5 de agosto de 2026',time:'19:00 – 20:30',status:'realizado'},
+
+    {id:8,name:'Parcial 1',course:'Ingeniería de Datos I',type:'parcial1',date:'10 de septiembre de 2026',time:'18:00 – 20:00',status:'proximo'},
+    {id:9,name:'Parcial 2',course:'Ingeniería de Datos I',type:'parcial2',date:'22 de octubre de 2026',time:'18:00 – 20:00',status:'proximo'},
+
+    {id:10,name:'Parcial 1',course:'Programación II',type:'parcial1',date:'25 de agosto de 2026',time:'08:00 – 10:00',status:'realizado'},
+    {id:11,name:'Parcial 2',course:'Programación II',type:'parcial2',date:'14 de octubre de 2026',time:'08:00 – 10:00',status:'proximo'},
+
+    {id:20,name:'Parcial 1',course:'Redes de Datos',type:'parcial1',date:'25 de marzo de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:25,name:'Recuperatorio Parcial 1',course:'Redes de Datos',type:'recup1',date:'15 de abril de 2026',time:'18:00 – 19:30',status:'realizado'},
+    {id:21,name:'Parcial 2',course:'Redes de Datos',type:'parcial2',date:'6 de mayo de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:26,name:'Recuperatorio Parcial 2',course:'Redes de Datos',type:'recup2',date:'20 de mayo de 2026',time:'18:00 – 19:30',status:'realizado'},
+    {id:22,name:'TP1',course:'Redes de Datos',type:'tp1',date:'22 de abril de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:23,name:'TP2',course:'Redes de Datos',type:'tp2',date:'10 de junio de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:24,name:'Final',course:'Redes de Datos',type:'final',date:'24 de junio de 2026',time:'18:00 – 20:00',status:'realizado'},
+
+    {id:30,name:'Parcial 1',course:'Programación I',type:'parcial1',date:'20 de marzo de 2026',time:'08:00 – 10:00',status:'realizado'},
+    {id:35,name:'Recuperatorio Parcial 1',course:'Programación I',type:'recup1',date:'10 de abril de 2026',time:'08:00 – 09:30',status:'realizado'},
+    {id:31,name:'Parcial 2',course:'Programación I',type:'parcial2',date:'24 de abril de 2026',time:'08:00 – 10:00',status:'realizado'},
+    {id:36,name:'Recuperatorio Parcial 2',course:'Programación I',type:'recup2',date:'8 de mayo de 2026',time:'08:00 – 09:30',status:'realizado'},
+    {id:32,name:'TP1',course:'Programación I',type:'tp1',date:'29 de mayo de 2026',time:'08:00 – 10:00',status:'realizado'},
+    {id:33,name:'TP2',course:'Programación I',type:'tp2',date:'19 de junio de 2026',time:'08:00 – 10:00',status:'realizado'},
+    {id:34,name:'Final',course:'Programación I',type:'final',date:'26 de junio de 2026',time:'08:00 – 10:00',status:'realizado'},
+
+    {id:40,name:'Parcial 1',course:'Tecnología e Innovación',type:'parcial1',date:'19 de marzo de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:45,name:'Recuperatorio Parcial 1',course:'Tecnología e Innovación',type:'recup1',date:'16 de abril de 2026',time:'18:00 – 19:30',status:'realizado'},
+    {id:41,name:'Parcial 2',course:'Tecnología e Innovación',type:'parcial2',date:'23 de abril de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:46,name:'Recuperatorio Parcial 2',course:'Tecnología e Innovación',type:'recup2',date:'7 de mayo de 2026',time:'18:00 – 19:30',status:'realizado'},
+    {id:42,name:'TP1',course:'Tecnología e Innovación',type:'tp1',date:'21 de mayo de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:43,name:'TP2',course:'Tecnología e Innovación',type:'tp2',date:'18 de junio de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:44,name:'Final',course:'Tecnología e Innovación',type:'final',date:'25 de junio de 2026',time:'18:00 – 20:00',status:'realizado'},
+
+    {id:50,name:'Parcial 1',course:'Modelado y Simulación',type:'parcial1',date:'16 de marzo de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:55,name:'Recuperatorio Parcial 1',course:'Modelado y Simulación',type:'recup1',date:'13 de abril de 2026',time:'18:00 – 19:30',status:'realizado'},
+    {id:51,name:'Parcial 2',course:'Modelado y Simulación',type:'parcial2',date:'20 de abril de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:56,name:'Recuperatorio Parcial 2',course:'Modelado y Simulación',type:'recup2',date:'4 de mayo de 2026',time:'18:00 – 19:30',status:'realizado'},
+    {id:52,name:'TP1',course:'Modelado y Simulación',type:'tp1',date:'18 de mayo de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:53,name:'TP2',course:'Modelado y Simulación',type:'tp2',date:'15 de junio de 2026',time:'18:00 – 20:00',status:'realizado'},
+    {id:54,name:'Final',course:'Modelado y Simulación',type:'final',date:'22 de junio de 2026',time:'18:00 – 20:00',status:'realizado'}
+  ]
+  const COURSE_META = {
+    'Desarrollo de Aplicaciones II': {com:'123',sede:'Monserrat',room:'204',period:'2° Cuatrimestre 2026'},
+    'Ingeniería de Datos I': {com:'087',sede:'Belgrano',room:'302',period:'2° Cuatrimestre 2026'},
+    'Ingeniería de Software': {com:'205',sede:'Monserrat',room:'301',period:'2° Cuatrimestre 2026'},
+    'Programación II': {com:'401',sede:'Belgrano',room:'201',period:'2° Cuatrimestre 2026'},
+    'Redes de Datos': {com:'201',sede:'Belgrano',room:'205',period:'1° Cuatrimestre 2026'},
+    'Programación I': {com:'310',sede:'Monserrat',room:'105',period:'1° Cuatrimestre 2026'},
+    'Tecnología e Innovación': {com:'087',sede:'Belgrano',room:'104',period:'1° Cuatrimestre 2026'},
+    'Modelado y Simulación': {com:'045',sede:'Monserrat',room:'203',period:'1° Cuatrimestre 2026'}
+  };
+
+  function canonicalExamType(exam){
+    const n = String(exam?.name || exam?.title || '').trim().toLowerCase();
+    const t = String(exam?.type || exam?.tipo || '').trim().toLowerCase();
+    if(t==='parcial1' || /parcial\\s*1|primer\\s+parcial/.test(n)) return 'parcial1';
+    if(t==='parcial2' || /parcial\\s*2|segundo\\s+parcial/.test(n)) return 'parcial2';
+    if(t==='recup1' || /recuperatorio.*parcial\\s*1|recuperatorio.*primer\\s+parcial/.test(n)) return 'recup1';
+    if(t==='recup2' || /recuperatorio.*parcial\\s*2|recuperatorio.*segundo\\s+parcial/.test(n)) return 'recup2';
+    if(t==='tp1' || /\\btp\\s*1\\b/.test(n)) return 'tp1';
+    if(t==='tp2' || /\\btp\\s*2\\b/.test(n)) return 'tp2';
+    if(t==='final' || /^final(?:\\s+regular)?$/.test(n)) return 'final';
+    return t || 'parcial1';
+  }
+  const canonicalExamNames = {
+    parcial1:'Parcial 1', parcial2:'Parcial 2',
+    recup1:'Recuperatorio Parcial 1', recup2:'Recuperatorio Parcial 2',
+    tp1:'TP1', tp2:'TP2', final:'Final'
+  };
+  function canonicalExamName(exam){
+    return canonicalExamNames[canonicalExamType(exam)] || String(exam?.name || exam?.title || 'Examen');
+  }
+
+  function calendarEvents(){
+    const base = fixedExams.map(e => {
+      const iso = e.date.match(/(\d{1,2}) de ([a-záéíóúñ]+) de (\d{4})/i);
+      const months={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};
+      const date = iso ? `${iso[3]}-${String(months[iso[2].toLowerCase()]).padStart(2,'0')}-${String(iso[1]).padStart(2,'0')}` : '';
+      const meta = COURSE_META[e.course] || {};
+      const typeLabels = {parcial1:'Parcial 1',parcial2:'Parcial 2',recup1:'Recuperatorio Parcial 1',recup2:'Recuperatorio Parcial 2',tp1:'TP1',tp2:'TP2',final:'Final',parcial:'Parcial 1',recuperatorio:'Recuperatorio Parcial 1',integrador:'TP1'};
+      // Los datos del calendario son una representación visual de los exámenes reales.
+      // Conservamos el ID fijo original para poder resolver luego el examen concreto.
+      const exactName = e.name;
+      return {...e,id:'fixed-exam-'+e.id,examSourceId:e.id,date,time:e.time.split('–')[0].trim(),end:e.time.split('–')[1]?.trim()||'',cat:'examen',title:`${exactName} — ${e.course}`,sub:e.course,course:e.course,com:meta.com||'—',sede:meta.sede||'—',room:meta.room||'—',tipo:typeLabels[e.type]||e.type};
+    });
+    let session=[]; try{session=JSON.parse(sessionStorage.getItem('uadenetSessionExams')||'[]')}catch(e){}
+    const dynamic=session.map((e,i)=>{
+      const meta = COURSE_META[e.course] || {};
+      let sessionCourses=[]; try{sessionCourses=JSON.parse(sessionStorage.getItem('uadenetCreatedCourses')||'[]')}catch(_){}
+      const sc = sessionCourses.find(c=>String(c.id)===String(e.courseId) || c.name===e.course) || {};
+      const canonicalType = canonicalExamType(e);
+      const canonicalName = canonicalExamName(e);
+      const typeLabels = {parcial1:'Parcial 1',parcial2:'Parcial 2',recup1:'Recuperatorio Parcial 1',recup2:'Recuperatorio Parcial 2',tp1:'TP1',tp2:'TP2',final:'Final'};
+      return {...e,id:'session-exam-'+(e.id||i),examSourceId:e.id,date:e.dateISO||e.date,time:(e.time||'').split('–')[0].trim(),end:(e.time||'').split('–')[1]?.trim()||'',cat:'examen',name:canonicalName,type:canonicalType,title:`${canonicalName} — ${e.course||''}`,sub:e.course||'',course:e.course||'',com:e.com||sc.com||sc.comision||meta.com||'—',sede:e.location||sc.sede||meta.sede||'—',room:e.room||sc.room||sc.aula||meta.room||'—',tipo:typeLabels[canonicalType]||canonicalName};
+    });
+    return [...base,...dynamic,
+      {id:'feriado-17',date:'2026-08-17',time:null,end:null,cat:'feriado',title:'Feriado nacional',sub:'Sin actividades académicas'},
+      {id:'reunion-docente',date:'2026-09-04',time:'15:00',end:'16:00',cat:'evento',title:'Reunión docente',sub:'Sala de reuniones 2'},
+      {id:'cierre-actas',date:'2026-08-31',time:'17:00',end:'18:00',cat:'evento',title:'Cierre de actas',sub:'Evento académico'},
+      {id:'almuerzo-01',date:'2026-09-01',time:'12:00',end:'14:00',cat:'comedor',title:'Turno de comedor',sub:'Comedor central',ubicacion:'Belgrano'},
+      {id:'almuerzo-02',date:'2026-09-02',time:'12:00',end:'14:00',cat:'comedor',title:'Turno de comedor',sub:'Comedor central',ubicacion:'Monserrat'},
+      {id:'jornada-innovacion',date:'2026-09-05',time:'10:00',end:'13:00',cat:'evento',title:'Jornada de innovación',sub:'Campus UADEnet'}
+    ];
+  }
+  let events = calendarEvents();
+
+
+  function fmtDate(d){
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+  function isSameDay(a,b){ return fmtDate(a)===fmtDate(b); }
+  function isPast(dateStr, time){
+    const d = new Date(dateStr+'T'+(time||'23:59'));
+    return d < TODAY || (isSameDay(d,TODAY) && time && time < '12:24');
+  }
+
+  function activeCategories(){
+    return Array.from(document.querySelectorAll('.filter-check input')).filter(i=>i.checked).map(i=>i.dataset.cat);
+  }
+  const CANCELLED_EXAMS_KEY = 'uadenetCancelledExams';
+  function loadCancelledExamIds(){
+    try{
+      const raw = JSON.parse(sessionStorage.getItem(CANCELLED_EXAMS_KEY) || '[]');
+      return new Set(Array.isArray(raw) ? raw.map(String) : []);
+    }catch(_){
+      return new Set();
+    }
+  }
+  function isExamCancelled(ev, cancelledIds){
+    if(!ev || ev.cat !== 'examen') return false;
+    // Los eventos fijos/dinámicos son una representación visual del examen
+    // real. La cancelación se guarda con el ID real del examen, no con el ID
+    // visual del evento (fixed-exam-* / session-exam-*).
+    const sourceId = ev.examSourceId != null
+      ? String(ev.examSourceId)
+      : String(ev.id || '').replace(/^(?:fixed|session)-exam-/, '');
+    return cancelledIds.has(sourceId) || cancelledIds.has(String(ev.id));
+  }
+  function visibleEvents(){
+    events = calendarEvents();
+    const active = activeCategories();
+    const cancelledIds = loadCancelledExamIds();
+    return events.filter(e => active.includes(e.cat) && !isExamCancelled(e, cancelledIds));
+  }
+
+  /* ============ MONTH GRID ============ */
+  function renderMonthGrid(){
+    const year = viewDate.getFullYear(), month = viewDate.getMonth();
+    document.getElementById('monthLabel').textContent = `${MONTH_NAMES[month]} ${year}`;
+    const firstOfMonth = new Date(year, month, 1);
+    let startOffset = firstOfMonth.getDay() - 1; // Monday-first
+    if(startOffset < 0) startOffset = 6;
+    const gridStart = new Date(year, month, 1 - startOffset);
+
+    const grid = document.getElementById('monthGrid');
+    grid.innerHTML = '';
+    const evList = visibleEvents();
+
+    for(let i=0;i<42;i++){
+      const cellDate = new Date(gridStart);
+      cellDate.setDate(gridStart.getDate() + i);
+      const inMonth = cellDate.getMonth() === month;
+      const dayEvents = evList.filter(e => e.date === fmtDate(cellDate));
+
+      const cell = document.createElement('div');
+      cell.className = 'day-cell' + (inMonth ? '' : ' other-month');
+
+      const numRow = document.createElement('div');
+      numRow.className = 'day-num-row';
+      const num = document.createElement('span');
+      num.className = 'day-num' + (isSameDay(cellDate, TODAY) ? ' today' : '');
+      num.textContent = cellDate.getDate();
+      numRow.appendChild(num);
+      cell.appendChild(numRow);
+
+      const evWrap = document.createElement('div');
+      evWrap.className = 'day-events';
+
+      const isHoliday = dayEvents.some(e => e.cat === 'feriado');
+      const shown = dayEvents.slice(0, 2);
+      shown.forEach(ev => {
+        const chip = document.createElement('button');
+        chip.className = `ev-chip ${ev.cat}` + (ev.time && isPast(ev.date, ev.time) ? ' past' : '');
+        chip.onclick = () => openEventModal(ev.id);
+        chip.innerHTML = `${ev.time ? `<span>${ev.time}</span>` : ''}<span class="ev-label">${ev.title}</span>`;
+        evWrap.appendChild(chip);
+      });
+      if(dayEvents.length > 2){
+        const more = document.createElement('button');
+        more.className = 'ev-more';
+        more.textContent = `+${dayEvents.length - 2} eventos`;
+        more.onclick = () => openDayList(cellDate, dayEvents);
+        evWrap.appendChild(more);
+      }
+      if(isHoliday && dayEvents.filter(e=>e.cat!=='feriado').length === 0){
+        const tag = document.createElement('div');
+        tag.className = 'no-activities-tag';
+        tag.textContent = 'Sin actividades académicas';
+        evWrap.appendChild(tag);
+      }
+
+      cell.appendChild(evWrap);
+      grid.appendChild(cell);
+    }
+  }
+
+  /* ============ WEEK VIEW ============ */
+  function startOfWeek(d){
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    const r = new Date(d);
+    r.setDate(d.getDate() + diff);
+    return r;
+  }
+  function renderWeekView(){
+    const start = startOfWeek(viewDate);
+    const head = document.getElementById('weekHead');
+    const body = document.getElementById('weekBody');
+    head.innerHTML = '<div class="week-head-cell"></div>';
+    const days = [];
+    for(let i=0;i<7;i++){
+      const d = new Date(start); d.setDate(start.getDate()+i);
+      days.push(d);
+      head.innerHTML += `<div class="week-head-cell"><div class="week-head-day">${WEEKDAY_NAMES[d.getDay()]}</div><div class="week-head-num${isSameDay(d,TODAY)?' today':''}">${d.getDate()}</div></div>`;
+    }
+    document.getElementById('monthLabel').textContent = `${days[0].getDate()}–${days[6].getDate()} de ${MONTH_NAMES[days[6].getMonth()]} ${days[6].getFullYear()}`;
+
+    const evList = visibleEvents();
+    const hours = [8,9,10,11,12,13,14,15,16,17,18,19,20];
+    body.innerHTML = '';
+    hours.forEach(h => {
+      body.innerHTML += `<div class="hour-label">${String(h).padStart(2,'0')}:00</div>`;
+      days.forEach(d => {
+        const cellEvents = evList.filter(e => e.date===fmtDate(d) && e.time && parseInt(e.time)===h);
+        let html = '<div class="hour-cell">';
+        cellEvents.forEach(ev => {
+          html += `<div class="week-ev ${ev.cat}" onclick="openEventModal('${ev.id}')">${ev.title}</div>`;
+        });
+        html += '</div>';
+        body.innerHTML += html;
+      });
+    });
+  }
+
+  /* ============ DAY VIEW ============ */
+  function renderDayView(){
+    document.getElementById('monthLabel').textContent = `${viewDate.getDate()} de ${MONTH_NAMES[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
+    document.getElementById('dayViewTitle').textContent = `${WEEKDAY_LONG[viewDate.getDay()]} ${viewDate.getDate()} de ${MONTH_NAMES[viewDate.getMonth()]} de ${viewDate.getFullYear()}`;
+    const evList = visibleEvents().filter(e => e.date === fmtDate(viewDate) && e.time);
+    const hours = [8,9,10,11,12,13,14,15,16,17,18,19,20];
+    const timeline = document.getElementById('dayTimeline');
+    timeline.innerHTML = '';
+    hours.forEach(h => {
+      const hourEvents = evList.filter(e => parseInt(e.time)===h);
+      let html = `<div class="day-hour-row"><div class="day-hour-label">${String(h).padStart(2,'0')}:00</div><div class="day-hour-body">`;
+      hourEvents.forEach(ev => {
+        html += `<div class="day-ev ${ev.cat}" onclick="openEventModal('${ev.id}')">
+          <div><p class="day-ev-title">${ev.title}</p><p class="day-ev-sub">${ev.sub || ''}${ev.end ? ' · '+ev.time+'–'+ev.end : ''}</p></div>
+        </div>`;
+      });
+      html += '</div></div>';
+      timeline.innerHTML += html;
+    });
+  }
+
+  /* ============ AGENDA VIEW ============ */
+  function renderAgendaView(){
+    document.getElementById('monthLabel').textContent = `${MONTH_NAMES[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
+    const evList = visibleEvents().filter(e => new Date(e.date) >= TODAY).sort((a,b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
+    const byDate = {};
+    evList.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+
+    const wrap = document.getElementById('agendaView');
+    wrap.innerHTML = '';
+    if(Object.keys(byDate).length === 0){
+      wrap.innerHTML = `<div class="cal-state"><span class="icon"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/></svg></span><p>No hay eventos para este período.</p></div>`;
+      return;
+    }
+    Object.keys(byDate).slice(0,10).forEach(dateStr => {
+      const d = new Date(dateStr+'T00:00');
+      let label = `${WEEKDAY_LONG[d.getDay()]} — ${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+      if(isSameDay(d,TODAY)) label = `Hoy — ${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+      else{
+        const tmr = new Date(TODAY); tmr.setDate(TODAY.getDate()+1);
+        if(isSameDay(d,tmr)) label = `Mañana — ${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+      }
+      let html = `<div class="agenda-day"><p class="agenda-day-title">${label}</p><div class="agenda-items">`;
+      byDate[dateStr].forEach(ev => {
+        html += `<div class="agenda-item ${ev.cat}" onclick="openEventModal('${ev.id}')">
+          <span class="agenda-time">${ev.time || '—'}</span>
+          <span class="agenda-icon ${ev.cat}">${iconFor(ev.cat)}</span>
+          <div class="agenda-main"><p class="agenda-item-title">${CATEGORY_META[ev.cat].label} — ${ev.title}</p><p class="agenda-item-sub">${ev.sub || ''}</p></div>
+        </div>`;
+      });
+      html += '</div></div>';
+      wrap.innerHTML += html;
+    });
+  }
+
+  function iconFor(cat){
+    const icons = {
+      clase:'<svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+      examen:'<svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/></svg>',
+      evento:'<svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/></svg>',
+      institucional:'<svg viewBox="0 0 20 20" fill="none"><path d="M3 16V14.5C3 12.6 5.2 11 8 11C10.8 11 13 12.6 13 14.5V16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/></svg>',
+      feriado:'<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 6V10L12.5 11.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      comedor:'<svg viewBox="0 0 20 20" fill="none"><path d="M6 2.5V9M4 2.5V6.5C4 7.6 4.9 8.5 6 8.5M8 2.5V6.5C8 7.6 7.1 8.5 6 8.5M6 8.5V17.5M14 2.5C12 2.5 12 6 12 8C12 9 12.7 9.5 13.5 9.7V17.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    };
+    return icons[cat] || '';
+  }
+
+  /* ============ NAV CONTROLS ============ */
+  function changeMonth(delta){
+    if(currentView === 'day') viewDate.setDate(viewDate.getDate() + delta);
+    else if(currentView === 'week') viewDate.setDate(viewDate.getDate() + delta*7);
+    else viewDate.setMonth(viewDate.getMonth() + delta);
+    renderCurrentView();
+  }
+  function goToday(){ viewDate = new Date(TODAY); renderCurrentView(); }
+
+  document.getElementById('viewSwitch').addEventListener('click', (e) => {
+    const btn = e.target.closest('.view-btn');
+    if(!btn) return;
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.dataset.view;
+    document.getElementById('monthView').style.display = currentView === 'month' ? '' : 'none';
+    document.getElementById('weekView').style.display = currentView === 'week' ? '' : 'none';
+    document.getElementById('dayView').style.display = currentView === 'day' ? '' : 'none';
+    document.getElementById('agendaView').style.display = currentView === 'agenda' ? '' : 'none';
+    renderCurrentView();
+  });
+
+  function renderCurrentView(){
+    if(currentView === 'month') renderMonthGrid();
+    else if(currentView === 'week') renderWeekView();
+    else if(currentView === 'day') renderDayView();
+    else if(currentView === 'agenda') renderAgendaView();
+  }
+
+  document.querySelectorAll('.filter-check input').forEach(cb => cb.addEventListener('change', renderCurrentView));
+
+  /* ============ FILTERS PANEL TOGGLE ============ */
+  const filtersBtn = document.getElementById('filtersBtn');
+  const filtersPanel = document.getElementById('filtersPanel');
+  filtersBtn.addEventListener('click', (e) => { e.stopPropagation(); filtersPanel.classList.toggle('open'); });
+  document.addEventListener('click', (e) => { if(!filtersPanel.contains(e.target) && e.target !== filtersBtn) filtersPanel.classList.remove('open'); });
+
+  /* ============ EVENT MODAL ============ */
+  const catColor = {clase:'var(--clase-c)',examen:'var(--examen-c)',evento:'var(--evento-c)',institucional:'var(--institucional-c)',feriado:'var(--feriado-c)',comedor:'var(--comedor-c)'};
+  const catBg = {clase:'var(--clase-bg)',examen:'var(--examen-bg)',evento:'var(--evento-bg)',institucional:'var(--institucional-bg)',feriado:'var(--feriado-bg)',comedor:'var(--comedor-bg)'};
+
+  function openEventModal(id){
+    const ev = events.find(e => e.id === id);
+    if(!ev) return;
+
+    if(ev.cat === 'comedor'){
+      const d = new Date(ev.date+'T00:00');
+      document.getElementById('modalIcon').style.background = catBg.comedor;
+      document.getElementById('modalIcon').style.color = catColor.comedor;
+      document.getElementById('modalIcon').innerHTML = iconFor('comedor');
+      document.getElementById('modalEyebrow').textContent = 'Menú del día';
+      document.getElementById('modalEyebrow').style.color = catColor.comedor;
+      document.getElementById('modalTitle').textContent = `${WEEKDAY_LONG[d.getDay()]} ${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="menu-section"><p class="menu-label">${ev.title}</p><p class="menu-value">Horario: ${ev.time}–${ev.end}</p></div>
+        <div class="menu-section"><p class="menu-label">Plato principal</p><p class="menu-value">Pollo al horno con guarnición.</p></div>
+        <div class="menu-section"><p class="menu-label">Opción vegetariana</p><p class="menu-value">Tarta de verduras.</p></div>
+        <div class="menu-section"><p class="menu-label">Postre</p><p class="menu-value">Fruta.</p></div>
+        <div class="menu-section"><p class="menu-label">Bebida</p><p class="menu-value">Agua.</p></div>
+        <div class="menu-section"><p class="menu-label">Ubicación</p><p class="menu-value">${ev.ubicacion}</p></div>`;
+      document.getElementById('modalFooter').innerHTML = '';
+    } else if(ev.cat === 'feriado'){
+      document.getElementById('modalIcon').style.background = catBg.feriado;
+      document.getElementById('modalIcon').style.color = catColor.feriado;
+      document.getElementById('modalIcon').innerHTML = iconFor('feriado');
+      document.getElementById('modalEyebrow').textContent = 'Feriado nacional';
+      document.getElementById('modalEyebrow').style.color = catColor.feriado;
+      const d = new Date(ev.date+'T00:00');
+      document.getElementById('modalTitle').textContent = `${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+      document.getElementById('modalBody').innerHTML = `<p class="modal-desc">No habrá actividades académicas.</p>`;
+      document.getElementById('modalFooter').innerHTML = '';
+    } else if(ev.cat === 'institucional'){
+      document.getElementById('modalIcon').style.background = catBg.institucional;
+      document.getElementById('modalIcon').style.color = catColor.institucional;
+      document.getElementById('modalIcon').innerHTML = iconFor('institucional');
+      document.getElementById('modalEyebrow').textContent = 'Evento institucional';
+      document.getElementById('modalEyebrow').style.color = catColor.institucional;
+      document.getElementById('modalTitle').textContent = ev.title;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="modal-row"><span class="lbl">Fecha</span><span class="val">${fmtLongDate(ev.date)}</span></div>
+        <div class="modal-row"><span class="lbl">Horario</span><span class="val">${ev.time}–${ev.end}</span></div>
+        <div class="modal-row"><span class="lbl">Lugar</span><span class="val">${ev.lugar}</span></div>
+        <div class="modal-row"><span class="lbl">Organizador</span><span class="val">${ev.organizador}</span></div>
+        <p class="modal-desc">${ev.desc}</p>`;
+      document.getElementById('modalFooter').innerHTML = '';
+    } else if(ev.cat === 'evento'){
+      document.getElementById('modalIcon').style.background = catBg.evento;
+      document.getElementById('modalIcon').style.color = catColor.evento;
+      document.getElementById('modalIcon').innerHTML = iconFor('evento');
+      document.getElementById('modalEyebrow').textContent = 'Evento académico';
+      document.getElementById('modalEyebrow').style.color = catColor.evento;
+      document.getElementById('modalTitle').textContent = ev.title;
+      document.getElementById('modalBody').innerHTML = `<div class="modal-row"><span class="lbl">Fecha</span><span class="val">${fmtLongDate(ev.date)}</span></div>`;
+      document.getElementById('modalFooter').innerHTML = '';
+    } else if(ev.cat === 'clase'){
+      document.getElementById('modalIcon').style.background = catBg.clase;
+      document.getElementById('modalIcon').style.color = catColor.clase;
+      document.getElementById('modalIcon').innerHTML = iconFor('clase');
+      document.getElementById('modalEyebrow').textContent = 'Clase';
+      document.getElementById('modalEyebrow').style.color = catColor.clase;
+      document.getElementById('modalTitle').textContent = ev.course;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="modal-row"><span class="lbl">Fecha</span><span class="val">${fmtLongDate(ev.date)}</span></div>
+        <div class="modal-row"><span class="lbl">Horario</span><span class="val">${ev.time}–${ev.end}</span></div>
+        <div class="modal-row"><span class="lbl">Aula</span><span class="val">${ev.room}</span></div>
+        <div class="modal-row"><span class="lbl">Comisión</span><span class="val">${ev.com}</span></div>
+        <div class="modal-row"><span class="lbl">Docente</span><span class="val">${ev.teacher}</span></div>`;
+      document.getElementById('modalFooter').innerHTML = `<button class="btn-primary" onclick="__uadenetGo('pantalla-05-detalle-curso')">Ver curso</button>`;
+    } else if(ev.cat === 'examen'){
+      document.getElementById('modalIcon').style.background = catBg.examen;
+      document.getElementById('modalIcon').style.color = catColor.examen;
+      document.getElementById('modalIcon').innerHTML = iconFor('examen');
+      document.getElementById('modalEyebrow').textContent = 'Examen';
+      document.getElementById('modalEyebrow').style.color = catColor.examen;
+      document.getElementById('modalTitle').textContent = ev.title;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="modal-row"><span class="lbl">Fecha</span><span class="val">${fmtLongDate(ev.date)}</span></div>
+        <div class="modal-row"><span class="lbl">Horario</span><span class="val">${ev.time}–${ev.end}</span></div>
+        <div class="modal-row"><span class="lbl">Sede</span><span class="val">${ev.sede || '—'}</span></div>
+        <div class="modal-row"><span class="lbl">Aula</span><span class="val">${ev.room || '—'}</span></div>
+        <div class="modal-row"><span class="lbl">Comisión</span><span class="val">${ev.com || '—'}</span></div>
+        <div class="modal-row"><span class="lbl">Tipo</span><span class="val">${ev.tipo || '—'}</span></div>`;
+      // IMPORTANTE: no construimos una página de examen ficticia ni navegamos
+      // mediante un href que pueda perder el contexto al pasar por el visor.
+      // Primero resolvemos el examen REAL (fijo o creado durante la sesión),
+      // lo guardamos en sessionStorage y recién después pedimos al visor que
+      // abra la pantalla de detalle de examen.
+      document.getElementById('modalFooter').innerHTML = `<button id="calendarExamLink" type="button" class="btn-primary">Ver examen</button>`;
+      const examLink = document.getElementById('calendarExamLink');
+      if(examLink){
+        examLink.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openExamDetailFromCalendar(ev.id);
+        });
+      }
+    }
+
+    document.getElementById('eventModal').classList.add('show');
+  }
+
+  function prepareExamSelection(id){
+    const ev = events.find(e => String(e.id) === String(id));
+    if(!ev || ev.cat !== 'examen') return null;
+
+    const norm = v => String(v || '').trim().toLowerCase();
+    let resolved = null;
+
+    // 1) Exámenes creados durante la sesión: el evento usa el ID visual
+    //    "session-exam-<id>", pero el registro real conserva <id>.
+    try{
+      const sessionExams = JSON.parse(sessionStorage.getItem('uadenetSessionExams') || '[]');
+      const rawId = String(ev.examSourceId ?? String(ev.id).replace(/^session-exam-/, ''));
+      resolved = sessionExams.find(e => String(e.id) === rawId) || null;
+
+      // Fallback por contenido, útil si el creador generó un ID no numérico.
+      if(!resolved){
+        const targetType = norm(ev.type);
+        resolved = sessionExams.find(e =>
+          norm(e.course || e.courseName) === norm(ev.course) &&
+          norm(e.name || e.title) === norm(ev.name || ev.title) &&
+          norm(e.type || e.tipo) === targetType
+        ) || null;
+      }
+    }catch(_){}
+
+    // 2) Exámenes fijos: se busca por el ID original del registro fijo.
+    if(!resolved){
+      const fixedId = ev.examSourceId != null ? String(ev.examSourceId) : String(ev.id).replace(/^fixed-exam-/, '');
+      const fixed = fixedExams.find(e => String(e.id) === fixedId);
+      if(fixed) resolved = {...fixed};
+    }
+
+    // 3) Los recuperatorios son exámenes reales con su propio detalle.
+    // NO deben redirigir al Parcial 1/2: el botón "Ver examen" debe abrir
+    // exactamente el recuperatorio seleccionado en el calendario.
+    // La relación con el parcial se utiliza únicamente para la lógica de
+    // calificaciones, no para la navegación.
+    if(!resolved) resolved = {...ev};
+
+    const selected = {
+      ...ev,
+      ...resolved,
+      id: resolved.id ?? ev.examSourceId ?? ev.id,
+      calendarEventId: ev.id,
+      course: resolved.course || ev.course,
+      name: resolved.name || ev.name,
+      type: resolved.type || ev.type,
+      tipo: resolved.tipo || ev.tipo || '',
+      dateISO: resolved.dateISO || ev.date || resolved.date || '',
+      startTime: resolved.startTime || ev.time || '',
+      endTime: resolved.endTime || ev.end || '',
+      location: resolved.location || ev.sede || '',
+      room: resolved.room || ev.room || ''
+    };
+
+    try{
+      sessionStorage.setItem('uadenetSelectedExam', JSON.stringify(selected));
+      sessionStorage.setItem('uadenetSelectedExamId', String(selected.id));
+      const courseIds = {
+        'Desarrollo de Aplicaciones II':'da2','Ingeniería de Datos I':'id1','Ingeniería de Software':'isw',
+        'Programación II':'pr2','Redes de Datos':'rd','Programación I':'pr1','Tecnología e Innovación':'bd','Modelado y Simulación':'mys'
+      };
+      let cid = courseIds[selected.course];
+      if(!cid){
+        try{
+          const created = JSON.parse(sessionStorage.getItem('uadenetCreatedCourses') || '[]');
+          const c = created.find(x => String(x.id) === String(selected.courseId) || norm(x.name) === norm(selected.course));
+          if(c) cid = c.id;
+        }catch(_){}
+      }
+      if(cid){
+        sessionStorage.setItem('uadenetSelectedCourse', String(cid));
+        localStorage.setItem('uadenetSelectedCourse', String(cid));
+      }
+      // Guardamos el contexto COMPLETO del curso. Antes se persistía un objeto
+      // parcial (y a veces con period:'') y, al entrar a Información general,
+      // ese objeto pisaba los datos completos del catálogo.
+      const courseMeta = COURSE_META[selected.course] || {};
+      const courseContext = {
+        id: cid || selected.course,
+        name: selected.course,
+        com: selected.com || courseMeta.com || '',
+        period: selected.period || courseMeta.period || '',
+        sede: selected.sede || selected.location || courseMeta.sede || '',
+        room: selected.room || courseMeta.room || ''
+      };
+      localStorage.setItem('uadenetSelectedCourseData', JSON.stringify(courseContext));
+    }catch(e){ console.warn('No se pudo guardar el contexto del examen:', e); }
+    return selected;
+  }
+
+  function openExamDetailFromCalendar(id){
+    const selected = prepareExamSelection(id);
+    if(!selected) return;
+    // El visor navega por slug. El examen real ya quedó persistido en sessionStorage,
+    // por lo que la pantalla 12 recupera exactamente ese registro.
+    if(typeof __uadenetGo === 'function') __uadenetGo('pantalla-12-detalle-examen');
+  }
+
+  // Explicit global entry point used by the dynamically-rendered modal button.
+  window.__uadenetOpenExamFromCalendar = openExamDetailFromCalendar;
+
+  function fmtLongDate(dateStr){
+    const d = new Date(dateStr+'T00:00');
+    return `${d.getDate()} de ${MONTH_NAMES[d.getMonth()]} de ${d.getFullYear()}`;
+  }
+
+  function openDayList(date, dayEvents){
+    document.getElementById('dayListTitle').textContent = `${date.getDate()} de ${MONTH_NAMES[date.getMonth()]}`;
+    const body = document.getElementById('dayListBody');
+    body.innerHTML = dayEvents.map(ev => `
+      <div class="day-list-item" onclick="closeModal('dayListModal'); openEventModal('${ev.id}')">
+        <span class="day-list-icon" style="background:${catBg[ev.cat]};color:${catColor[ev.cat]}">${iconFor(ev.cat)}</span>
+        <div><p style="margin:0;font-size:13px;font-weight:700;color:var(--text-900);">${ev.time ? ev.time+' — ' : ''}${CATEGORY_META[ev.cat].label}</p><p style="margin:0;font-size:12px;color:var(--text-600);">${ev.title}</p></div>
+      </div>
+    `).join('');
+    document.getElementById('dayListModal').classList.add('show');
+  }
+
+  function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+  document.getElementById('eventModal').addEventListener('click', e => { if(e.target.id==='eventModal') closeModal('eventModal'); });
+  document.getElementById('dayListModal').addEventListener('click', e => { if(e.target.id==='dayListModal') closeModal('dayListModal'); });
+
+  /* ============ PAGE STATES (review only) ============ */
+  function setPageState(name){
+    const viewContainer = document.getElementById('viewContainer');
+    const nextEventCard = document.getElementById('nextEventCard');
+    renderCurrentView();
+    nextEventCard.style.display = '';
+
+    const existingOverlay = document.getElementById('calStateOverlay');
+    if(existingOverlay) existingOverlay.remove();
+    document.getElementById('monthView').style.display = currentView==='month' ? '' : 'none';
+    document.getElementById('weekView').style.display = currentView==='week' ? '' : 'none';
+    document.getElementById('dayView').style.display = currentView==='day' ? '' : 'none';
+    document.getElementById('agendaView').style.display = currentView==='agenda' ? '' : 'none';
+
+    if(name === 'normal') return;
+
+    nextEventCard.style.display = 'none';
+    if(name === 'loading'){
+      ['monthView','weekView','dayView','agendaView'].forEach(id => document.getElementById(id).style.display='none');
+      const skel = document.createElement('div');
+      skel.id = 'calStateOverlay';
+      skel.className = 'cal-panel';
+      skel.style.padding = '16px';
+      let rows = '';
+      for(let i=0;i<5;i++){ rows += `<div class="skel" style="width:100%;height:70px;margin-bottom:8px;border-radius:8px;"></div>`; }
+      skel.innerHTML = rows;
+      viewContainer.appendChild(skel);
+    } else if(name === 'empty'){
+      ['monthView','weekView','dayView','agendaView'].forEach(id => document.getElementById(id).style.display='none');
+      const block = document.createElement('div');
+      block.id = 'calStateOverlay';
+      block.className = 'cal-state';
+      block.innerHTML = `<span class="icon"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.3"/></svg></span><p>No hay eventos para este período.</p>`;
+      viewContainer.appendChild(block);
+    } else if(name === 'noResults'){
+      ['monthView','weekView','dayView','agendaView'].forEach(id => document.getElementById(id).style.display='none');
+      const block = document.createElement('div');
+      block.id = 'calStateOverlay';
+      block.className = 'cal-state';
+      block.innerHTML = `<span class="icon"><svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><p>No encontramos eventos con los filtros seleccionados.</p><button class="retry-btn" onclick="resetFilters()">Limpiar filtros</button>`;
+      viewContainer.appendChild(block);
+    } else if(name === 'error'){
+      ['monthView','weekView','dayView','agendaView'].forEach(id => document.getElementById(id).style.display='none');
+      const block = document.createElement('div');
+      block.id = 'calStateOverlay';
+      block.className = 'cal-state error';
+      block.innerHTML = `<span class="icon"><svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><p>No pudimos cargar el calendario.</p><button class="retry-btn" onclick="setPageState('normal')">Reintentar</button>`;
+      viewContainer.appendChild(block);
+    }
+  }
+  function resetFilters(){
+    document.querySelectorAll('.filter-check input').forEach(cb => cb.checked = true);
+    setPageState('normal');
+  }
+
+  /* init */
+  renderMonthGrid();
+</script>
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-19-detalle-evento":"pantalla-19-detalle-evento.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  function closeAllUserMenus(except){
+    document.querySelectorAll('.user-dropdown.open').forEach(function(menu){
+      if(menu !== except) menu.classList.remove('open');
+    });
+    document.querySelectorAll('.user-menu.active-menu').forEach(function(btn){
+      if(!except || btn.parentElement.querySelector('.user-dropdown') !== except){
+        btn.classList.remove('active-menu');
+      }
+    });
+  }
+
+  window.toggleUserMenu = function(button){
+    var wrap = button.closest('.user-menu-wrap');
+    var menu = wrap ? wrap.querySelector('.user-dropdown') : null;
+    if(!menu) return;
+    var willOpen = !menu.classList.contains('open');
+    closeAllUserMenus(menu);
+    menu.classList.toggle('open', willOpen);
+    button.classList.toggle('active-menu', willOpen);
+  };
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.user-menu-wrap')){
+      closeAllUserMenus(null);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+</body>
+</html>

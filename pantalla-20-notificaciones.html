@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Notificaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f; --navy-900:#1b2a4a; --navy-800:#26375c; --navy-600:#4a5c82; --navy-100:#e8ecf5;
+    --gold-500:#c9a24b; --gold-600:#ab8437; --gold-100:#f4ead2;
+    --bg:#f6f7fa; --surface:#ffffff;
+    --text-900:#16213a; --text-600:#5b6472; --text-400:#8992a3;
+    --border:#dde2ea;
+    --error-600:#b3392c; --error-100:#fbeae7;
+    --success-600:#2f7a4f; --success-100:#e7f4ec;
+    --info-600:#3a5a99; --info-100:#eaf0fb;
+    --warn-600:#a06a1a; --warn-100:#fdf1e2;
+    --radius-lg:16px; --radius-md:10px; --radius-sm:7px;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-h:64px; --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font-body);color:var(--text-900);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ============ HEADER (shared) ============ */
+  .app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;color:var(--navy-900);}
+  .hamburger:hover{background:var(--navy-100);}
+  .brand-mark{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:2px;}
+  .brand-glyph{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg, var(--navy-900), var(--navy-950));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .brand-glyph svg{width:16px;height:16px;}
+  .brand-word{font-family:var(--font-display);font-weight:600;font-size:18.5px;color:var(--navy-950);white-space:nowrap;}
+  .brand-word .accent{color:var(--gold-600);}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:9px;cursor:pointer;color:var(--navy-900);}
+  .icon-btn:hover{background:var(--navy-100);}
+  .icon-btn svg{width:19px;height:19px;}
+  .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--error-600);border:1.5px solid var(--surface);}
+  .balance-chip{display:flex;align-items:center;gap:7px;background:var(--gold-100);border:1px solid rgba(201,162,75,0.4);border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;color:var(--navy-950);}
+  .balance-chip:hover{background:#efe1bb;}
+  .balance-chip svg{width:15px;height:15px;color:var(--gold-600);}
+  .balance-chip .amount{font-size:13px;font-weight:700;}
+  .balance-chip .label{font-size:11px;color:var(--text-600);font-weight:500;}
+  .user-menu{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:4px 6px 4px 4px;border-radius:999px;}
+  .user-menu:hover{background:var(--navy-100);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;}
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;text-align:left;}
+  .user-meta .name{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .user-meta .role{font-size:11px;color:var(--text-400);}
+  @media (max-width:900px){.user-meta{display:none;} .balance-chip .label{display:none;}}
+
+  /* ============ SIDEBAR (shared) ============ */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 12px 20px;z-index:40;transition:transform .2s ease;}
+  .nav-group{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--text-600);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:var(--navy-100);color:var(--navy-900);}
+  .nav-item.active{background:var(--navy-900);color:#fff;font-weight:600;}
+  .nav-divider{height:1px;background:var(--border);margin:10px 4px;}
+  .nav-item.logout{color:var(--error-600);}
+  .nav-item.logout:hover{background:var(--error-100);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;top:var(--header-h);background:rgba(16,25,47,0.35);z-index:39;}
+
+  /* ============ MAIN LAYOUT ============ */
+  .app-body{padding-top:var(--header-h);}
+  .main{margin-left:var(--sidebar-w);padding:24px 32px 70px;max-width:880px;}
+
+  .breadcrumb{font-size:12.5px;color:var(--text-400);margin:0 0 14px;font-weight:500;}
+  .breadcrumb a{color:var(--text-400);text-decoration:none;cursor:pointer;}
+  .breadcrumb a:hover{color:var(--navy-800);text-decoration:underline;}
+
+  .page-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+  .page-title{font-family:var(--font-display);font-size:25px;font-weight:600;color:var(--navy-950);margin:0 0 5px;}
+  .page-desc{font-size:13.5px;color:var(--text-600);margin:0;}
+
+  .btn-primary{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:var(--radius-md);padding:9px 16px;cursor:pointer;white-space:nowrap;}
+  .btn-primary:hover{background:var(--navy-800);}
+  .btn-secondary{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:9px 15px;cursor:pointer;white-space:nowrap;}
+  .btn-secondary:hover{border-color:var(--navy-800);background:var(--navy-100);}
+
+  /* ============ QUICK FILTER PILLS ============ */
+  .quick-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .pill{
+    display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--text-600);
+    background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:8px 15px;cursor:pointer;
+  }
+  .pill:hover{border-color:var(--navy-600);}
+  .pill.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
+  .pill .count{font-size:11.5px;font-weight:700;padding:1px 6px;border-radius:999px;background:var(--bg);color:var(--text-600);}
+  .pill.active .count{background:rgba(255,255,255,0.2);color:#fff;}
+
+  /* ============ SEARCH + FILTERS ROW ============ */
+  .toolbar-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+  .search-wrap{position:relative;flex:1;min-width:220px;}
+  .search-wrap svg.leading{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--text-400);}
+  .search-wrap input{width:100%;font-size:13.5px;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px 10px 38px;outline:none;transition:border-color .15s ease, box-shadow .15s ease;}
+  .search-wrap input::placeholder{color:var(--text-400);}
+  .search-wrap input:focus{border-color:var(--navy-800);box-shadow:0 0 0 3.5px rgba(27,42,74,0.12);}
+
+  .filters-wrap{position:relative;}
+  .filters-panel{
+    display:none;position:absolute;top:44px;right:0;z-index:25;width:280px;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    box-shadow:0 16px 40px -12px rgba(16,25,47,0.25);padding:16px;
+  }
+  .filters-panel.open{display:block;}
+  .filter-group{margin-bottom:14px;}
+  .filter-group:last-of-type{margin-bottom:16px;}
+  .filter-group-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-400);margin:0 0 8px;}
+  .filter-select-full{
+    width:100%;font-size:13px;font-weight:500;color:var(--text-900);background:var(--surface);
+    border:1.5px solid var(--border);border-radius:var(--radius-md);padding:9px 30px 9px 12px;cursor:pointer;outline:none;
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5 7.5L10 12.5L15 7.5' stroke='%235b6472' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 10px center;
+  }
+  .filters-actions{display:flex;gap:8px;}
+  .filters-actions .btn-secondary, .filters-actions .btn-primary{flex:1;justify-content:center;}
+
+  .sort-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+  .sort-row label{font-size:12.5px;color:var(--text-600);font-weight:500;}
+  .sort-select{
+    font-size:12.5px;font-weight:600;color:var(--text-900);background:var(--surface);
+    border:1.5px solid var(--border);border-radius:var(--radius-md);padding:7px 28px 7px 11px;cursor:pointer;outline:none;
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5 7.5L10 12.5L15 7.5' stroke='%235b6472' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center;
+  }
+
+  /* ============ FEATURED CARD ============ */
+  .featured-card{
+    display:flex;gap:14px;align-items:flex-start;background:var(--warn-100);
+    border:1px solid rgba(160,106,26,0.25);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:18px;
+  }
+  .featured-icon{width:36px;height:36px;border-radius:10px;background:var(--warn-600);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .featured-icon svg{width:17px;height:17px;}
+  .featured-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--warn-600);margin:0 0 3px;}
+  .featured-title{font-size:14px;font-weight:700;color:var(--text-900);margin:0 0 4px;}
+  .featured-desc{font-size:13px;color:var(--text-600);margin:0 0 10px;line-height:1.5;}
+
+  /* ============ GROUPS ============ */
+  .date-group{margin-bottom:22px;}
+  .date-group-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-400);margin:0 0 10px;}
+
+  /* ============ NOTIFICATION ITEM ============ */
+  .notif-list{display:flex;flex-direction:column;gap:8px;}
+  .notif-item{
+    display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:14px 14px 14px 16px;cursor:pointer;position:relative;
+  }
+  .notif-item:hover{border-color:var(--navy-600);}
+  .notif-item.unread{background:var(--navy-100);border-color:rgba(27,42,74,0.15);}
+  .notif-item.read{opacity:0.86;}
+
+  .unread-dot{width:8px;height:8px;border-radius:50%;background:var(--navy-900);flex-shrink:0;margin-top:6px;}
+  .unread-dot.hidden{visibility:hidden;}
+
+  .notif-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .notif-icon svg{width:17px;height:17px;}
+  .notif-icon.cursos{background:var(--navy-100);color:var(--navy-900);}
+  .notif-icon.asistencia{background:var(--success-100);color:var(--success-600);}
+  .notif-icon.calificaciones{background:var(--info-100);color:var(--info-600);}
+  .notif-icon.examenes{background:var(--error-100);color:var(--error-600);}
+  .notif-icon.actas{background:var(--gold-100);color:var(--gold-600);}
+  .notif-icon.calendario{background:var(--info-100);color:var(--info-600);}
+  .notif-icon.institucional{background:#efe9f9;color:#6b4fa0;}
+  .notif-icon.comedor{background:#fdece0;color:#c05a1f;}
+  .notif-icon.sistema{background:var(--bg);color:var(--text-600);}
+
+  .notif-main{flex:1;min-width:0;}
+  .notif-top-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;}
+  .notif-title{font-size:13.5px;font-weight:700;color:var(--text-900);margin:0;}
+  .notif-item.read .notif-title{font-weight:600;color:var(--text-600);}
+  .important-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--warn-600);background:var(--warn-100);padding:2px 8px;border-radius:999px;}
+  .important-tag svg{width:10px;height:10px;}
+  .notif-desc{font-size:12.5px;color:var(--text-600);margin:0 0 5px;line-height:1.45;}
+  .notif-bottom-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .notif-context{font-size:11.5px;color:var(--text-600);font-weight:500;}
+  .notif-time{font-size:11.5px;color:var(--text-400);}
+  .notif-time::before{content:"·";margin-right:8px;color:var(--text-400);}
+  .status-tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;color:var(--navy-800);background:var(--bg);padding:2px 8px;border-radius:999px;}
+
+  .notif-actions{position:relative;flex-shrink:0;}
+  .action-menu-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:7px;cursor:pointer;color:var(--text-400);}
+  .action-menu-btn:hover{background:var(--surface);color:var(--navy-900);}
+  .action-menu-btn svg{width:16px;height:16px;}
+  .action-menu{
+    display:none;position:absolute;right:0;top:32px;min-width:190px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 12px 30px -10px rgba(16,25,47,0.25);
+    padding:6px;z-index:10;
+  }
+  .action-menu.open{display:block;}
+  .action-menu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font-size:13px;font-weight:500;color:var(--text-900);background:none;border:none;padding:8px 10px;border-radius:7px;cursor:pointer;}
+  .action-menu button:hover{background:var(--navy-100);}
+  .action-menu button.danger{color:var(--error-600);}
+  .action-menu button.danger:hover{background:var(--error-100);}
+  .action-menu svg{width:14px;height:14px;color:var(--text-600);flex-shrink:0;}
+  .action-menu button.danger svg{color:var(--error-600);}
+
+  /* ============ EMPTY / NO RESULTS / LOADING ============ */
+  .list-state{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 20px;gap:12px;}
+  .list-state .icon{width:52px;height:52px;border-radius:14px;background:var(--navy-100);color:var(--navy-800);display:flex;align-items:center;justify-content:center;}
+  .list-state .icon svg{width:24px;height:24px;}
+  .list-state p{margin:0;font-size:14px;font-weight:700;color:var(--text-900);}
+  .list-state .sub{font-size:13px;font-weight:400;color:var(--text-600);max-width:320px;}
+  .retry-btn{font-size:12.5px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-top:2px;}
+  .retry-btn:hover{background:var(--navy-800);}
+
+  .skel{background:linear-gradient(90deg,#eceef2 25%,#f4f5f8 37%,#eceef2 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;}
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+  /* ============ PAGINATION ============ */
+  .pagination{display:flex;justify-content:center;align-items:center;gap:4px;margin-top:22px;}
+  .page-btn{min-width:32px;height:32px;padding:0 8px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;color:var(--text-600);background:none;border:1px solid transparent;border-radius:7px;cursor:pointer;}
+  .page-btn:hover{background:var(--navy-100);color:var(--navy-900);}
+  .page-btn.active{background:var(--navy-900);color:#fff;}
+  .page-btn:disabled{color:var(--text-400);cursor:not-allowed;}
+  .page-btn svg{width:15px;height:15px;}
+  .page-ellipsis{font-size:12.5px;color:var(--text-400);padding:0 4px;}
+
+  /* ============ MODAL ============ */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(16,25,47,0.45);z-index:90;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--surface);border-radius:var(--radius-lg);max-width:400px;width:100%;padding:26px;box-shadow:0 30px 70px -20px rgba(16,25,47,0.4);}
+  .modal-icon{width:42px;height:42px;border-radius:11px;background:var(--navy-100);color:var(--navy-900);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .modal-icon svg{width:20px;height:20px;}
+  .modal h3{font-size:16.5px;font-weight:700;color:var(--text-900);margin:0 0 8px;}
+  .modal p{font-size:13.5px;color:var(--text-600);margin:0 0 20px;line-height:1.5;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+
+
+  .notification-detail-modal{max-width:520px;padding:24px;}
+  .notification-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .notification-detail-head .modal-icon{margin:0;}
+  .modal-close{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-600);cursor:pointer;}
+  .modal-close:hover{background:var(--bg);color:var(--navy-900);}
+  .modal-close svg{width:17px;height:17px;}
+  .notification-detail-category{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-400);margin:0 0 5px !important;}
+  .notification-detail-modal h3{font-size:19px;margin-bottom:8px;}
+  .notification-detail-modal > p:not(.notification-detail-category){font-size:13.5px;color:var(--text-600);margin-bottom:20px;line-height:1.55;}
+  .notification-detail-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .notification-detail-meta div{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:11px 12px;display:flex;flex-direction:column;gap:3px;}
+  .notification-detail-meta span{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;font-weight:700;color:var(--text-400);}
+  .notification-detail-meta strong{font-size:12.5px;color:var(--text-900);font-weight:600;}
+  @media(max-width:640px){.notification-detail-meta{grid-template-columns:1fr;}}
+
+  /* ============ TOAST ============ */
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    display:flex;align-items:center;gap:10px;background:var(--navy-950);color:#fff;
+    padding:13px 20px;border-radius:var(--radius-md);box-shadow:0 16px 40px -12px rgba(16,25,47,0.4);
+    font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:100;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .toast svg{width:18px;height:18px;color:var(--success-600);flex-shrink:0;}
+
+  /* state controls */
+  .state-controls{position:fixed;bottom:14px;left:calc(50% + var(--sidebar-w)/2);transform:translateX(-50%);z-index:60;display:flex;gap:6px;background:rgba(16,25,47,0.94);padding:8px;border-radius:10px;flex-wrap:wrap;justify-content:center;max-width:84vw;}
+  .state-controls button{font-size:11.5px;font-weight:600;color:#e8ecf5;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;cursor:pointer;}
+  .state-controls button:hover{background:rgba(255,255,255,0.18);}
+  .state-controls span{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(232,236,245,0.55);align-self:center;padding-right:2px;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:900px){
+    :root{--sidebar-w:0px;}
+    .hamburger{display:flex;}
+    .sidebar{width:264px;transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:16px 0 40px rgba(16,25,47,0.18);}
+    .sidebar-backdrop.open{display:block;}
+    .main{margin-left:0;padding:20px 16px 90px;}
+    .state-controls{left:50%;max-width:92vw;bottom:10px;}
+    .page-head-row .btn-secondary{width:100%;justify-content:center;}
+  }
+  @media (max-width:640px){
+    .page-title{font-size:21px;}
+    .filters-panel{right:auto;left:0;width:260px;}
+    .notif-bottom-row{flex-direction:column;align-items:flex-start;gap:2px;}
+    .notif-time::before{display:none;}
+  }
+
+
+/* Ajuste global de selectores: flechas compactas, centradas y proporcionadas */
+select,
+.filter-select,
+.filter-select-full,
+.sort-select,
+.estado-select,
+.field select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 11px center !important;
+  background-size: 13px 13px !important;
+  padding-right: 34px !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12L14.5 7.5' stroke='%235b6472' stroke-width='1.45' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+}
+
+/* En selectores compactos, mantener la flecha todavía más cerca del borde */
+.filters-panel select,
+select.filter-select,
+select.filter-select-full,
+select.sort-select,
+select.estado-select {
+  background-position: right 10px center !important;
+  background-size: 12px 12px !important;
+  padding-right: 32px !important;
+}
+
+
+.user-menu-wrap{position:relative;}
+  .user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 34px -10px rgba(16,25,47,0.28);min-width:200px;padding:6px;z-index:60;}
+  .user-dropdown.open{display:block;}
+  .user-dropdown button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;cursor:pointer;}
+  .user-dropdown button:hover{background:var(--navy-100);}
+  .user-dropdown button.logout{color:var(--error-600);}
+  .user-dropdown button.logout:hover{background:var(--error-100);}
+  .user-dropdown button svg{width:16px;height:16px;color:var(--text-600);flex-shrink:0;}
+  .user-dropdown button.logout svg{color:var(--error-600);}
+  .user-dropdown .dd-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5H17.5M2.5 10H17.5M2.5 14.5H17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="brand-mark" aria-label="UADEnet — ir a Inicio" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <span class="brand-glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/></svg></span>
+      <span class="brand-word">UADE<span class="accent">net</span></span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Notificaciones" onclick="console.log('Abrir dropdown de notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <button class="balance-chip" aria-label="Saldo institucional — ir a Cuenta institucional" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/></svg>
+      <span class="amount">$18.400</span><span class="label">Saldo</span>
+    </button>
+    <div class="user-menu-wrap"><button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu(this)">
+      <span class="avatar">MG</span>
+      <span class="user-meta"><span class="name">Mariana Gómez</span><span class="role">Docente</span></span>
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+      <div class="user-dropdown" id="userDropdown">
+        <button onclick="__uadenetGo('pantalla-27-perfil-docente')">
+          <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Mi perfil
+        </button>
+        <button onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+          Cuenta institucional
+        </button>
+        <div class="dd-divider"></div>
+        <button class="logout" onclick="uadenetLogout()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8V16.5H15V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-03-mis-cursos')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/><path d="M17.5 5.5V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Mis cursos
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-15-actas')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Actas
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-18-calendario')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Calendario académico
+    </a>
+    <a class="nav-item active" aria-current="page" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Notificaciones
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-22-mis-compras')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 6L10 2.5L17 6L10 9.5L3 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8.2V12.5L10 14.5L14 12.5V8.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Mis compras
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+      Cuenta institucional
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-27-perfil-docente')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil
+    </a>
+    <a class="nav-item logout" onclick="uadenetLogout()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cerrar sesión
+    </a>
+  </div>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<div class="app-body">
+  <main class="main">
+
+    <p class="breadcrumb"><a onclick="__uadenetGo('pantalla-02-dashboard')">Inicio</a> / Notificaciones</p>
+
+    <div class="page-head-row">
+      <div>
+        <h1 class="page-title">Notificaciones</h1>
+        <p class="page-desc">Consultá todas tus notificaciones.</p>
+      </div>
+      <button class="btn-secondary" id="markAllBtn">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Marcar todas como leídas
+      </button>
+    </div>
+
+    <div class="quick-filters" id="quickFilters">
+      <button class="pill active" data-qf="todas">Todas <span class="count" id="countTodas">0</span></button>
+      <button class="pill" data-qf="noleidas">No leídas <span class="count" id="countNoLeidas">0</span></button>
+    </div>
+
+    <div class="toolbar-row">
+      <div class="search-wrap">
+        <svg class="leading" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="searchInput" placeholder="Buscar por título o contenido...">
+      </div>
+    </div>
+
+    <div class="sort-row">
+      <label for="sortSelect">Ordenar por</label>
+      <select class="sort-select" id="sortSelect">
+        <option value="recent">Más recientes</option>
+        <option value="oldest">Más antiguas</option>
+      </select>
+    </div>
+
+    <div id="listContainer"><!-- injected --></div>
+    <div class="pagination" id="pagination" aria-label="Paginación de notificaciones"></div>
+
+  </main>
+</div>
+
+<!-- ============ MARK ALL READ MODAL ============ -->
+<div class="modal-backdrop" id="markAllModal">
+  <div class="modal">
+    <div class="modal-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h3>¿Marcar todas como leídas?</h3>
+    <p>Todas las notificaciones pendientes pasarán a estado leído.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="document.getElementById('markAllModal').classList.remove('show')">Cancelar</button>
+      <button class="btn-primary" onclick="markAllRead()">Marcar como leídas</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ NOTIFICATION DETAIL MODAL ============ -->
+<div class="modal-backdrop" id="notificationDetailModal">
+  <div class="modal notification-detail-modal" role="dialog" aria-modal="true" aria-labelledby="notificationDetailTitle">
+    <div class="notification-detail-head">
+      <span class="modal-icon" id="notificationDetailIcon"></span>
+      <button class="modal-close" id="notificationDetailClose" aria-label="Cerrar">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <p class="notification-detail-category" id="notificationDetailCategory"></p>
+    <h3 id="notificationDetailTitle"></h3>
+    <p id="notificationDetailDescription"></p>
+    <div class="notification-detail-meta">
+      <div><span>Fecha</span><strong id="notificationDetailDate"></strong></div>
+      <div><span>Tipo</span><strong id="notificationDetailType"></strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 20 20" fill="none"><path d="M17 6L8 15L3 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastText">Todas las notificaciones fueron marcadas como leídas.</span>
+</div>
+
+
+<script>
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  function toggleSidebar(open){
+    sidebar.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    hamburgerBtn.setAttribute('aria-expanded', String(open));
+  }
+  hamburgerBtn.addEventListener('click', () => toggleSidebar(!sidebar.classList.contains('open')));
+  backdrop.addEventListener('click', () => toggleSidebar(false));
+
+  /* ============ DATA ============ */
+  const NOTIF_READ_KEY = 'uadenetNotificationReadState';
+  const CANCELLED_EXAMS_KEY = 'uadenetCancelledExams';
+  const MONTHS = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};
+  const TYPE_NAMES = {parcial1:'Parcial 1',parcial2:'Parcial 2',recup1:'Recuperatorio Parcial 1',recup2:'Recuperatorio Parcial 2',tp1:'TP1',tp2:'TP2',final:'Final'};
+  const FIXED_EXAMS = [
+    {id:0,name:'Parcial 1',course:'Desarrollo de Aplicaciones II',type:'parcial1',date:'31 de agosto de 2026',time:'18:00 – 20:00'},
+    {id:1,name:'Parcial 2',course:'Desarrollo de Aplicaciones II',type:'parcial2',date:'14 de octubre de 2026',time:'18:00 – 20:00'},
+    {id:2,name:'Recuperatorio Parcial 1',course:'Desarrollo de Aplicaciones II',type:'recup1',date:'21 de octubre de 2026',time:'18:00 – 19:30'},
+    {id:3,name:'Recuperatorio Parcial 2',course:'Desarrollo de Aplicaciones II',type:'recup2',date:'28 de octubre de 2026',time:'18:00 – 19:30'},
+    {id:4,name:'TP1',course:'Desarrollo de Aplicaciones II',type:'tp1',date:'15 de septiembre de 2026',time:'18:00 – 20:00'},
+    {id:5,name:'TP2',course:'Desarrollo de Aplicaciones II',type:'tp2',date:'10 de noviembre de 2026',time:'18:00 – 20:00'},
+    {id:6,name:'Parcial 1',course:'Ingeniería de Software',type:'parcial1',date:'7 de septiembre de 2026',time:'19:00 – 21:00'},
+    {id:7,name:'Recuperatorio Parcial 1',course:'Ingeniería de Software',type:'recup1',date:'5 de agosto de 2026',time:'19:00 – 20:30'},
+    {id:8,name:'Parcial 1',course:'Ingeniería de Datos I',type:'parcial1',date:'10 de septiembre de 2026',time:'18:00 – 20:00'},
+    {id:9,name:'Parcial 2',course:'Ingeniería de Datos I',type:'parcial2',date:'22 de octubre de 2026',time:'18:00 – 20:00'},
+    {id:10,name:'Parcial 1',course:'Programación II',type:'parcial1',date:'25 de agosto de 2026',time:'08:00 – 10:00'},
+    {id:11,name:'Parcial 2',course:'Programación II',type:'parcial2',date:'14 de octubre de 2026',time:'08:00 – 10:00'},
+    {id:20,name:'Parcial 1',course:'Redes de Datos',type:'parcial1',date:'25 de marzo de 2026',time:'18:00 – 20:00'},
+    {id:25,name:'Recuperatorio Parcial 1',course:'Redes de Datos',type:'recup1',date:'15 de abril de 2026',time:'18:00 – 19:30'},
+    {id:21,name:'Parcial 2',course:'Redes de Datos',type:'parcial2',date:'6 de mayo de 2026',time:'18:00 – 20:00'},
+    {id:26,name:'Recuperatorio Parcial 2',course:'Redes de Datos',type:'recup2',date:'20 de mayo de 2026',time:'18:00 – 19:30'},
+    {id:22,name:'TP1',course:'Redes de Datos',type:'tp1',date:'22 de abril de 2026',time:'18:00 – 20:00'},
+    {id:23,name:'TP2',course:'Redes de Datos',type:'tp2',date:'10 de junio de 2026',time:'18:00 – 20:00'},
+    {id:24,name:'Final',course:'Redes de Datos',type:'final',date:'24 de junio de 2026',time:'18:00 – 20:00'},
+    {id:30,name:'Parcial 1',course:'Programación I',type:'parcial1',date:'20 de marzo de 2026',time:'08:00 – 10:00'},
+    {id:35,name:'Recuperatorio Parcial 1',course:'Programación I',type:'recup1',date:'10 de abril de 2026',time:'08:00 – 09:30'},
+    {id:31,name:'Parcial 2',course:'Programación I',type:'parcial2',date:'24 de abril de 2026',time:'08:00 – 10:00'},
+    {id:36,name:'Recuperatorio Parcial 2',course:'Programación I',type:'recup2',date:'8 de mayo de 2026',time:'08:00 – 09:30'},
+    {id:32,name:'TP1',course:'Programación I',type:'tp1',date:'29 de mayo de 2026',time:'08:00 – 10:00'},
+    {id:33,name:'TP2',course:'Programación I',type:'tp2',date:'19 de junio de 2026',time:'08:00 – 10:00'},
+    {id:34,name:'Final',course:'Programación I',type:'final',date:'26 de junio de 2026',time:'08:00 – 10:00'},
+    {id:40,name:'Parcial 1',course:'Tecnología e Innovación',type:'parcial1',date:'19 de marzo de 2026',time:'18:00 – 20:00'},
+    {id:45,name:'Recuperatorio Parcial 1',course:'Tecnología e Innovación',type:'recup1',date:'16 de abril de 2026',time:'18:00 – 19:30'},
+    {id:41,name:'Parcial 2',course:'Tecnología e Innovación',type:'parcial2',date:'23 de abril de 2026',time:'18:00 – 20:00'},
+    {id:46,name:'Recuperatorio Parcial 2',course:'Tecnología e Innovación',type:'recup2',date:'7 de mayo de 2026',time:'18:00 – 19:30'},
+    {id:42,name:'TP1',course:'Tecnología e Innovación',type:'tp1',date:'21 de mayo de 2026',time:'18:00 – 20:00'},
+    {id:43,name:'TP2',course:'Tecnología e Innovación',type:'tp2',date:'18 de junio de 2026',time:'18:00 – 20:00'},
+    {id:44,name:'Final',course:'Tecnología e Innovación',type:'final',date:'25 de junio de 2026',time:'18:00 – 20:00'},
+    {id:50,name:'Parcial 1',course:'Modelado y Simulación',type:'parcial1',date:'16 de marzo de 2026',time:'18:00 – 20:00'},
+    {id:55,name:'Recuperatorio Parcial 1',course:'Modelado y Simulación',type:'recup1',date:'13 de abril de 2026',time:'18:00 – 19:30'},
+    {id:51,name:'Parcial 2',course:'Modelado y Simulación',type:'parcial2',date:'20 de abril de 2026',time:'18:00 – 20:00'},
+    {id:56,name:'Recuperatorio Parcial 2',course:'Modelado y Simulación',type:'recup2',date:'4 de mayo de 2026',time:'18:00 – 19:30'},
+    {id:52,name:'TP1',course:'Modelado y Simulación',type:'tp1',date:'18 de mayo de 2026',time:'18:00 – 20:00'},
+    {id:53,name:'TP2',course:'Modelado y Simulación',type:'tp2',date:'15 de junio de 2026',time:'18:00 – 20:00'},
+    {id:54,name:'Final',course:'Modelado y Simulación',type:'final',date:'22 de junio de 2026',time:'18:00 – 20:00'}
+  ];
+  const FIXED_EVENTS = [
+    {id:'feriado-17',cat:'feriado',dateISO:'2026-08-17',time:null,title:'Feriado nacional',detail:'Sin actividades académicas'},
+    {id:'reunion-docente',cat:'evento',dateISO:'2026-09-04',time:'15:00',title:'Reunión docente',detail:'Sala de reuniones 2'},
+    {id:'cierre-actas',cat:'evento',dateISO:'2026-08-31',time:'17:00',title:'Cierre de actas',detail:'Evento académico'},
+    {id:'almuerzo-01',cat:'comedor',dateISO:'2026-09-01',time:'12:00',title:'Turno de comedor',detail:'Comedor central · Belgrano'},
+    {id:'almuerzo-02',cat:'comedor',dateISO:'2026-09-02',time:'12:00',title:'Turno de comedor',detail:'Comedor central · Monserrat'},
+    {id:'jornada-innovacion',cat:'evento',dateISO:'2026-09-05',time:'10:00',title:'Jornada de innovación',detail:'Campus UADEnet'}
+  ];
+  function parseDate(str){
+    if(/^\d{4}-\d{2}-\d{2}$/.test(String(str||''))) return String(str);
+    const m=String(str||'').match(/(\d{1,2}) de ([a-záéíóúñ]+) de (\d{4})/i);
+    if(!m) return '';
+    const month=MONTHS[m[2].toLowerCase()];
+    return month?`${m[3]}-${String(month).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`:'';
+  }
+  function canonicalType(e){
+    const n=String(e?.name||e?.title||'').trim().toLowerCase();
+    const t=String(e?.type||e?.tipo||'').trim().toLowerCase();
+    if(t==='parcial1'||/parcial\s*1|primer\s+parcial/.test(n))return'parcial1';
+    if(t==='parcial2'||/parcial\s*2|segundo\s+parcial/.test(n))return'parcial2';
+    if(t==='recup1'||/recuperatorio.*parcial\s*1|recuperatorio.*primer\s+parcial/.test(n))return'recup1';
+    if(t==='recup2'||/recuperatorio.*parcial\s*2|recuperatorio.*segundo\s+parcial/.test(n))return'recup2';
+    if(t==='tp1'||/\btp\s*1\b/.test(n))return'tp1';
+    if(t==='tp2'||/\btp\s*2\b/.test(n))return'tp2';
+    if(t==='final'||/^final(?:\s+regular)?$/.test(n))return'final';
+    return t||'parcial1';
+  }
+  function loadCancelled(){
+    try{const raw=JSON.parse(sessionStorage.getItem(CANCELLED_EXAMS_KEY)||'[]');return new Set(Array.isArray(raw)?raw.map(String):[]);}catch(_){return new Set();}
+  }
+  function calendarLikeEvents(){
+    const fixed=FIXED_EXAMS.map(e=>({
+      id:`fixed-exam-${e.id}`,sourceId:String(e.id),cat:'examen',dateISO:parseDate(e.date),time:String(e.time||'').split('–')[0].trim(),
+      title:TYPE_NAMES[canonicalType(e)]||e.name,detail:e.course
+    }));
+    let session=[];
+    try{session=JSON.parse(sessionStorage.getItem('uadenetSessionExams')||'[]');}catch(_){session=[];}
+    const dynamic=session.map((e,i)=>{
+      const type=canonicalType(e);
+      const dateISO=e.dateISO||parseDate(e.date);
+      return {id:`session-exam-${e.id??i}`,sourceId:String(e.id??i),cat:'examen',dateISO,time:String(e.time||'').split('–')[0].trim(),title:TYPE_NAMES[type]||String(e.name||e.title||'Examen'),detail:e.course||''};
+    });
+    return [...fixed,...dynamic,...FIXED_EVENTS];
+  }
+  const todayISO=(()=>{const d=new Date();d.setHours(0,0,0,0);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;})();
+  function eventTimestamp(e){
+    if(!e.dateISO)return NaN;
+    const time=String(e.time||'12:00').match(/\d{1,2}:\d{2}/)?.[0]||'12:00';
+    return new Date(`${e.dateISO}T${time}:00`).getTime();
+  }
+  function eventDateLabel(iso){
+    const d=new Date(`${iso}T00:00:00`);
+    return `${d.getDate()} de ${Object.keys(MONTHS).find(k=>MONTHS[k]===d.getMonth()+1)} de ${d.getFullYear()}`;
+  }
+  function eventCategoryLabel(e){
+    if(e.cat==='examen')return'Examen';
+    if(e.cat==='feriado')return'Feriado nacional';
+    if(e.cat==='comedor')return'Comedor';
+    return'Evento académico';
+  }
+  const ICONS={
+    examen:'<svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    feriado:'<svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5L12 7L16.8 7.4L13.1 10.5L14.2 15.2L10 12.7L5.8 15.2L6.9 10.5L3.2 7.4L8 7L10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+    evento:'<svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    comedor:'<svg viewBox="0 0 20 20" fill="none"><path d="M5 3V9M7 3V9M6 9V17M14 3V17M12.5 3V8C12.5 9.1 13.2 10 14 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'
+  };
+  let notifications=[];
+  let currentQuickFilter='todas';
+  let searchTerm='';
+  let sortMode='recent';
+  let currentPage=1;
+  const PAGE_SIZE=8;
+  function loadReadState(){
+    try{const raw=JSON.parse(sessionStorage.getItem(NOTIF_READ_KEY)||'{}');return raw&&typeof raw==='object'?raw:{};}catch(_){return {};}
+  }
+  function saveReadState(state){try{sessionStorage.setItem(NOTIF_READ_KEY,JSON.stringify(state));}catch(_){} }
+  function buildNotifications(){
+    const cancelled=loadCancelled();
+    const state=loadReadState();
+    const all=calendarLikeEvents().filter(e=>e.dateISO && (e.dateISO<=todayISO || e.cat==='comedor') && !(e.cat==='examen' && (cancelled.has(String(e.sourceId))||cancelled.has(String(e.id)))));
+    const sorted=[...all].sort((a,b)=>eventTimestamp(b)-eventTimestamp(a));
+    const unreadThreshold=sorted.slice(0,3).map(e=>String(e.id));
+    return sorted.map(e=>({
+      id:String(e.id),cat:e.cat,title:e.cat==='examen'?`${e.title} — ${e.detail}`:e.title,
+      desc:e.detail||'',dateISO:e.dateISO,time:e.time||'',unread:state[String(e.id)]!==undefined?!!state[String(e.id)]:unreadThreshold.includes(String(e.id))
+    }));
+  }
+  function updateCounts(){
+    document.getElementById('countTodas').textContent=notifications.length;
+    document.getElementById('countNoLeidas').textContent=notifications.filter(n=>n.unread).length;
+  }
+  function renderList(){
+    let list=[...notifications];
+    if(currentQuickFilter==='noleidas')list=list.filter(n=>n.unread);
+    if(searchTerm){const q=searchTerm.toLowerCase();list=list.filter(n=>`${n.title} ${n.desc}`.toLowerCase().includes(q));}
+    list.sort((a,b)=>sortMode==='recent' ? (eventTimestamp(b)-eventTimestamp(a)) : (eventTimestamp(a)-eventTimestamp(b)));
+    const totalPages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));
+    if(currentPage>totalPages)currentPage=totalPages;
+    const startIndex=(currentPage-1)*PAGE_SIZE;
+    const pageList=list.slice(startIndex,startIndex+PAGE_SIZE);
+    const container=document.getElementById('listContainer');
+    if(!list.length){
+      container.innerHTML='<div class="list-state"><span class="icon"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span><p>No tenés notificaciones</p><span class="sub">Cuando haya eventos del calendario hasta hoy, aparecerán acá.</span></div>';
+      renderPagination(0,0);
+      return;
+    }
+    container.innerHTML='<div class="notif-list">'+pageList.map(n=>{
+      const label=`${eventDateLabel(n.dateISO)}${n.time?` · ${n.time}`:''}`;
+      const status=n.unread?'<span class="status-tag">No leída</span>':'';
+      return `<div class="notif-item ${n.unread?'unread':'read'}" onclick="openNotification('${String(n.id).replace(/'/g,"\\'")}')">
+        <span class="unread-dot ${n.unread?'':'hidden'}"></span>
+        <span class="notif-icon ${n.cat}">${ICONS[n.cat]||ICONS.evento}</span>
+        <div class="notif-main">
+          <div class="notif-top-row"><p class="notif-title">${n.title}</p></div>
+          <p class="notif-desc">${n.desc||eventCategoryLabel(n)}</p>
+          <div class="notif-bottom-row"><span class="notif-context">${eventCategoryLabel(n)}</span><span class="notif-time">${label}</span>${status}</div>
+        </div>
+      </div>`;
+    }).join('')+'</div>';
+    renderPagination(list.length,totalPages);
+  }
+  function renderPagination(total,totalPages){
+    const el=document.getElementById('pagination');
+    if(!el)return;
+    if(!total || totalPages<=1){el.innerHTML='';return;}
+    el.innerHTML=`<button class="page-btn" ${currentPage===1?'disabled':''} onclick="changePage(${currentPage-1})" aria-label="Página anterior">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="page-ellipsis">Página ${currentPage} de ${totalPages}</span>
+    <button class="page-btn" ${currentPage===totalPages?'disabled':''} onclick="changePage(${currentPage+1})" aria-label="Página siguiente">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>`;
+  }
+  function changePage(page){
+    currentPage=Math.max(1,page);
+    renderList();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function setQuickFilter(qf){
+    currentQuickFilter=qf;
+    currentPage=1;
+    document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.qf===qf));
+    renderList();
+  }
+  function openNotification(id){
+    const n=notifications.find(x=>String(x.id)===String(id));
+    if(!n)return;
+    n.unread=false;
+    const state=loadReadState();state[String(id)]=false;saveReadState(state);
+    updateCounts();renderList();
+    const modal=document.getElementById('notificationDetailModal');
+    const icon=document.getElementById('notificationDetailIcon');
+    icon.className=`modal-icon notification-detail-icon ${n.cat}`;
+    icon.innerHTML=ICONS[n.cat]||ICONS.evento;
+    document.getElementById('notificationDetailCategory').textContent=eventCategoryLabel(n);
+    document.getElementById('notificationDetailTitle').textContent=n.title;
+    document.getElementById('notificationDetailDescription').textContent=n.desc||eventCategoryLabel(n);
+    document.getElementById('notificationDetailDate').textContent=`${eventDateLabel(n.dateISO)}${n.time?` · ${n.time}`:''}`;
+    document.getElementById('notificationDetailType').textContent=eventCategoryLabel(n);
+    modal.classList.add('show');
+  }
+  function closeNotificationDetail(){document.getElementById('notificationDetailModal').classList.remove('show');}
+  function markAllRead(){
+    const state=loadReadState();notifications.forEach(n=>{n.unread=false;state[String(n.id)]=false;});
+    saveReadState(state);updateCounts();renderList();
+    document.getElementById('markAllModal').classList.remove('show');
+    document.getElementById('toastText').textContent='Todas las notificaciones fueron marcadas como leídas.';
+    document.getElementById('toast').classList.add('show');
+    setTimeout(()=>document.getElementById('toast').classList.remove('show'),3000);
+  }
+  document.getElementById('quickFilters').addEventListener('click',e=>{const pill=e.target.closest('.pill');if(pill)setQuickFilter(pill.dataset.qf);});
+  document.getElementById('searchInput').addEventListener('input',e=>{searchTerm=e.target.value.trim();currentPage=1;renderList();});
+  document.getElementById('sortSelect').addEventListener('change',e=>{sortMode=e.target.value;currentPage=1;renderList();});
+  document.getElementById('markAllBtn').addEventListener('click',()=>document.getElementById('markAllModal').classList.add('show'));
+  document.getElementById('markAllModal').addEventListener('click',e=>{if(e.target.id==='markAllModal')e.target.classList.remove('show');});
+  document.getElementById('notificationDetailClose').addEventListener('click',closeNotificationDetail);
+  document.getElementById('notificationDetailModal').addEventListener('click',e=>{if(e.target.id==='notificationDetailModal')closeNotificationDetail();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNotificationDetail();});
+  notifications=buildNotifications();
+  updateCounts();
+  renderList();
+
+  /* ============ PAGE STATES (review only) ============ */
+  function setPageState(name){
+    if(name==='normal'){ notifications=buildNotifications(); updateCounts(); renderList(); }
+  }
+
+</script>
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  function closeAllUserMenus(except){
+    document.querySelectorAll('.user-dropdown.open').forEach(function(menu){
+      if(menu !== except) menu.classList.remove('open');
+    });
+    document.querySelectorAll('.user-menu.active-menu').forEach(function(btn){
+      if(!except || btn.parentElement.querySelector('.user-dropdown') !== except){
+        btn.classList.remove('active-menu');
+      }
+    });
+  }
+
+  window.toggleUserMenu = function(button){
+    var wrap = button.closest('.user-menu-wrap');
+    var menu = wrap ? wrap.querySelector('.user-dropdown') : null;
+    if(!menu) return;
+    var willOpen = !menu.classList.contains('open');
+    closeAllUserMenus(menu);
+    menu.classList.toggle('open', willOpen);
+    button.classList.toggle('active-menu', willOpen);
+  };
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.user-menu-wrap')){
+      closeAllUserMenus(null);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); sessionStorage.removeItem('uadenetNotificationReadState'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetNotificationReadState');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+</body>
+</html>

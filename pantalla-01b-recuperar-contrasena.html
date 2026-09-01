@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Recuperar contraseña</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f;
+    --navy-900:#1b2a4a;
+    --navy-800:#26375c;
+    --navy-600:#4a5c82;
+    --navy-100:#e8ecf5;
+    --gold-500:#c9a24b;
+    --gold-600:#ab8437;
+    --gold-100:#f4ead2;
+    --bg:#f6f7fa;
+    --surface:#ffffff;
+    --text-900:#16213a;
+    --text-600:#5b6472;
+    --text-400:#8992a3;
+    --border:#dde2ea;
+    --border-focus:var(--navy-800);
+    --error-600:#b3392c;
+    --error-100:#fbeae7;
+    --success-600:#2f7a4f;
+    --success-100:#e8f3ec;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --radius-sm:7px;
+    --shadow-card:0 24px 60px -20px rgba(16,25,47,0.28), 0 2px 8px rgba(16,25,47,0.06);
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--text-900);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px;
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(1100px 620px at 12% -10%, rgba(27,42,74,0.05), transparent 60%),
+      radial-gradient(900px 560px at 108% 108%, rgba(201,162,75,0.10), transparent 60%),
+      var(--bg);
+  }
+
+  .net-motif{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0.55;
+  }
+  .net-motif svg{width:100%;height:100%;}
+
+  .login-card{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:428px;
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+    padding:40px 40px 36px;
+    border:1px solid rgba(16,25,47,0.04);
+  }
+
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-600);
+    text-decoration:none;
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    margin-bottom:22px;
+    font-family:var(--font-body);
+  }
+  .back-link:hover{color:var(--navy-900);}
+  .back-link svg{width:15px;height:15px;}
+  .back-link:focus-visible{outline:2px solid var(--navy-800); outline-offset:3px; border-radius:4px;}
+
+  .brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  .brand-mark{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:2px;
+  }
+  .brand-mark:focus-visible{outline:2px solid var(--navy-800); outline-offset:4px; border-radius:6px;}
+
+  .brand-glyph{
+    width:34px;height:34px;
+    border-radius:8px;
+    background:linear-gradient(155deg, var(--navy-900), var(--navy-950));
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-glyph svg{width:18px;height:18px;}
+
+  .brand-word{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:22px;
+    letter-spacing:0.01em;
+    color:var(--navy-950);
+  }
+  .brand-word .accent{color:var(--gold-600);}
+
+  .icon-badge{
+    width:52px;height:52px;
+    border-radius:14px;
+    background:var(--navy-100);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 18px;
+  }
+  .icon-badge svg{width:24px;height:24px;color:var(--navy-800);}
+  .icon-badge.success{background:var(--success-100);}
+  .icon-badge.success svg{color:var(--success-600);}
+
+  .title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:24px;
+    line-height:1.25;
+    color:var(--text-900);
+    margin:0 0 8px;
+  }
+
+  .subtitle{
+    font-size:14.5px;
+    color:var(--text-600);
+    margin:0;
+    line-height:1.55;
+  }
+  .subtitle strong{color:var(--text-900);}
+
+  form{margin-top:22px;}
+
+  .field{margin-bottom:18px;}
+
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-900);
+    margin-bottom:7px;
+  }
+
+  .input-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+
+  .input-wrap .leading-icon{
+    position:absolute;
+    left:14px;
+    width:18px;height:18px;
+    color:var(--text-400);
+    pointer-events:none;
+    display:flex;
+  }
+
+  input[type="email"]{
+    width:100%;
+    font-family:var(--font-body);
+    font-size:14.5px;
+    color:var(--text-900);
+    background:var(--surface);
+    border:1.5px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:12px 14px 12px 42px;
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    outline:none;
+  }
+  input::placeholder{color:var(--text-400);}
+  input:hover:not(:disabled){border-color:var(--navy-600);}
+  input:focus{
+    border-color:var(--border-focus);
+    box-shadow:0 0 0 3.5px rgba(27,42,74,0.12);
+  }
+  input:disabled{
+    background:#f1f2f5;
+    color:var(--text-400);
+    cursor:not-allowed;
+  }
+  input.has-error{
+    border-color:var(--error-600);
+    background:var(--error-100);
+  }
+  input.has-error:focus{box-shadow:0 0 0 3.5px rgba(179,57,44,0.14);}
+
+  .field-error{
+    display:none;
+    align-items:center;
+    gap:6px;
+    margin-top:7px;
+    font-size:12.5px;
+    color:var(--error-600);
+    font-weight:500;
+  }
+  .field-error svg{width:14px;height:14px;flex-shrink:0;}
+  .field.error .field-error{display:flex;}
+
+  .btn-primary{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    font-family:var(--font-body);
+    font-size:15px;
+    font-weight:600;
+    color:#fff;
+    background:var(--navy-900);
+    border:none;
+    border-radius:var(--radius-md);
+    padding:13px 16px;
+    cursor:pointer;
+    transition:background .15s ease, transform .05s ease, box-shadow .15s ease;
+    box-shadow:0 1px 2px rgba(16,25,47,0.06);
+  }
+  .btn-primary:hover:not(:disabled){background:var(--navy-800);}
+  .btn-primary:active:not(:disabled){transform:translateY(1px);}
+  .btn-primary:focus-visible{outline:2px solid var(--gold-600); outline-offset:2px;}
+  .btn-primary:disabled{
+    background:var(--navy-600);
+    cursor:not-allowed;
+    opacity:.75;
+  }
+
+  .btn-secondary{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-family:var(--font-body);
+    font-size:14px;
+    font-weight:600;
+    color:var(--navy-900);
+    background:var(--surface);
+    border:1.5px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:11px 16px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .btn-secondary:hover:not(:disabled){border-color:var(--navy-800); background:var(--navy-100);}
+  .btn-secondary:disabled{color:var(--text-400); cursor:not-allowed;}
+
+  .spinner{
+    width:16px;height:16px;
+    border:2px solid rgba(255,255,255,0.35);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    display:none;
+  }
+  .btn-primary.loading .spinner{display:inline-block;}
+  .btn-primary.loading .btn-label::after{content:"Enviando…";}
+  .btn-primary.loading .btn-label{font-size:0;}
+  .btn-primary.loading .btn-label::after{font-size:15px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .foot-note{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--text-400);
+    margin-top:26px;
+  }
+
+  .resend-row{
+    text-align:center;
+    margin-top:16px;
+    font-size:13px;
+    color:var(--text-600);
+  }
+  .resend-row button{
+    background:none;
+    border:none;
+    padding:0;
+    font-family:var(--font-body);
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy-800);
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:2px;
+  }
+  .resend-row button:disabled{
+    color:var(--text-400);
+    cursor:not-allowed;
+    text-decoration:none;
+  }
+
+  /* estados: request vs success */
+  .view{display:none;}
+  .view.active{display:block;}
+
+  @media (max-width:520px){
+    .screen{padding:20px 14px 40px;}
+    .login-card{padding:30px 22px 28px; border-radius:14px;}
+    .title{font-size:21px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <div class="net-motif" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <g stroke="#1b2a4a" stroke-width="1" opacity="0.16">
+        <line x1="80" y1="120" x2="300" y2="240"/>
+        <line x1="300" y1="240" x2="220" y2="420"/>
+        <line x1="300" y1="240" x2="500" y2="180"/>
+        <line x1="220" y1="420" x2="60" y2="520"/>
+        <line x1="1360" y1="760" x2="1180" y2="640"/>
+        <line x1="1180" y1="640" x2="1260" y2="470"/>
+        <line x1="1180" y1="640" x2="980" y2="700"/>
+        <line x1="1260" y1="470" x2="1400" y2="380"/>
+      </g>
+      <g fill="#c9a24b" opacity="0.5">
+        <circle cx="80" cy="120" r="3.5"/>
+        <circle cx="300" cy="240" r="3.5"/>
+        <circle cx="220" cy="420" r="3.5"/>
+        <circle cx="500" cy="180" r="3.5"/>
+        <circle cx="60" cy="520" r="3.5"/>
+        <circle cx="1360" cy="760" r="3.5"/>
+        <circle cx="1180" cy="640" r="3.5"/>
+        <circle cx="1260" cy="470" r="3.5"/>
+        <circle cx="980" cy="700" r="3.5"/>
+        <circle cx="1400" cy="380" r="3.5"/>
+      </g>
+    </svg>
+  </div>
+
+  <main class="login-card" role="main">
+
+    <button class="back-link" id="backLink" type="button">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Volver a iniciar sesión
+    </button>
+
+    <!-- ESTADO 1: solicitar enlace -->
+    <div class="view active" id="requestView">
+      <div class="brand">
+        <button class="brand-mark" type="button" aria-label="UADEnet — ir al inicio" onclick="return false;">
+          <span class="brand-glyph">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/>
+            </svg>
+          </span>
+          <span class="brand-word">UADE<span class="accent">net</span></span>
+        </button>
+        <h1 class="title">Recuperar contraseña</h1>
+        <p class="subtitle">Ingresá tu email institucional y te enviaremos un enlace para restablecer tu contraseña.</p>
+      </div>
+
+      <form id="recoverForm" novalidate>
+        <div class="field" id="emailField">
+          <label for="email">Email institucional</label>
+          <div class="input-wrap">
+            <span class="leading-icon">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L9.15 10.2C9.66 10.56 10.34 10.56 10.85 10.2L17.5 5.5M4 15.5H16C16.83 15.5 17.5 14.83 17.5 14V6C17.5 5.17 16.83 4.5 16 4.5H4C3.17 4.5 2.5 5.17 2.5 6V14C2.5 14.83 3.17 15.5 4 15.5Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <input type="email" id="email" name="email" placeholder="Ingresá tu email" autocomplete="username">
+          </div>
+          <div class="field-error">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Ingresá un email institucional válido.</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submitBtn">
+          <span class="spinner"></span>
+          <span class="btn-label">Enviar enlace</span>
+        </button>
+      </form>
+
+      <p class="foot-note">© 2026 Universidad Argentina de la Empresa</p>
+    </div>
+
+    <!-- ESTADO 2: confirmación de envío -->
+    <div class="view" id="successView">
+      <div class="brand">
+        <div class="icon-badge success">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h1 class="title">Revisá tu email</h1>
+        <p class="subtitle">Si <strong id="sentToEmail">tu email</strong> corresponde a una cuenta registrada, vas a recibir un enlace para restablecer tu contraseña en los próximos minutos.</p>
+      </div>
+
+      <button type="button" class="btn-secondary" id="backToLoginBtn">Volver a iniciar sesión</button>
+
+      <p class="resend-row">
+        ¿No te llegó el email?
+        <button type="button" id="resendBtn">Reenviar enlace</button>
+      </p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const emailField = document.getElementById('emailField');
+  const emailInput = document.getElementById('email');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('recoverForm');
+  const backLink = document.getElementById('backLink');
+  const backToLoginBtn = document.getElementById('backToLoginBtn');
+  const resendBtn = document.getElementById('resendBtn');
+  const requestView = document.getElementById('requestView');
+  const successView = document.getElementById('successView');
+  const sentToEmail = document.getElementById('sentToEmail');
+
+  function isInstitutionalEmail(value){
+    return /^[^\s@]+@uade\.edu\.ar$/i.test(value.trim());
+  }
+
+  function goToLogin(){
+    // Si la pantalla está integrada en el visor de UADEnet, le pide al shell
+    // que navegue de vuelta a la pantalla de login.
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'uadenet-navigate', screen: 'pantalla-01-login' }, '*');
+    } else {
+      __uadenetGo('pantalla-01-login');
+    }
+  }
+
+  backLink.addEventListener('click', goToLogin);
+  backToLoginBtn.addEventListener('click', goToLogin);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    emailField.classList.remove('error');
+    emailInput.classList.remove('has-error');
+
+    if (!isInstitutionalEmail(emailInput.value)) {
+      emailField.classList.add('error');
+      emailInput.classList.add('has-error');
+      emailInput.focus();
+      return;
+    }
+
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    emailInput.disabled = true;
+
+    setTimeout(() => {
+      sentToEmail.textContent = emailInput.value.trim();
+      requestView.classList.remove('active');
+      successView.classList.add('active');
+    }, 1100);
+  });
+
+  let resendCooldown = 0;
+  resendBtn.addEventListener('click', () => {
+    if (resendCooldown > 0) return;
+    resendCooldown = 30;
+    resendBtn.disabled = true;
+    const original = 'Reenviar enlace';
+    const tick = () => {
+      if (resendCooldown <= 0) {
+        resendBtn.textContent = original;
+        resendBtn.disabled = false;
+        return;
+      }
+      resendBtn.textContent = `Reenviar enlace (${resendCooldown}s)`;
+      resendCooldown -= 1;
+      setTimeout(tick, 1000);
+    };
+    tick();
+  });
+</script>
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+</body>
+</html>

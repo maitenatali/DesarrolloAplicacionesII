@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Mi perfil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f; --navy-900:#1b2a4a; --navy-800:#26375c; --navy-600:#4a5c82; --navy-100:#e8ecf5;
+    --gold-500:#c9a24b; --gold-600:#ab8437; --gold-100:#f4ead2;
+    --bg:#f6f7fa; --surface:#ffffff;
+    --text-900:#16213a; --text-600:#5b6472; --text-400:#8992a3;
+    --border:#dde2ea;
+    --error-600:#b3392c; --error-100:#fbeae7;
+    --success-600:#2f7a4f; --success-100:#e7f4ec;
+    --info-600:#3a5a99; --info-100:#eaf0fb;
+    --warn-600:#a06a1a; --warn-100:#fdf1e2;
+    --radius-lg:16px; --radius-md:10px; --radius-sm:7px;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-h:64px; --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font-body);color:var(--text-900);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+  input{font-family:inherit;}
+
+  /* ============ HEADER (shared) ============ */
+  .app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;color:var(--navy-900);}
+  .hamburger:hover{background:var(--navy-100);}
+  .brand-mark{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:2px;}
+  .brand-glyph{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg, var(--navy-900), var(--navy-950));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .brand-glyph svg{width:16px;height:16px;}
+  .brand-word{font-family:var(--font-display);font-weight:600;font-size:18.5px;color:var(--navy-950);white-space:nowrap;}
+  .brand-word .accent{color:var(--gold-600);}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:9px;cursor:pointer;color:var(--navy-900);}
+  .icon-btn:hover{background:var(--navy-100);}
+  .icon-btn svg{width:19px;height:19px;}
+  .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--error-600);border:1.5px solid var(--surface);}
+  .balance-chip{display:flex;align-items:center;gap:7px;background:var(--gold-100);border:1px solid rgba(201,162,75,0.4);border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;color:var(--navy-950);}
+  .balance-chip:hover{background:#efe1bb;}
+  .balance-chip svg{width:15px;height:15px;color:var(--gold-600);}
+  .balance-chip .amount{font-size:13px;font-weight:700;}
+  .balance-chip .label{font-size:11px;color:var(--text-600);font-weight:500;}
+  .user-menu{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:4px 6px 4px 4px;border-radius:999px;}
+  .user-menu:hover{background:var(--navy-100);}
+  .user-menu.active-menu{background:var(--navy-100);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;}
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;text-align:left;}
+  .user-meta .name{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .user-meta .role{font-size:11px;color:var(--text-400);}
+  @media (max-width:900px){.user-meta{display:none;} .balance-chip .label{display:none;}}
+
+  /* header user dropdown */
+  .user-menu-wrap{position:relative;}
+  .user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 34px -10px rgba(16,25,47,0.28);min-width:200px;padding:6px;z-index:60;}
+  .user-dropdown.open{display:block;}
+  .user-dropdown button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;cursor:pointer;}
+  .user-dropdown button:hover{background:var(--navy-100);}
+  .user-dropdown button.logout{color:var(--error-600);}
+  .user-dropdown button.logout:hover{background:var(--error-100);}
+  .user-dropdown button svg{width:16px;height:16px;color:var(--text-600);flex-shrink:0;}
+  .user-dropdown button.logout svg{color:var(--error-600);}
+  .user-dropdown .dd-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  /* ============ SIDEBAR (shared) ============ */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 12px 20px;z-index:40;transition:transform .2s ease;}
+  .nav-group{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--text-600);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:var(--navy-100);color:var(--navy-900);}
+  .nav-item.active{background:var(--navy-900);color:#fff;font-weight:600;}
+  .nav-divider{height:1px;background:var(--border);margin:10px 4px;}
+  .nav-item.logout{color:var(--error-600);}
+  .nav-item.logout:hover{background:var(--error-100);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;top:var(--header-h);background:rgba(16,25,47,0.35);z-index:39;}
+
+  /* ============ MAIN LAYOUT ============ */
+  .app-body{padding-top:var(--header-h);}
+  .main{margin-left:var(--sidebar-w);padding:28px 32px 100px;max-width:1240px;}
+
+  .breadcrumb{font-size:12.5px;color:var(--text-400);margin:0 0 14px;font-weight:500;}
+  .breadcrumb a{color:var(--text-400);text-decoration:none;cursor:pointer;}
+  .breadcrumb a:hover{color:var(--navy-800);text-decoration:underline;}
+  .breadcrumb .current{color:var(--text-600);}
+
+  .page-head{margin-bottom:24px;}
+  .page-title{font-family:var(--font-display);font-size:27px;font-weight:600;color:var(--navy-950);margin:0 0 6px;}
+  .page-sub{font-size:14px;color:var(--text-600);margin:0;}
+
+  .btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:var(--radius-md);padding:11px 18px;cursor:pointer;white-space:nowrap;}
+  .btn-primary:hover{background:var(--navy-800);}
+  .btn-primary:disabled{background:var(--navy-600);cursor:not-allowed;opacity:0.75;}
+  .btn-primary svg{width:16px;height:16px;}
+
+  .btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:9px 14px;cursor:pointer;white-space:nowrap;}
+  .btn-secondary:hover{border-color:var(--navy-800);background:var(--navy-100);}
+  .btn-secondary:disabled{color:var(--text-400);cursor:not-allowed;}
+  .btn-secondary svg{width:15px;height:15px;}
+
+  .btn-destructive{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;color:var(--error-600);background:var(--error-100);border:1.5px solid rgba(179,57,44,0.25);border-radius:var(--radius-md);padding:9px 14px;cursor:pointer;white-space:nowrap;}
+  .btn-destructive:hover{background:#f6d8d3;}
+
+  .btn-ghost{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--navy-800);background:none;border:none;cursor:pointer;padding:6px 4px;}
+  .btn-ghost:hover{text-decoration:underline;}
+  .btn-ghost svg{width:14px;height:14px;}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .badge.activo{background:var(--success-100);color:var(--success-600);}
+  .badge.activo::before{background:var(--success-600);}
+
+  /* ============ PROFILE GRID ============ */
+  .profile-grid{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;}
+  .col-identity{position:sticky;top:calc(var(--header-h) + 20px);display:flex;flex-direction:column;gap:16px;}
+  .col-info{display:flex;flex-direction:column;gap:18px;min-width:0;}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .panel-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .panel-title{font-family:var(--font-display);font-size:16.5px;font-weight:600;color:var(--navy-950);margin:0;}
+  .panel-body{padding:18px 20px 20px;}
+
+  /* identity card */
+  .identity-card .panel-body{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 20px 22px;}
+  .avatar-lg{width:92px;height:92px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:30px;font-weight:600;margin-bottom:14px;flex-shrink:0;}
+  .identity-name{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--navy-950);margin:0 0 3px;}
+  .identity-role{font-size:13px;color:var(--text-600);margin:0 0 12px;}
+  .identity-id{font-size:12px;color:var(--text-400);background:var(--bg);border-radius:999px;padding:5px 12px;margin-bottom:16px;}
+  .identity-stat{font-size:12.5px;color:var(--text-600);margin-bottom:16px;}
+  .identity-stat strong{color:var(--navy-950);font-weight:700;}
+  .identity-card .btn-secondary{width:100%;}
+
+  .mini-panel .panel-body{padding:16px 20px;}
+  .mini-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--text-600);padding:4px 0;}
+  .mini-row span:last-child{color:var(--text-900);font-weight:600;}
+
+  /* info sections */
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;}
+  .info-field .info-label{font-size:11.5px;font-weight:600;color:var(--text-400);text-transform:uppercase;letter-spacing:0.02em;margin:0 0 6px;}
+  .info-field .info-value{font-size:14px;font-weight:600;color:var(--text-900);margin:0;}
+  .info-field.readonly .info-value{color:var(--text-600);font-weight:500;}
+
+  .section-note{font-size:11.5px;color:var(--text-400);font-weight:500;display:flex;align-items:center;gap:5px;}
+  .section-note svg{width:13px;height:13px;}
+
+  /* form fields (modo edición) */
+  .form-field{display:flex;flex-direction:column;gap:6px;}
+  .form-field label{font-size:12px;font-weight:600;color:var(--text-600);}
+  .form-field input{width:100%;font-size:13.5px;font-weight:500;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;}
+  .form-field input:focus{outline:none;border-color:var(--navy-800);box-shadow:0 0 0 3px rgba(38,55,92,0.12);}
+  .form-field.has-error input{border-color:var(--error-600);}
+  .form-field.has-error input:focus{box-shadow:0 0 0 3px rgba(179,57,44,0.12);}
+  .field-error{display:none;align-items:center;gap:5px;font-size:12px;color:var(--error-600);font-weight:500;}
+  .form-field.has-error .field-error{display:flex;}
+  .field-error svg{width:13px;height:13px;flex-shrink:0;}
+  .field-static-inline{display:flex;flex-direction:column;gap:6px;}
+  .field-static-inline .info-label{font-size:11.5px;font-weight:600;color:var(--text-400);text-transform:uppercase;letter-spacing:0.02em;margin:0;}
+  .field-static-inline .static-value{font-size:13.5px;font-weight:600;color:var(--text-600);background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;}
+
+  .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);}
+
+  .save-banner{display:flex;align-items:flex-start;gap:10px;border-radius:var(--radius-md);padding:12px 14px;margin-top:16px;font-size:13px;line-height:1.5;}
+  .save-banner svg{width:17px;height:17px;flex-shrink:0;margin-top:1px;}
+  .save-banner.success{background:var(--success-100);color:var(--success-600);}
+  .save-banner.error{background:var(--error-100);color:var(--error-600);}
+  .save-banner p{margin:0;}
+  .save-banner strong{display:block;font-size:13.5px;margin-bottom:2px;}
+  .save-banner .retry-inline{margin-top:8px;}
+
+  /* cursos a cargo */
+  .course-list{display:flex;flex-direction:column;gap:2px;}
+  .course-row{display:flex;align-items:center;gap:14px;padding:13px 10px;border-radius:10px;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .course-row:hover{background:var(--bg);}
+  .course-row-icon{width:38px;height:38px;border-radius:10px;background:var(--navy-100);color:var(--navy-900);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .course-row-icon svg{width:18px;height:18px;}
+  .course-row-main{flex:1;min-width:0;}
+  .course-row-name{font-size:13.5px;font-weight:700;color:var(--text-900);margin:0 0 2px;}
+  .course-row-meta{font-size:12px;color:var(--text-600);margin:0;}
+  .course-chev{width:16px;height:16px;color:var(--text-400);flex-shrink:0;}
+  .course-divider{height:1px;background:var(--border);margin:0 10px;}
+
+  /* skeleton (uso puntual) */
+  .skel{background:linear-gradient(90deg,#eceef2 25%,#f4f5f8 37%,#eceef2 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;}
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+  /* ============ MODALES ============ */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(16,25,47,0.5);z-index:80;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--surface);border-radius:var(--radius-lg);max-width:420px;width:100%;padding:24px;box-shadow:0 24px 60px -12px rgba(16,25,47,0.4);}
+  .modal-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .modal-icon svg{width:22px;height:22px;}
+  .modal-icon.neutral{background:var(--navy-100);color:var(--navy-900);}
+  .modal-icon.warn{background:var(--warn-100);color:var(--warn-600);}
+  .modal-title{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--navy-950);margin:0 0 8px;}
+  .modal-text{font-size:13.5px;color:var(--text-600);line-height:1.55;margin:0 0 20px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+  .modal-actions.spread{justify-content:space-between;}
+
+  .photo-preview-row{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
+  .photo-preview{width:64px;height:64px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;font-weight:600;flex-shrink:0;}
+  .file-drop{border:1.5px dashed var(--border);border-radius:var(--radius-md);padding:16px;text-align:center;flex:1;}
+  .file-drop .btn-secondary{margin-bottom:8px;}
+  .file-drop p{margin:0;font-size:11.5px;color:var(--text-400);}
+
+  /* ============ TOAST ============ */
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-950);color:#fff;font-size:13px;font-weight:600;padding:13px 20px;border-radius:var(--radius-md);display:flex;align-items:center;gap:10px;box-shadow:0 14px 34px -10px rgba(16,25,47,0.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast svg{width:17px;height:17px;color:var(--success-600);flex-shrink:0;}
+
+  /* state controls (solo revisión) */
+  .state-controls{position:fixed;bottom:14px;left:calc(50% + var(--sidebar-w)/2);transform:translateX(-50%);z-index:60;display:flex;gap:6px;background:rgba(16,25,47,0.94);padding:8px;border-radius:10px;flex-wrap:wrap;justify-content:center;max-width:78vw;}
+  .state-controls button{font-size:11.5px;font-weight:600;color:#e8ecf5;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;cursor:pointer;}
+  .state-controls button:hover{background:rgba(255,255,255,0.18);}
+  .state-controls span{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(232,236,245,0.55);align-self:center;padding-right:2px;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    .profile-grid{grid-template-columns:1fr;}
+    .col-identity{position:static;}
+    .identity-card .panel-body{flex-direction:row;text-align:left;align-items:center;gap:18px;padding:20px;}
+    .avatar-lg{margin-bottom:0;}
+    .identity-card .btn-secondary{width:auto;margin-left:auto;}
+  }
+  @media (max-width:900px){
+    :root{--sidebar-w:0px;}
+    .hamburger{display:flex;}
+    .sidebar{width:264px;transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:16px 0 40px rgba(16,25,47,0.18);}
+    .sidebar-backdrop.open{display:block;}
+    .main{margin-left:0;padding:22px 18px 110px;}
+    .state-controls{left:50%;max-width:92vw;bottom:10px;}
+  }
+  @media (max-width:640px){
+    .page-title{font-size:22px;}
+    .identity-card .panel-body{flex-direction:column;text-align:center;}
+    .avatar-lg{margin-bottom:14px;}
+    .identity-card .btn-secondary{width:100%;margin-left:0;}
+    .info-grid{grid-template-columns:1fr;}
+    .form-actions{flex-direction:column-reverse;}
+    .form-actions button{width:100%;}
+    .modal-actions{flex-direction:column-reverse;}
+    .modal-actions button{width:100%;}
+    .photo-preview-row{flex-direction:column;align-items:stretch;text-align:center;}
+  }
+  @media (max-width:430px){
+    .main{padding:18px 14px 110px;}
+    .panel-body{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5H17.5M2.5 10H17.5M2.5 14.5H17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="brand-mark" aria-label="UADEnet — ir a Inicio" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <span class="brand-glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/></svg></span>
+      <span class="brand-word">UADE<span class="accent">net</span></span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Notificaciones" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <button class="balance-chip" aria-label="Saldo institucional — ir a Cuenta institucional" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/></svg>
+      <span class="amount">$18.400</span><span class="label">Saldo</span>
+    </button>
+    <div class="user-menu-wrap">
+      <button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu()">
+        <span class="avatar" id="headerAvatar">MG</span>
+        <span class="user-meta"><span class="name">Mariana Gómez</span><span class="role">Docente</span></span>
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="user-dropdown" id="userDropdown">
+        <button onclick="__uadenetGo('pantalla-27-perfil-docente')">
+          <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Mi perfil
+        </button>
+        <button onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+          Cuenta institucional
+        </button>
+        <div class="dd-divider"></div>
+        <button class="logout" onclick="uadenetLogout()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8V16.5H15V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-03-mis-cursos')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/><path d="M17.5 5.5V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Mis cursos
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-15-actas')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Actas
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-18-calendario')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Calendario académico
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Notificaciones
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-22-mis-compras')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 6L10 2.5L17 6L10 9.5L3 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8.2V12.5L10 14.5L14 12.5V8.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Mis compras
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+      Cuenta institucional
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item active" aria-current="page" onclick="__uadenetGo('pantalla-27-perfil-docente')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil
+    </a>
+    <a class="nav-item logout" onclick="uadenetLogout()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cerrar sesión
+    </a>
+  </div>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<div class="app-body">
+  <main class="main">
+
+    <p class="breadcrumb">
+      <a onclick="__uadenetGo('pantalla-02-dashboard')">Inicio</a> /
+      <span class="current">Mi perfil</span>
+    </p>
+
+    <div class="page-head">
+      <h1 class="page-title">Mi perfil</h1>
+      <p class="page-sub">Consultá y administrá tus datos personales e institucionales.</p>
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- ===== COLUMNA IZQUIERDA — IDENTIDAD ===== -->
+      <div class="col-identity">
+
+        <div class="panel identity-card">
+          <div class="panel-body">
+            <span class="avatar-lg" id="identityAvatar">MG</span>
+            <p class="identity-name">Mariana Gómez</p>
+            <p class="identity-role">Docente</p>
+            <span class="identity-id">ID institucional: DOC-00124</span>
+            <p class="identity-stat"><strong id="activeCourseCount">4</strong> cursos activos</p>
+            <button class="btn-secondary" onclick="openPhotoModal()">
+              <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="6" width="14" height="10.5" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 6L8.2 4H11.8L13 6" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="11" r="2.6" stroke="currentColor" stroke-width="1.4"/></svg>
+              Cambiar foto
+            </button>
+          </div>
+        </div>
+
+        <div class="panel mini-panel">
+          <div class="panel-head"><h2 class="panel-title" style="font-family:var(--font-body);font-size:13px;">Estado de cuenta</h2></div>
+          <div class="panel-body">
+            <span class="badge activo">Activa</span>
+          </div>
+        </div>
+
+        <div class="panel mini-panel">
+          <div class="panel-head">
+            <h2 class="panel-title" style="font-family:var(--font-body);font-size:13px;">Seguridad</h2>
+          </div>
+          <div class="panel-body">
+            <div class="mini-row"><span>Último acceso</span><span>25/08/2026 · 18:42</span></div>
+            <div class="mini-row"><span>Sesión actual</span><span>MacBook Pro · Chrome</span></div>
+            <button class="btn-secondary" style="width:100%;margin-top:12px;" onclick="openSecurityModal()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L16 4.5V9C16 13 13.5 16 10 17.5C6.5 16 4 13 4 9V4.5L10 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              Gestionar seguridad
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== COLUMNA DERECHA — INFORMACIÓN ===== -->
+      <div class="col-info">
+
+        <!-- Información personal (solo lectura) -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Información personal</h2>
+            <span class="section-note">
+              <svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 9V6.5C7 4.6 8.3 3 10 3C11.7 3 13 4.6 13 6.5V9" stroke="currentColor" stroke-width="1.3"/></svg>
+              Solo lectura
+            </span>
+          </div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-field readonly"><p class="info-label">Nombre completo</p><p class="info-value">Mariana Gómez</p></div>
+              <div class="info-field readonly"><p class="info-label">Documento</p><p class="info-value">32.145.678</p></div>
+              <div class="info-field readonly"><p class="info-label">Fecha de nacimiento</p><p class="info-value">14/03/1985</p></div>
+              <div class="info-field readonly"><p class="info-label">Nacionalidad</p><p class="info-value">Argentina</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos de contacto (editable: correo personal, teléfono) -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Datos de contacto</h2>
+            <button class="btn-ghost" id="editContactBtn" onclick="enterEditMode()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M11.5 3.5L16.5 8.5L7 18H2V13L11.5 3.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              Editar
+            </button>
+          </div>
+          <div class="panel-body">
+
+            <!-- modo visualización -->
+            <div id="contactView">
+              <div class="info-grid">
+                <div class="info-field readonly"><p class="info-label">Correo institucional</p><p class="info-value">mariana.gomez@uade.edu.ar</p></div>
+                <div class="info-field"><p class="info-label">Correo personal</p><p class="info-value" id="viewEmailPersonal">mariana.gomez@gmail.com</p></div>
+                <div class="info-field"><p class="info-label">Teléfono</p><p class="info-value" id="viewPhone">+54 9 11 4567-8899</p></div>
+                <div class="info-field readonly"><p class="info-label">Domicilio</p><p class="info-value">Avenida Rivadavia 1864, Buenos Aires, Argentina</p></div>
+              </div>
+            </div>
+
+            <!-- modo edición -->
+            <div id="contactEdit" style="display:none;">
+              <div class="info-grid">
+                <div class="field-static-inline">
+                  <p class="info-label">Correo institucional</p>
+                  <p class="static-value">mariana.gomez@uade.edu.ar</p>
+                </div>
+                <div class="form-field" id="fieldEmailPersonal">
+                  <label for="inputEmailPersonal">Correo personal</label>
+                  <input type="email" id="inputEmailPersonal" value="mariana.gomez@gmail.com">
+                  <span class="field-error">
+                    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5V10.5M10 13.5H10.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    Ingresá un correo electrónico válido.
+                  </span>
+                </div>
+                <div class="form-field" id="fieldPhone">
+                  <label for="inputPhone">Teléfono</label>
+                  <input type="tel" id="inputPhone" value="+54 9 11 4567-8899">
+                  <span class="field-error">
+                    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5V10.5M10 13.5H10.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    Ingresá un número de teléfono válido.
+                  </span>
+                </div>
+                <div class="field-static-inline">
+                  <p class="info-label">Domicilio</p>
+                  <p class="static-value">Avenida Rivadavia 1864, Buenos Aires, Argentina</p>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn-secondary" onclick="handleCancelEdit()">Cancelar</button>
+                <button class="btn-primary" id="saveBtn" onclick="handleSaveChanges()">
+                  <span id="saveBtnLabel">Guardar cambios</span>
+                </button>
+              </div>
+
+              <div class="save-banner success" id="successBanner" style="display:none;">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="7" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 10.2L8.7 12.4L13.5 7.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p><strong>Cambios guardados correctamente</strong>Tu información fue actualizada.</p>
+              </div>
+
+              <div class="save-banner error" id="errorBanner" style="display:none;">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p><strong>No pudimos guardar los cambios</strong>Intentá nuevamente.
+                  <span class="retry-inline"><button class="btn-secondary" onclick="handleSaveChanges()">Intentar nuevamente</button></span>
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Información institucional (solo lectura) -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Información institucional</h2>
+            <span class="section-note">
+              <svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 9V6.5C7 4.6 8.3 3 10 3C11.7 3 13 4.6 13 6.5V9" stroke="currentColor" stroke-width="1.3"/></svg>
+              Solo lectura
+            </span>
+          </div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-field readonly"><p class="info-label">ID docente</p><p class="info-value">DOC-00124</p></div>
+              <div class="info-field readonly"><p class="info-label">Cargo</p><p class="info-value">Docente</p></div>
+              <div class="info-field readonly"><p class="info-label">Departamento</p><p class="info-value">Ingeniería</p></div>
+              <div class="info-field readonly"><p class="info-label">Área</p><p class="info-value">Informática</p></div>
+              <div class="info-field readonly"><p class="info-label">Sede</p><p class="info-value">Buenos Aires</p></div>
+              <div class="info-field readonly"><p class="info-label">Estado</p><p class="info-value">Activo</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información académica (solo lectura) -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Información académica</h2>
+            <span class="section-note">
+              <svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 9V6.5C7 4.6 8.3 3 10 3C11.7 3 13 4.6 13 6.5V9" stroke="currentColor" stroke-width="1.3"/></svg>
+              Solo lectura
+            </span>
+          </div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-field readonly"><p class="info-label">Título / formación</p><p class="info-value">Ingeniería en Informática</p></div>
+              <div class="info-field readonly"><p class="info-label">Especialidad</p><p class="info-value">Informática</p></div>
+              <div class="info-field readonly"><p class="info-label">Antigüedad docente</p><p class="info-value">5 años</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cursos a cargo -->
+        <div class="panel">
+          <div class="panel-head"><h2 class="panel-title">Cursos a cargo</h2></div>
+          <div class="panel-body" style="padding:8px 10px 12px;">
+            <div class="course-list" id="coursesCargoList">
+              <button class="course-row" onclick="openCourse('da2')">
+                <span class="course-row-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/></svg></span>
+                <span class="course-row-main"><p class="course-row-name">Desarrollo de Aplicaciones II</p><p class="course-row-meta">Comisión 123 · 2.º cuatrimestre 2026</p></span>
+                <svg class="course-chev" viewBox="0 0 20 20" fill="none"><path d="M7.5 4.5L13 10L7.5 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="course-divider"></div>
+              <button class="course-row" onclick="openCourse('id1')">
+                <span class="course-row-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/></svg></span>
+                <span class="course-row-main"><p class="course-row-name">Ingeniería de Datos I</p><p class="course-row-meta">Comisión 087 · 2.º cuatrimestre 2026</p></span>
+                <svg class="course-chev" viewBox="0 0 20 20" fill="none"><path d="M7.5 4.5L13 10L7.5 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="course-divider"></div>
+              <button class="course-row" onclick="openCourse('isw')">
+                <span class="course-row-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/></svg></span>
+                <span class="course-row-main"><p class="course-row-name">Ingeniería de Software</p><p class="course-row-meta">Comisión 205 · 2.º cuatrimestre 2026</p></span>
+                <svg class="course-chev" viewBox="0 0 20 20" fill="none"><path d="M7.5 4.5L13 10L7.5 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="course-divider"></div>
+              <button class="course-row" onclick="openCourse('pr2')">
+                <span class="course-row-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/></svg></span>
+                <span class="course-row-main"><p class="course-row-name">Programación II</p><p class="course-row-meta">Comisión 401 · 2.º cuatrimestre 2026</p></span>
+                <svg class="course-chev" viewBox="0 0 20 20" fill="none"><path d="M7.5 4.5L13 10L7.5 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ MODAL — CAMBIAR FOTO ============ -->
+<div class="modal-overlay" id="photoModal">
+  <div class="modal-box">
+    <h3 class="modal-title">Cambiar foto de perfil</h3>
+    <p class="modal-text">Actualizá tu foto de perfil. Se reflejará en el encabezado, el menú lateral y tu perfil.</p>
+    <div class="photo-preview-row">
+      <span class="photo-preview" id="modalPhotoPreview">MG</span>
+      <div class="file-drop">
+        <button class="btn-secondary" onclick="console.log('Abrir selector de archivo')">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 13V4M10 4L6.5 7.5M10 4L13.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 14V15.5C4 16.3 4.7 17 5.5 17H14.5C15.3 17 16 16.3 16 15.5V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Seleccionar archivo
+        </button>
+        <p>Formatos: JPG, PNG · Tamaño máximo: 5 MB</p>
+      </div>
+    </div>
+    <div class="modal-actions spread">
+      <button class="btn-destructive" onclick="console.log('Eliminar foto de perfil')">Eliminar foto</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" onclick="closePhotoModal()">Cancelar</button>
+        <button class="btn-primary" onclick="saveNewPhoto()">Guardar foto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL — DESCARTAR CAMBIOS ============ -->
+<div class="modal-overlay" id="discardModal">
+  <div class="modal-box">
+    <div class="modal-icon warn">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 class="modal-title">¿Descartar cambios?</h3>
+    <p class="modal-text">Los cambios realizados no se guardarán.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeDiscardModal()">Seguir editando</button>
+      <button class="btn-destructive" onclick="confirmDiscardChanges()">Descartar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL — SEGURIDAD ============ -->
+<div class="modal-overlay" id="securityModal">
+  <div class="modal-box">
+    <div class="modal-icon neutral">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L16 4.5V9C16 13 13.5 16 10 17.5C6.5 16 4 13 4 9V4.5L10 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 class="modal-title">Seguridad de la cuenta</h3>
+    <p class="modal-text">
+      Último acceso: 25/08/2026 · 18:42<br>
+      Sesión actual: MacBook Pro · Chrome · Última actividad: ahora
+    </p>
+    <p class="modal-text" style="margin-top:-10px;">Para cambiar tu contraseña o gestionar accesos, contactá al área de Sistemas.</p>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="closeSecurityModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="7" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 10.2L8.7 12.4L13.5 7.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastText">Cambios guardados correctamente.</span>
+</div>
+
+<!-- ============ STATE CONTROLS (solo revisión) ============ -->
+<script>
+  // ---------- sidebar mobile drawer ----------
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  function toggleSidebar(open){
+    sidebar.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    hamburgerBtn.setAttribute('aria-expanded', String(open));
+  }
+  hamburgerBtn.addEventListener('click', () => toggleSidebar(!sidebar.classList.contains('open')));
+  backdrop.addEventListener('click', () => toggleSidebar(false));
+
+  // ---------- header user dropdown ----------
+  const userDropdown = document.getElementById('userDropdown');
+  const userMenuBtn = document.getElementById('userMenuBtn');
+  function toggleUserMenu(){
+    userDropdown.classList.toggle('open');
+    userMenuBtn.classList.toggle('active-menu');
+  }
+  document.addEventListener('click', (e) => {
+    if(!e.target.closest('.user-menu-wrap')){
+      userDropdown.classList.remove('open');
+      userMenuBtn.classList.remove('active-menu');
+    }
+  });
+
+  function openCourse(id){
+    localStorage.setItem('uadenetSelectedCourse', id);
+    __uadenetGo('pantalla-05-detalle-curso');
+  }
+
+  // Reflejar los cursos creados durante la sesión en "Cursos a cargo".
+  // Los cursos de sesión viven en sessionStorage y desaparecen al cerrar sesión.
+  (function renderSessionCourses(){
+    const list = document.getElementById('coursesCargoList');
+    const count = document.getElementById('activeCourseCount');
+    if(!list) return;
+    let created = [];
+    try { created = JSON.parse(sessionStorage.getItem('uadenetCreatedCourses') || '[]'); } catch(e) { created = []; }
+    if(!Array.isArray(created)) created = [];
+    const active = created.filter(c => c && String(c.status || 'activo').toLowerCase() !== 'finalizado');
+    if(count) count.textContent = String(4 + active.length);
+    if(!active.length) return;
+    active.forEach(c => {
+      const divider = document.createElement('div');
+      divider.className = 'course-divider';
+      const button = document.createElement('button');
+      button.className = 'course-row';
+      button.setAttribute('type','button');
+      button.addEventListener('click', () => openCourse(c.id));
+      const period = c.period || 'Período académico';
+      const com = c.com ? ('Comisión ' + c.com) : 'Comisión —';
+      button.innerHTML = `<span class="course-row-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/></svg></span><span class="course-row-main"><p class="course-row-name"></p><p class="course-row-meta"></p></span><svg class="course-chev" viewBox="0 0 20 20" fill="none"><path d="M7.5 4.5L13 10L7.5 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      button.querySelector('.course-row-name').textContent = c.name || 'Curso sin nombre';
+      button.querySelector('.course-row-meta').textContent = com + ' · ' + period;
+      list.appendChild(divider);
+      list.appendChild(button);
+    });
+  })();
+
+  // ---------- valores originales (para "Cancelar") ----------
+  const originalValues = {
+    emailPersonal: 'mariana.gomez@gmail.com',
+    phone: '+54 9 11 4567-8899'
+  };
+
+  const contactView = document.getElementById('contactView');
+  const contactEdit = document.getElementById('contactEdit');
+  const editContactBtn = document.getElementById('editContactBtn');
+  const inputEmailPersonal = document.getElementById('inputEmailPersonal');
+  const inputPhone = document.getElementById('inputPhone');
+  const fieldEmailPersonal = document.getElementById('fieldEmailPersonal');
+  const fieldPhone = document.getElementById('fieldPhone');
+  const successBanner = document.getElementById('successBanner');
+  const errorBanner = document.getElementById('errorBanner');
+
+  function hasUnsavedChanges(){
+    return inputEmailPersonal.value !== originalValues.emailPersonal || inputPhone.value !== originalValues.phone;
+  }
+
+  function enterEditMode(){
+    contactView.style.display = 'none';
+    contactEdit.style.display = 'block';
+    editContactBtn.style.display = 'none';
+    successBanner.style.display = 'none';
+    errorBanner.style.display = 'none';
+  }
+
+  function exitEditMode(){
+    contactView.style.display = 'block';
+    contactEdit.style.display = 'none';
+    editContactBtn.style.display = 'inline-flex';
+    fieldEmailPersonal.classList.remove('has-error');
+    fieldPhone.classList.remove('has-error');
+    successBanner.style.display = 'none';
+    errorBanner.style.display = 'none';
+  }
+
+  function handleCancelEdit(){
+    if(hasUnsavedChanges()){
+      document.getElementById('discardModal').classList.add('open');
+    } else {
+      exitEditMode();
+    }
+  }
+
+  function closeDiscardModal(){
+    document.getElementById('discardModal').classList.remove('open');
+  }
+
+  function confirmDiscardChanges(){
+    inputEmailPersonal.value = originalValues.emailPersonal;
+    inputPhone.value = originalValues.phone;
+    closeDiscardModal();
+    exitEditMode();
+  }
+
+  function validateEmail(value){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  }
+  function validatePhone(value){
+    return value.trim().length >= 8;
+  }
+
+  function handleSaveChanges(){
+    errorBanner.style.display = 'none';
+    successBanner.style.display = 'none';
+
+    let valid = true;
+    if(inputEmailPersonal.value.trim() === ''){
+      fieldEmailPersonal.classList.add('has-error');
+      valid = false;
+    } else if(!validateEmail(inputEmailPersonal.value)){
+      fieldEmailPersonal.classList.add('has-error');
+      valid = false;
+    } else {
+      fieldEmailPersonal.classList.remove('has-error');
+    }
+
+    if(inputPhone.value.trim() === '' || !validatePhone(inputPhone.value)){
+      fieldPhone.classList.add('has-error');
+      valid = false;
+    } else {
+      fieldPhone.classList.remove('has-error');
+    }
+
+    if(!valid) return;
+
+    const saveBtn = document.getElementById('saveBtn');
+    const label = document.getElementById('saveBtnLabel');
+    saveBtn.disabled = true;
+    label.textContent = 'Guardando cambios...';
+
+    setTimeout(() => {
+      saveBtn.disabled = false;
+      label.textContent = 'Guardar cambios';
+      originalValues.emailPersonal = inputEmailPersonal.value;
+      originalValues.phone = inputPhone.value;
+      document.getElementById('viewEmailPersonal').textContent = inputEmailPersonal.value;
+      document.getElementById('viewPhone').textContent = inputPhone.value;
+      successBanner.style.display = 'flex';
+      showToast('Cambios guardados correctamente.');
+    }, 1000);
+  }
+
+  // ---------- modal cambiar foto ----------
+  function openPhotoModal(){ document.getElementById('photoModal').classList.add('open'); }
+  function closePhotoModal(){ document.getElementById('photoModal').classList.remove('open'); }
+  function saveNewPhoto(){
+    closePhotoModal();
+    showToast('Foto de perfil actualizada.');
+  }
+
+  // ---------- modal seguridad ----------
+  function openSecurityModal(){ document.getElementById('securityModal').classList.add('open'); }
+  function closeSecurityModal(){ document.getElementById('securityModal').classList.remove('open'); }
+
+  // ---------- toast ----------
+  function showToast(text){
+    const toast = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  // ---------- state controls (solo revisión) ----------
+  function setReviewState(name){
+    if(name === 'normal'){ exitEditMode(); }
+  }
+  function simulateFieldErrors(){
+    enterEditMode();
+    inputEmailPersonal.value = 'correo-invalido';
+    inputPhone.value = '';
+    handleSaveChanges();
+  }
+  function simulateSaveError(){
+    enterEditMode();
+    errorBanner.style.display = 'flex';
+    successBanner.style.display = 'none';
+  }
+  function simulateSaveSuccess(){
+    enterEditMode();
+    successBanner.style.display = 'flex';
+    errorBanner.style.display = 'none';
+  }
+</script>
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+</body>
+</html>

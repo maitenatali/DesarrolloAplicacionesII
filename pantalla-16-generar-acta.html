@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Nueva acta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f; --navy-900:#1b2a4a; --navy-800:#26375c; --navy-600:#4a5c82; --navy-100:#e8ecf5;
+    --gold-500:#c9a24b; --gold-600:#ab8437; --gold-100:#f4ead2;
+    --bg:#f6f7fa; --surface:#ffffff;
+    --text-900:#16213a; --text-600:#5b6472; --text-400:#8992a3;
+    --border:#dde2ea;
+    --error-600:#b3392c; --error-100:#fbeae7;
+    --success-600:#2f7a4f; --success-100:#e7f4ec;
+    --info-600:#3a5a99; --info-100:#eaf0fb;
+    --warn-600:#a06a1a; --warn-100:#fdf1e2;
+    --radius-lg:16px; --radius-md:10px; --radius-sm:7px;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-h:64px; --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font-body);color:var(--text-900);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ============ HEADER (shared) ============ */
+  .app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;color:var(--navy-900);}
+  .hamburger:hover{background:var(--navy-100);}
+  .brand-mark{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:2px;}
+  .brand-glyph{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg, var(--navy-900), var(--navy-950));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .brand-glyph svg{width:16px;height:16px;}
+  .brand-word{font-family:var(--font-display);font-weight:600;font-size:18.5px;color:var(--navy-950);white-space:nowrap;}
+  .brand-word .accent{color:var(--gold-600);}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:9px;cursor:pointer;color:var(--navy-900);}
+  .icon-btn:hover{background:var(--navy-100);}
+  .icon-btn svg{width:19px;height:19px;}
+  .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--error-600);border:1.5px solid var(--surface);}
+  .balance-chip{display:flex;align-items:center;gap:7px;background:var(--gold-100);border:1px solid rgba(201,162,75,0.4);border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;color:var(--navy-950);}
+  .balance-chip:hover{background:#efe1bb;}
+  .balance-chip svg{width:15px;height:15px;color:var(--gold-600);}
+  .balance-chip .amount{font-size:13px;font-weight:700;}
+  .balance-chip .label{font-size:11px;color:var(--text-600);font-weight:500;}
+  .user-menu{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:4px 6px 4px 4px;border-radius:999px;}
+  .user-menu:hover{background:var(--navy-100);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;}
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;text-align:left;}
+  .user-meta .name{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .user-meta .role{font-size:11px;color:var(--text-400);}
+  @media (max-width:900px){.user-meta{display:none;} .balance-chip .label{display:none;}}
+
+  /* ============ SIDEBAR (shared) ============ */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 12px 20px;z-index:40;transition:transform .2s ease;}
+  .nav-group{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--text-600);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:var(--navy-100);color:var(--navy-900);}
+  .nav-item.active{background:var(--navy-900);color:#fff;font-weight:600;}
+  .nav-divider{height:1px;background:var(--border);margin:10px 4px;}
+  .nav-item.logout{color:var(--error-600);}
+  .nav-item.logout:hover{background:var(--error-100);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;top:var(--header-h);background:rgba(16,25,47,0.35);z-index:39;}
+
+  /* ============ MAIN LAYOUT ============ */
+  .app-body{padding-top:var(--header-h);}
+  .main{margin-left:var(--sidebar-w);padding:28px 32px 120px;max-width:1120px;}
+
+  .breadcrumb{font-size:12.5px;color:var(--text-400);margin:0 0 14px;font-weight:500;}
+  .breadcrumb a{color:var(--text-400);text-decoration:none;cursor:pointer;}
+  .breadcrumb a:hover{color:var(--navy-800);text-decoration:underline;}
+  .breadcrumb .current{color:var(--text-600);}
+
+  .btn-primary{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:var(--radius-md);padding:11px 18px;cursor:pointer;white-space:nowrap;}
+  .btn-primary:hover{background:var(--navy-800);}
+  .btn-primary:disabled{background:var(--navy-100);color:var(--text-400);cursor:not-allowed;}
+  .btn-primary svg{width:16px;height:16px;}
+
+  .btn-secondary{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:9px 14px;cursor:pointer;white-space:nowrap;}
+  .btn-secondary:hover{border-color:var(--navy-800);background:var(--navy-100);}
+  .btn-secondary:disabled{color:var(--text-400);cursor:not-allowed;}
+  .btn-secondary.danger{color:var(--error-600);border-color:var(--error-100);}
+  .btn-secondary.danger:hover{background:var(--error-100);border-color:var(--error-600);}
+  .btn-secondary svg{width:15px;height:15px;}
+
+  .spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;}
+  .badge.activo,.badge.regular,.badge.aprobado{background:var(--success-100);color:var(--success-600);}
+  .badge.activo::before,.badge.regular::before,.badge.aprobado::before{background:var(--success-600);}
+  .badge.finalizado,.badge.ausente{background:var(--bg);color:var(--text-600);}
+  .badge.finalizado::before,.badge.ausente::before{background:var(--text-400);}
+  .badge.promocionado{background:var(--info-100);color:var(--info-600);}
+  .badge.promocionado::before{background:var(--info-600);}
+  .badge.libre,.badge.desaprobado{background:var(--error-100);color:var(--error-600);}
+  .badge.libre::before,.badge.desaprobado::before{background:var(--error-600);}
+  .badge.pendiente,.badge.sinregistrar{background:var(--warn-100);color:var(--warn-600);}
+  .badge.pendiente::before,.badge.sinregistrar::before{background:var(--warn-600);}
+
+  /* ============ PAGE HEAD ============ */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px;}
+  .page-title{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--navy-950);margin:0 0 5px;}
+  .page-desc{font-size:13.5px;color:var(--text-600);margin:0;}
+
+  /* ============ STEP INDICATOR ============ */
+  .steps{display:flex;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px;}
+  .step{display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 0 auto;width:150px;text-align:center;background:none;border:none;cursor:default;font-family:inherit;}
+  .step.reachable{cursor:pointer;}
+  .step-circle{width:30px;height:30px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);color:var(--text-400);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+  .step-circle svg{width:15px;height:15px;}
+  .step.active .step-circle{background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+  .step.completed .step-circle{background:var(--success-600);border-color:var(--success-600);color:#fff;}
+  .step-label{font-size:12.5px;font-weight:600;color:var(--text-400);}
+  .step.active .step-label{color:var(--navy-950);}
+  .step.completed .step-label{color:var(--text-900);}
+  .step-line{flex:1 1 auto;height:1.5px;background:var(--border);margin-top:15px;min-width:20px;}
+  .step-line.done{background:var(--success-600);}
+
+  /* ============ FORM CARD ============ */
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;}
+  .form-card-head{padding:18px 22px;border-bottom:1px solid var(--border);}
+  .form-card-title{font-size:15px;font-weight:700;color:var(--text-900);margin:0;}
+  .form-card-body{padding:22px;}
+  .form-card-foot{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:var(--bg);}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.span-2{grid-column:1/-1;}
+  .field label{font-size:13px;font-weight:600;color:var(--text-900);}
+  .field label .req{color:var(--error-600);margin-left:2px;}
+  .field .hint{font-size:12px;color:var(--text-400);margin-top:-2px;}
+  .field select, .field input[type="text"], .field input[type="date"], .field textarea{
+    width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+    font-size:13.5px;font-family:inherit;color:var(--text-900);background:var(--surface);
+  }
+  .field select:focus, .field input:focus, .field textarea:focus{outline:none;border-color:var(--navy-800);box-shadow:0 0 0 3px rgba(38,55,92,0.12);}
+  .field select:disabled, .field input:disabled{background:var(--bg);color:var(--text-400);cursor:not-allowed;}
+  .field textarea{resize:vertical;min-height:84px;}
+  .field.has-error select, .field.has-error input, .field.has-error textarea{border-color:var(--error-600);}
+  .field-error{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--error-600);font-weight:500;}
+  .field-error svg{width:13px;height:13px;flex-shrink:0;}
+  .readonly-box{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px dashed var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text-600);font-size:13px;}
+  .readonly-box svg{width:15px;height:15px;color:var(--text-400);flex-shrink:0;}
+  .readonly-box .code{font-weight:700;color:var(--text-900);margin-left:auto;font-family:var(--font-display);}
+
+  /* ============ STUDENTS SECTION ============ */
+  .students-intro{font-size:13px;color:var(--text-600);margin:0 0 4px;}
+  .students-count-line{font-size:12.5px;color:var(--text-400);margin:0 0 16px;}
+  .students-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+  .search-wrap{position:relative;flex:1;min-width:220px;}
+  .search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-400);}
+  .search-wrap input{width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13.5px;font-family:inherit;}
+  .search-wrap input:focus{outline:none;border-color:var(--navy-800);}
+  .select-all-wrap{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text-900);white-space:nowrap;}
+  .select-count{font-size:12.5px;font-weight:600;color:var(--navy-800);white-space:nowrap;margin-left:auto;}
+
+  input[type="checkbox"]{width:16px;height:16px;accent-color:var(--navy-900);cursor:pointer;flex-shrink:0;}
+
+  .students-table{width:100%;border-collapse:collapse;}
+  .students-table thead th{text-align:left;font-size:11.5px;font-weight:700;color:var(--text-400);text-transform:uppercase;letter-spacing:0.03em;padding:0 10px 10px;border-bottom:1.5px solid var(--border);}
+  .students-table tbody td{padding:11px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+  .students-table tbody tr:last-child td{border-bottom:none;}
+  .students-table tbody tr.is-selected{background:var(--navy-100);}
+  .student-name-cell{display:flex;align-items:center;gap:10px;}
+  .student-mini-avatar{width:28px;height:28px;border-radius:50%;background:var(--navy-100);color:var(--navy-900);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+  .student-name{font-weight:600;color:var(--text-900);}
+  .legajo-cell{color:var(--text-600);}
+  .resultado-cell{font-weight:600;color:var(--text-900);}
+  .resultado-cell.muted{color:var(--text-400);font-weight:500;font-style:italic;}
+
+  .students-cards{display:none;flex-direction:column;gap:10px;}
+  .student-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:13px 14px;}
+  .student-card.is-selected{border-color:var(--navy-600);background:var(--navy-100);}
+  .student-card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .student-card-top input{margin-top:2px;}
+  .student-card-name{font-size:13.5px;font-weight:700;color:var(--text-900);margin:0 0 2px;}
+  .student-card-legajo{font-size:12px;color:var(--text-600);margin:0;}
+  .student-card-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-left:26px;}
+  .student-card-result{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .student-card-result.muted{color:var(--text-400);font-style:italic;font-weight:500;}
+
+  .no-results{padding:28px 10px;text-align:center;color:var(--text-400);font-size:13px;}
+
+  .alert{display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-radius:var(--radius-md);margin:18px 0 4px;}
+  .alert.warn{background:var(--warn-100);border:1px solid rgba(160,106,26,0.25);}
+  .alert-icon{width:20px;height:20px;color:var(--warn-600);flex-shrink:0;margin-top:1px;}
+  .alert-title{font-size:13.5px;font-weight:700;color:var(--warn-600);margin:0 0 3px;}
+  .alert-desc{font-size:12.5px;color:var(--text-700,#5b4a1f);color:#7a5b17;margin:0 0 10px;line-height:1.5;}
+  .alert .btn-secondary{background:var(--surface);}
+
+  /* ============ REVIEW SECTION ============ */
+  .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin-bottom:20px;}
+  .review-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .review-row .r-label{font-size:12.5px;color:var(--text-600);font-weight:500;}
+  .review-row .r-value{font-size:13.5px;color:var(--text-900);font-weight:700;text-align:right;}
+
+  .review-stats{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 14px;}
+  .stat-chip{flex:1;min-width:110px;border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;text-align:center;}
+  .stat-chip .stat-value{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy-950);}
+  .stat-chip.ok .stat-value{color:var(--success-600);}
+  .stat-chip.bad .stat-value{color:var(--error-600);}
+  .stat-chip.neutral .stat-value{color:var(--text-600);}
+  .stat-chip .stat-label{font-size:11.5px;color:var(--text-600);font-weight:500;margin-top:2px;}
+
+  .toggle-link{background:none;border:none;color:var(--navy-800);font-size:12.5px;font-weight:600;cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:5px;}
+  .toggle-link:hover{text-decoration:underline;}
+  .toggle-link svg{width:13px;height:13px;transition:transform .15s ease;}
+  .review-students-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);max-height:220px;overflow-y:auto;}
+  .review-students-detail .mini-row{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;color:var(--text-600);}
+  .review-students-detail .mini-row b{color:var(--text-900);}
+
+  .confirm-row{display:flex;align-items:flex-start;gap:10px;margin-top:18px;padding:14px 16px;background:var(--bg);border-radius:var(--radius-md);}
+  .confirm-row input{margin-top:2px;}
+  .confirm-row label{font-size:13px;font-weight:600;color:var(--text-900);cursor:pointer;line-height:1.5;}
+
+  /* ============ BOTTOM ACTION BAR ============ */
+  .action-bar{position:static;bottom:auto;left:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 -6px 20px -14px rgba(16,25,47,0.2);}
+  .action-bar-right{display:flex;gap:10px;flex-wrap:wrap;}
+
+  /* section reveal */
+  .section-block{display:none;}
+  .section-block.visible{display:block;}
+  #section2{display:none !important;}
+
+  /* ============ MODALS ============ */
+  .modal-overlay{position:fixed;inset:0;background:rgba(16,25,47,0.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--surface);border-radius:var(--radius-lg);padding:28px;max-width:440px;width:100%;text-align:center;}
+  .modal-box.left{text-align:left;}
+  .modal-icon{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .modal-icon svg{width:26px;height:26px;}
+  .modal-icon.info{background:var(--navy-100);color:var(--navy-900);}
+  .modal-icon.success{background:var(--success-100);color:var(--success-600);}
+  .modal-icon.error{background:var(--error-100);color:var(--error-600);}
+  .modal-icon.warn{background:var(--warn-100);color:var(--warn-600);}
+  .modal-title{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--navy-950);margin:0 0 8px;}
+  .modal-desc{font-size:13.5px;color:var(--text-600);margin:0 0 6px;line-height:1.55;}
+  .modal-meta{display:inline-flex;align-items:center;gap:8px;margin:12px 0 4px;padding:8px 14px;background:var(--bg);border-radius:999px;font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .modal-actions{display:flex;justify-content:center;gap:10px;margin-top:22px;flex-wrap:wrap;}
+  .modal-actions.stack{flex-direction:column;}
+  .modal-actions .btn-primary, .modal-actions .btn-secondary{justify-content:center;}
+
+  /* ============ TOAST ============ */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--navy-950);color:#fff;padding:14px 18px;border-radius:var(--radius-md);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;box-shadow:0 12px 30px -10px rgba(16,25,47,0.5);z-index:120;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .2s ease, transform .2s ease;}
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast svg{width:17px;height:17px;color:var(--success-600);flex-shrink:0;}
+
+  /* state controls (review only) */
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:900px){
+    :root{--sidebar-w:0px;}
+    .hamburger{display:flex;}
+    .sidebar{width:264px;transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:16px 0 40px rgba(16,25,47,0.18);}
+    .sidebar-backdrop.open{display:block;}
+    .main{margin-left:0;padding:22px 18px 130px;}
+    .steps{padding:16px;overflow-x:auto;}
+    .step{width:110px;}
+  }
+  @media (max-width:760px){
+    .form-grid{grid-template-columns:1fr;}
+    .review-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:640px){
+    .page-head{flex-direction:column;}
+    .page-head .btn-secondary{width:100%;justify-content:center;}
+    .students-table{display:none;}
+    .students-cards{display:flex;}
+    .students-toolbar{flex-direction:column;align-items:stretch;}
+    .select-count{margin-left:0;}
+    .action-bar{flex-direction:column;align-items:stretch;}
+    .action-bar-right{flex-direction:column;}
+    .action-bar-right .btn-primary, .action-bar-right .btn-secondary{width:100%;justify-content:center;}
+  }
+  @media (max-width:430px){
+    .main{padding:18px 14px 130px;}
+    .form-card-body, .form-card-head{padding:16px;}
+    .review-stats{flex-direction:column;}
+  }
+
+
+/* Ajuste global de selectores: flechas compactas, centradas y proporcionadas */
+select,
+.filter-select,
+.filter-select-full,
+.sort-select,
+.estado-select,
+.field select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 11px center !important;
+  background-size: 13px 13px !important;
+  padding-right: 34px !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12L14.5 7.5' stroke='%235b6472' stroke-width='1.45' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+}
+
+/* En selectores compactos, mantener la flecha todavía más cerca del borde */
+.filters-panel select,
+select.filter-select,
+select.filter-select-full,
+select.sort-select,
+select.estado-select {
+  background-position: right 10px center !important;
+  background-size: 12px 12px !important;
+  padding-right: 32px !important;
+}
+
+
+.user-menu-wrap{position:relative;}
+  .user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 34px -10px rgba(16,25,47,0.28);min-width:200px;padding:6px;z-index:60;}
+  .user-dropdown.open{display:block;}
+  .user-dropdown button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;cursor:pointer;}
+  .user-dropdown button:hover{background:var(--navy-100);}
+  .user-dropdown button.logout{color:var(--error-600);}
+  .user-dropdown button.logout:hover{background:var(--error-100);}
+  .user-dropdown button svg{width:16px;height:16px;color:var(--text-600);flex-shrink:0;}
+  .user-dropdown button.logout svg{color:var(--error-600);}
+  .user-dropdown .dd-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5H17.5M2.5 10H17.5M2.5 14.5H17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="brand-mark" aria-label="UADEnet — ir a Inicio" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <span class="brand-glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/></svg></span>
+      <span class="brand-word">UADE<span class="accent">net</span></span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Notificaciones" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <button class="balance-chip" aria-label="Saldo institucional — ir a Cuenta institucional" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/></svg>
+      <span class="amount">$18.400</span><span class="label">Saldo</span>
+    </button>
+    <div class="user-menu-wrap"><button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu(this)">
+      <span class="avatar">MG</span>
+      <span class="user-meta"><span class="name">Mariana Gómez</span><span class="role">Docente</span></span>
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+      <div class="user-dropdown" id="userDropdown">
+        <button onclick="__uadenetGo('pantalla-27-perfil-docente')">
+          <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Mi perfil
+        </button>
+        <button onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+          Cuenta institucional
+        </button>
+        <div class="dd-divider"></div>
+        <button class="logout" onclick="uadenetLogout()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8V16.5H15V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-03-mis-cursos')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/><path d="M17.5 5.5V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Mis cursos
+    </a>
+    <a class="nav-item active" aria-current="page" onclick="__uadenetGo('pantalla-15-actas')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Actas
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-18-calendario')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Calendario académico
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Notificaciones
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-22-mis-compras')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 6L10 2.5L17 6L10 9.5L3 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8.2V12.5L10 14.5L14 12.5V8.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Mis compras
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+      Cuenta institucional
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-27-perfil-docente')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil
+    </a>
+    <a class="nav-item logout" onclick="uadenetLogout()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cerrar sesión
+    </a>
+  </div>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<div class="app-body">
+  <main class="main">
+
+    <p class="breadcrumb">
+      <a onclick="__uadenetGo('pantalla-02-dashboard')">Inicio</a> /
+      <a onclick="__uadenetGo('pantalla-15-actas')">Actas</a> /
+      <span class="current">Nueva acta</span>
+    </p>
+
+    <div id="pageContent">
+
+      <!-- ============ PAGE HEAD ============ -->
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Nueva acta</h1>
+          <p class="page-desc">Completá la información necesaria para generar una nueva acta académica.</p>
+        </div>
+        <button class="btn-secondary" onclick="__uadenetGo('pantalla-15-actas')">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Cancelar
+        </button>
+      </div>
+
+      <!-- ============ STEP INDICATOR ============ -->
+      <div class="steps" id="stepsBar">
+        <button class="step active" id="stepTab1" onclick="goToStep(1)">
+          <span class="step-circle">1</span>
+          <span class="step-label">Información general</span>
+        </button>
+        <div class="step-line" id="line1"></div>
+        <button class="step" id="stepTab3" onclick="goToStep(3)">
+          <span class="step-circle">2</span>
+          <span class="step-label">Vista previa</span>
+        </button>
+      </div>
+
+      <!-- ============ SECCIÓN 1 — INFORMACIÓN GENERAL ============ -->
+      <div class="section-block visible" id="section1">
+        <div class="form-card">
+          <div class="form-card-head"><h2 class="form-card-title">Información del acta</h2></div>
+          <div class="form-card-body">
+            <div class="form-grid">
+
+              <div class="field" id="f-curso">
+                <label>Curso <span class="req">*</span></label>
+                <select id="curso" onchange="onCursoChange()"><option value="">Seleccionar curso</option></select>
+                <span class="field-error" style="display:none;"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5V10.5M10 14H10.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Seleccioná un curso.</span>
+              </div>
+
+              <div class="field" id="f-comision">
+                <label>Comisión <span class="req">*</span></label>
+                <select id="comision" disabled><option value="">Se completa automáticamente</option></select>
+                
+                <span class="field-error" style="display:none;"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5V10.5M10 14H10.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Seleccioná una comisión.</span>
+              </div>
+
+              <div class="field" id="f-periodo">
+                <label>Período académico <span class="req">*</span></label>
+                <select id="periodo" disabled><option value="">Se completa automáticamente</option></select>
+                <span class="field-error" style="display:none;"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5V10.5M10 14H10.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Seleccioná un período académico.</span>
+              </div>
+
+              <div class="field">
+                <label>Número de acta</label>
+                <div class="readonly-box">
+                  <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5V10.5M10 14H10.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Se generará automáticamente
+                  <span class="code">N.º 2026-XXX</span>
+                </div>
+              </div>
+
+              <div class="field span-2">
+                <label>Observaciones</label>
+                <textarea id="observaciones" placeholder="Ingresá observaciones adicionales sobre el acta..."></textarea>
+              </div>
+
+            </div>
+          </div>
+          <div class="form-card-foot">
+            <button class="btn-primary" onclick="continueToStep2()">
+              Continuar
+              <svg viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SECCIÓN 2 — ESTUDIANTES ============ -->
+      <div class="section-block" id="section2">
+        <div class="form-card">
+          <div class="form-card-head"><h2 class="form-card-title">Estudiantes incluidos</h2></div>
+          <div class="form-card-body">
+            <p class="students-intro">Los estudiantes del curso se incluyen automáticamente en el acta.</p>
+            <p class="students-count-line" id="availableCountLine">32 estudiantes disponibles</p>
+
+            <div class="students-toolbar">
+              <div class="search-wrap">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.3 13.3L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <input type="text" id="studentSearch" placeholder="Buscar estudiante..." oninput="renderStudents()">
+              </div>
+              <label class="select-all-wrap">
+                <input type="checkbox" id="selectAllChk" onchange="toggleSelectAll()">
+                Seleccionar todos
+              </label>
+              <span class="select-count" id="selectCount">0 seleccionados</span>
+            </div>
+
+            <table class="students-table">
+              <thead>
+                <tr>
+                  <th style="width:34px;"></th>
+                  <th>Estudiante</th>
+                  <th>Legajo</th>
+                  <th>Estado</th>
+                  <th id="resultadoHeader">Resultado</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTbody"></tbody>
+            </table>
+
+            <div class="students-cards" id="studentsCards"></div>
+
+            <div class="alert warn" id="pendingAlert" style="display:none;">
+              <span class="alert-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L18 16.5H2L10 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8V11.5M10 14H10.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div>
+                <p class="alert-title">Hay información pendiente</p>
+                <p class="alert-desc">Algunos estudiantes seleccionados todavía no tienen un resultado registrado. Revisá las calificaciones antes de generar el acta.</p>
+                <button class="btn-secondary" onclick="__uadenetGo('pantalla-09-calificaciones')">Revisar calificaciones</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="form-card-foot" style="justify-content:space-between;">
+            <button class="btn-secondary" onclick="goToStep(1)">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Volver
+            </button>
+            <button class="btn-primary" id="continueStep3Btn" onclick="continueToStep3()" disabled>
+              Continuar a vista previa
+              <svg viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SECCIÓN 3 — REVISIÓN ============ -->
+      <div class="section-block" id="section3">
+        <div class="form-card">
+          <div class="form-card-head"><h2 class="form-card-title">Revisá la información</h2></div>
+          <div class="form-card-body">
+
+            <div class="review-grid">
+              <div class="review-row"><span class="r-label">Curso</span><span class="r-value" id="rv-curso">—</span></div>
+              <div class="review-row"><span class="r-label">Comisión</span><span class="r-value" id="rv-comision">—</span></div>
+              <div class="review-row"><span class="r-label">Período</span><span class="r-value" id="rv-periodo">—</span></div>
+              <div class="review-row"><span class="r-label">Fecha</span><span class="r-value" id="rv-fecha">—</span></div>
+            </div>
+
+            <p class="form-card-title" style="margin-bottom:10px;">Estudiantes</p>
+            <p class="students-count-line" id="rv-estudiantes-count" style="margin-bottom:12px;">0 estudiantes incluidos</p>
+
+            <div class="review-stats">
+              <div class="stat-chip ok"><div class="stat-value" id="rv-aprobados">0</div><div class="stat-label">Aprobados</div></div>
+              <div class="stat-chip bad"><div class="stat-value" id="rv-desaprobados">0</div><div class="stat-label">Desaprobados</div></div>
+            </div>
+
+            <button class="toggle-link" id="toggleDetailBtn" onclick="toggleReviewDetail()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Ver estudiantes seleccionados
+            </button>
+            <div class="review-students-detail" id="reviewStudentsDetail"></div>
+
+            <div class="confirm-row">
+              <input type="checkbox" id="confirmChk" onchange="onConfirmChkChange()">
+              <label for="confirmChk">Confirmo que revisé la información y que los datos ingresados son correctos.</label>
+            </div>
+
+          </div>
+          <div class="form-card-foot" style="justify-content:space-between;">
+            <button class="btn-secondary" onclick="goToStep(2)">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Volver
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ACTION BAR ============ -->
+      <div class="action-bar"><div></div><div class="action-bar-right"><button class="btn-primary" id="generateBtn" onclick="openConfirmModal()" disabled>
+            Generar acta
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ============ MODAL: CONFIRMAR GENERACIÓN ============ -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal-box">
+    <div class="modal-icon info"><svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+    <h3 class="modal-title">¿Generar acta?</h3>
+    <p class="modal-desc">Se generará el acta con la información ingresada y los estudiantes seleccionados. Verificá que todos los datos sean correctos antes de continuar.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modalConfirm')">Volver</button>
+      <button class="btn-primary" id="confirmGenerateBtn" onclick="generateActa()">Generar acta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: ÉXITO ============ -->
+<div class="modal-overlay" id="modalSuccess">
+  <div class="modal-box">
+    <div class="modal-icon success"><svg viewBox="0 0 20 20" fill="none"><path d="M5 10.5L8.5 14L15 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h3 class="modal-title">Acta generada correctamente</h3>
+    <p class="modal-desc">El acta fue generada y se encuentra disponible para su revisión.</p>
+    <div class="modal-meta">N.º 2026-001 · Acta generada</div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="__uadenetGo('pantalla-15-actas')">Volver a actas</button>
+      <button class="btn-primary" onclick="__uadenetGo('pantalla-17-detalle-acta')">Ver acta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: ERROR ============ -->
+<div class="modal-overlay" id="modalError">
+  <div class="modal-box">
+    <div class="modal-icon error"><svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h3 class="modal-title">No pudimos generar el acta</h3>
+    <p class="modal-desc">Ocurrió un problema al generar el acta. Verificá los datos e intentá nuevamente.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modalError')">Cerrar</button>
+      <button class="btn-primary" onclick="closeModal('modalError'); openConfirmModal();">Reintentar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: SALIR SIN GUARDAR ============ -->
+<div class="modal-overlay" id="modalLeave">
+  <div class="modal-box">
+    <div class="modal-icon warn"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L18 16.5H2L10 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8V11.5M10 14H10.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <h3 class="modal-title">¿Salir sin guardar?</h3>
+    <p class="modal-desc">Tenés información ingresada que todavía no fue guardada. Si salís ahora, perderás los cambios.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modalLeave')">Continuar editando</button>
+      <button class="btn-primary" style="background:var(--error-600);" onclick="confirmLeave()">Salir sin guardar</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const COURSE_KEY = 'uadenetCreatedCourses';
+
+  const STUDENT_NAME_POOL = ['Juan Pérez','María López','Carlos Fernández','Ana Núñez','Pablo Suárez','Lucía Ramírez','Julián Martínez','Sofía Torres','Diego Romero','Valentina Díaz','Martín Acosta','Camila Ríos','Tomás Medina','Julieta Sosa','Nicolás Vera','Paula Castro','Agustín Molina','Florencia Silva','Mateo Herrera','Carolina Paz','Federico Rossi','Micaela Díaz','Gonzalo Suárez','Bianca Núñez','Franco López','Santiago Gómez','Emilia Torres','Bruno Álvarez','Renata Pérez','Facundo Ruiz','Milagros Castro','Lucas Benítez','Victoria Acuña','Ramiro Ortiz','Abril Navarro','Thiago Flores','Ignacio Romero','Martina Vidal','Joaquín Arias','Candela Méndez','Valentín Costa','Malena Ibarra','Nahir Peralta','Simón Cabrera','Clara Funes','Delfina Correa','Bautista León','Agustina Pereyra','Sebastián Molina','Carla Giménez'];
+
+  const BASE_COURSES = [
+    {id:'da2', name:'Desarrollo de Aplicaciones II', com:'123', period:'2° Cuatrimestre 2026', status:'activo', students:32},
+    {id:'id1', name:'Ingeniería de Datos I', com:'087', period:'2° Cuatrimestre 2026', status:'activo', students:28},
+    {id:'is', name:'Ingeniería de Software', com:'205', period:'2° Cuatrimestre 2026', status:'activo', students:24},
+    {id:'pr2', name:'Programación II', com:'401', period:'2° Cuatrimestre 2026', status:'activo', students:22},
+    {id:'rd', name:'Redes de Datos', com:'201', period:'1° Cuatrimestre 2026', status:'finalizado', students:19},
+    {id:'pr1', name:'Programación I', com:'310', period:'1° Cuatrimestre 2026', status:'finalizado', students:35},
+    {id:'ti', name:'Tecnología e Innovación', com:'087', period:'1° Cuatrimestre 2026', status:'finalizado', students:21},
+    {id:'mys', name:'Modelado y Simulación', com:'045', period:'1° Cuatrimestre 2026', status:'finalizado', students:18}
+  ];
+
+  function getCreatedCourses(){
+    try { return JSON.parse(sessionStorage.getItem(COURSE_KEY) || '[]'); }
+    catch(e){ return []; }
+  }
+
+  function getActiveCourses(){
+    const created = getCreatedCourses()
+      .map(c => ({
+        id:String(c.id),
+        name:c.name || c.curso || 'Curso',
+        com:String(c.com || c.comision || ''),
+        period:c.period || c.periodo || '',
+        status:String(c.status || 'activo').toLowerCase(),
+        students:Number(c.students || 0)
+      }))
+      .filter(c => c.status !== 'finalizado' && c.status !== 'finalizada');
+
+    return [...created, ...BASE_COURSES.filter(c => c.status === 'activo')]
+      .filter((c,i,a) => a.findIndex(x => String(x.id) === String(c.id)) === i);
+  }
+
+  const GRADE_SESSION_KEY = 'uadenetGradesByCourse';
+  const GRADE_KEYS = ['p1','p2','tp1','tp2','finalRegular'];
+
+  function getSessionGrades(courseId){
+    try {
+      const all = JSON.parse(sessionStorage.getItem(GRADE_SESSION_KEY) || '{}');
+      return all[String(courseId)] || all[courseId] || {};
+    } catch(e) { return {}; }
+  }
+
+  function calculateFinalAverage(grades){
+    const values = GRADE_KEYS
+      .map(k => grades?.[k])
+      .filter(v => v !== null && v !== undefined && v !== '' && !Number.isNaN(Number(v)))
+      .map(Number);
+    if(!values.length) return null;
+    return Math.round((values.reduce((sum,v)=>sum+v,0)/values.length)*10)/10;
+  }
+
+  function getActaResult(grades){
+    // El resultado del acta se determina por la Nota final registrada.
+    // Sin nota final => Sin registrar. Con nota final, se clasifica por promedio.
+    const finalNote = grades?.finalRegular;
+    if(finalNote === null || finalNote === undefined || finalNote === '') {
+      return {tipo:'sin_registrar', texto:'Sin registrar', average:calculateFinalAverage(grades)};
+    }
+    const average = calculateFinalAverage(grades);
+    if(average !== null && average > 4) return {tipo:'aprobado', texto:`Aprobado · ${String(average).replace('.',',')}`, average};
+    if(average !== null && average < 4) return {tipo:'desaprobado', texto:`Desaprobado · ${String(average).replace('.',',')}`, average};
+    return {tipo:'sin_registrar', texto:'Sin registrar', average};
+  }
+
+  function makeStudents(course){
+    const count = Math.max(0, Number(course.students) || 0);
+    const savedGrades = getSessionGrades(course.id);
+    return Array.from({length:count},(_,i)=>{
+      const nombre=STUDENT_NAME_POOL[i % STUDENT_NAME_POOL.length];
+      const rawDni=String(40000000 + ((i+1)*137)%9999999).padStart(8,'0');
+      const gradeRecord = savedGrades[i+1] || savedGrades[String(i+1)] || {};
+      const grades = {};
+      GRADE_KEYS.forEach(k => {
+        const v = gradeRecord[k];
+        grades[k] = (v === null || v === undefined || v === '') ? null : Number(v);
+      });
+      return {
+        id:i+1, nombre,
+        legajo:String(123456+i),
+        dni:`${rawDni.slice(0,2)}.${rawDni.slice(2,5)}.${rawDni.slice(5)}`,
+        estado:i%4===3?'Libre':'Regular',
+        grades,
+        resultado:getActaResult(grades),
+        selected:true
+      };
+    });
+  }
+
+  let students = [];
+  let generating = false;
+  let formTouched = false;
+  let unlockedStep = 1;
+  let pendingLeaveAction = null;
+
+  function populateCourses(){
+    const select=document.getElementById('curso');
+    if(!select) return;
+    const current=select.value;
+    const courses=getActiveCourses();
+    select.innerHTML='<option value="">Seleccionar curso</option>' +
+      courses.map(c=>`<option value="${String(c.id).replace(/"/g,'&quot;')}">${escapeHtml(c.name)}</option>`).join('');
+    if(courses.some(c=>String(c.id)===String(current))) select.value=current;
+    if(!select.value && courses.length===1) select.value=courses[0].id;
+  }
+
+  function findCourse(id){
+    return getActiveCourses().find(c=>String(c.id)===String(id));
+  }
+
+  window.onCursoChange=function(){
+    const course=findCourse(document.getElementById('curso').value);
+    const com=document.getElementById('comision');
+    const per=document.getElementById('periodo');
+    if(!course){
+      com.innerHTML='<option value="">Se completa automáticamente</option>';
+      per.innerHTML='<option value="">Se completa automáticamente</option>';
+      students=[];
+    }else{
+      com.innerHTML=`<option value="${escapeAttr(course.com)}">${escapeHtml(course.com)}</option>`;
+      per.innerHTML=`<option value="${escapeAttr(course.period)}">${escapeHtml(course.period)}</option>`;
+      students=makeStudents(course);
+    }
+    document.getElementById('comisionHint')?.replaceChildren(document.createTextNode(
+      'Se completa automáticamente según el curso.'
+    ));
+    const line=document.getElementById('availableCountLine');
+    if(line) line.textContent=`${students.length} estudiantes disponibles`;
+    renderStudents();
+    markFormTouched();
+    updateGenerateAvailability();
+  };
+
+  function escapeHtml(v){
+    return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function escapeAttr(v){ return escapeHtml(v); }
+
+  window.renderStudents=function(){
+    const tbody=document.getElementById('studentsTbody');
+    const cards=document.getElementById('studentsCards');
+    if(!tbody || !cards) return;
+    const q=(document.getElementById('studentSearch')?.value||'').trim().toLowerCase();
+    const filtered=students.filter(s=>(s.nombre+' '+s.legajo).toLowerCase().includes(q));
+    tbody.innerHTML=filtered.length ? filtered.map(s=>`
+      <tr class="${s.selected?'is-selected':''}">
+        <td><input type="checkbox" ${s.selected?'checked':''} onchange="toggleStudent(${s.id})" aria-label="Seleccionar ${escapeHtml(s.nombre)}"></td>
+        <td><div class="student-name-cell"><span class="student-mini-avatar">${escapeHtml(s.nombre.split(' ').map(x=>x[0]).slice(0,2).join(''))}</span><span class="student-name">${escapeHtml(s.nombre)}</span></div></td>
+        <td class="legajo-cell">${escapeHtml(s.legajo)}</td><td><span class="badge">${escapeHtml(s.estado)}</span></td>
+        <td class="resultado-cell ${s.resultado?.tipo==='aprobado'?'approved':s.resultado?.tipo==='desaprobado'?'failed':'muted'}">${escapeHtml(s.resultado?.texto||'Sin registrar')}</td>
+      </tr>`).join('') : '<tr><td colspan="5"><div class="no-results">No se encontraron estudiantes.</div></td></tr>';
+    cards.innerHTML=filtered.map(s=>`
+      <div class="student-card ${s.selected?'is-selected':''}">
+        <div class="student-card-top"><input type="checkbox" ${s.selected?'checked':''} onchange="toggleStudent(${s.id})"><div><p class="student-card-name">${escapeHtml(s.nombre)}</p><p class="student-card-legajo">Legajo ${escapeHtml(s.legajo)}</p></div></div>
+        <div class="student-card-meta"><span class="badge">${escapeHtml(s.estado)}</span><span class="student-card-result ${s.resultado?.tipo==='aprobado'?'approved':s.resultado?.tipo==='desaprobado'?'failed':'muted'}">${escapeHtml(s.resultado?.texto||'Sin registrar')}</span></div>
+      </div>`).join('');
+    updateSelectionSummary();
+  };
+
+  window.toggleStudent=function(id){
+    const s=students.find(x=>x.id===id); if(!s)return;
+    s.selected=!s.selected; renderStudents();
+  };
+  window.toggleSelectAll=function(){
+    const checked=document.getElementById('selectAllChk').checked;
+    students.forEach(s=>s.selected=checked); renderStudents();
+  };
+  function updateSelectionSummary(){
+    const selected=students;
+    const count=document.getElementById('selectCount'); if(count)count.textContent=`${selected.length} seleccionados`;
+    const all=document.getElementById('selectAllChk');
+    if(all){all.checked=students.length>0&&selected.length===students.length; all.indeterminate=selected.length>0&&selected.length<students.length;}
+    const alert=document.getElementById('pendingAlert'); if(alert)alert.style.display=selected.some(s=>!s.resultado)?'flex':'none';
+    const btn=document.getElementById('continueStep3Btn'); if(btn)btn.disabled=selected.length===0;
+  }
+
+  function validGeneral(){
+    return !!document.getElementById('curso')?.value;
+  }
+  function updateGenerateAvailability(){
+    // Generation is enabled only after confirmation in step 3.
+  }
+
+  window.continueToStep2=function(){
+    if(!validGeneral()) return;
+    students.forEach(s=>s.selected=true);
+    completeStep(1);
+    unlockedStep=3;
+    document.getElementById('stepTab3')?.classList.add('reachable');
+    buildReview();
+    goToStep(3);
+  };
+  window.continueToStep3=function(){
+    students.forEach(s=>s.selected=true);
+    buildReview();
+    goToStep(3);
+  };
+  function completeStep(step){
+    const tab=document.getElementById('stepTab'+step), line=document.getElementById('line'+step), next=document.getElementById(step===1?'stepTab3':'stepTab'+(step+1));
+    if(tab)tab.classList.add('completed','reachable');
+    if(line)line.classList.add('done');
+    unlockedStep=Math.max(unlockedStep,step+1);
+    if(next)next.classList.add('reachable');
+  }
+  window.goToStep=function(step){
+    if(step>unlockedStep)return;
+    [1,3].forEach(n=>{
+      document.getElementById('section'+n)?.classList.toggle('visible',n===step);
+    });
+    document.getElementById('stepTab1')?.classList.toggle('active',step===1);
+    document.getElementById('stepTab3')?.classList.toggle('active',step===3);
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+
+  function buildReview(){
+    const course=findCourse(document.getElementById('curso').value);
+    const selected=students.filter(s=>s.selected);
+    document.getElementById('rv-curso').textContent=course?.name||'—';
+    document.getElementById('rv-comision').textContent=course?.com||'—';
+    document.getElementById('rv-periodo').textContent=course?.period||'—';
+    document.getElementById('rv-fecha').textContent=new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('rv-estudiantes-count').textContent=`${selected.length} estudiantes incluidos`;
+    document.getElementById('rv-aprobados').textContent=selected.filter(s=>s.resultado?.tipo==='aprobado').length;
+    document.getElementById('rv-desaprobados').textContent=selected.filter(s=>s.resultado?.tipo==='desaprobado').length;
+    document.getElementById('reviewStudentsDetail').innerHTML=selected.map(s=>`<div class="mini-row"><span><b>${escapeHtml(s.nombre)}</b> · Legajo ${escapeHtml(s.legajo)}</span><span>${s.resultado?.texto||'Sin registrar'}</span></div>`).join('');
+    document.getElementById('confirmChk').checked=false;
+    document.getElementById('generateBtn').disabled=true;
+  }
+
+  window.toggleReviewDetail=function(){
+    const d=document.getElementById('reviewStudentsDetail'); const open=d.style.display==='block';
+    d.style.display=open?'none':'block';
+    document.getElementById('toggleDetailBtn').innerHTML=open?'Ver estudiantes seleccionados':'Ocultar estudiantes seleccionados';
+  };
+  window.onConfirmChkChange=function(){
+    document.getElementById('generateBtn').disabled=!document.getElementById('confirmChk').checked;
+  };
+
+  function markFormTouched(){formTouched=true;}
+  document.addEventListener('input',e=>{if(e.target.closest('#pageContent'))markFormTouched();});
+  document.addEventListener('change',e=>{if(e.target.closest('#pageContent'))markFormTouched();});
+
+  window.handleCancel=function(){
+    if(formTouched){pendingLeaveAction=()=>__uadenetGo('pantalla-15-actas');openModal('modalLeave');}
+    else __uadenetGo('pantalla-15-actas');
+  };
+  window.confirmLeave=function(){closeModal('modalLeave');if(pendingLeaveAction)pendingLeaveAction();pendingLeaveAction=null;};
+  window.openConfirmModal=function(){if(!document.getElementById('generateBtn').disabled)openModal('modalConfirm');};
+  window.generateActa=function(){
+    if(generating)return;
+    const course=findCourse(document.getElementById('curso').value);
+    if(!course)return;
+    generating=true;
+    const btn=document.getElementById('confirmGenerateBtn');
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Generando acta...';
+    setTimeout(()=>{
+      const now=new Date();
+      const pad=n=>String(n).padStart(2,'0');
+      const fechaISO=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+      const fechaTexto=now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const hora=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const numero=`2026-${Math.floor(100+Math.random()*900)}`;
+      const acta={
+        id:'acta-'+course.id, nombre:'Acta Final', numero, curso:course.name, comision:course.com, periodo:course.period,
+        fecha:fechaTexto, fechaISO, fechaCreacionTexto:`${fechaTexto} · ${hora}`, estado:'Finalizada',
+        observaciones:document.getElementById('observaciones')?.value?.trim()||'',
+        course:{...course}, students:students.map(s=>({...s,grades:{...s.grades},resultado:{...s.resultado}}))
+      };
+      let generated=[]; try{ generated=JSON.parse(sessionStorage.getItem('uadenetGeneratedActas')||'[]'); if(!Array.isArray(generated)) generated=[]; }catch(e){generated=[];}
+      generated=generated.filter(a=>String(a.id)!==String(acta.id)); generated.push(acta);
+      sessionStorage.setItem('uadenetGeneratedActas',JSON.stringify(generated));
+      sessionStorage.setItem('uadenetGeneratedActa',JSON.stringify(acta));
+      sessionStorage.setItem('uadenetSelectedActa',JSON.stringify(acta));
+      generating=false; btn.disabled=false; btn.textContent='Generar acta';
+      const meta=document.querySelector('#modalSuccess .modal-meta'); if(meta)meta.textContent=`N.º ${numero} · Acta generada`;
+      closeModal('modalConfirm'); formTouched=false; openModal('modalSuccess');
+    },900);
+  };
+  window.openModal=function(id){document.getElementById(id)?.classList.add('open');};
+  window.closeModal=function(id){document.getElementById(id)?.classList.remove('open');};
+
+  const search=document.getElementById('studentSearch');
+  if(search)search.addEventListener('input',renderStudents);
+
+  populateCourses();
+  const courseSelect=document.getElementById('curso');
+  const pendingCourseId=sessionStorage.getItem('uadenetActaCourseId');
+  if(courseSelect && pendingCourseId && getActiveCourses().some(c=>String(c.id)===String(pendingCourseId))){
+    courseSelect.value=pendingCourseId;
+    sessionStorage.removeItem('uadenetActaCourseId');
+  }
+  onCursoChange();
+})();
+</script>
+
+
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  function closeAllUserMenus(except){
+    document.querySelectorAll('.user-dropdown.open').forEach(function(menu){
+      if(menu !== except) menu.classList.remove('open');
+    });
+    document.querySelectorAll('.user-menu.active-menu').forEach(function(btn){
+      if(!except || btn.parentElement.querySelector('.user-dropdown') !== except){
+        btn.classList.remove('active-menu');
+      }
+    });
+  }
+
+  window.toggleUserMenu = function(button){
+    var wrap = button.closest('.user-menu-wrap');
+    var menu = wrap ? wrap.querySelector('.user-dropdown') : null;
+    if(!menu) return;
+    var willOpen = !menu.classList.contains('open');
+    closeAllUserMenus(menu);
+    menu.classList.toggle('open', willOpen);
+    button.classList.toggle('active-menu', willOpen);
+  };
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.user-menu-wrap')){
+      closeAllUserMenus(null);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+</body>
+</html>

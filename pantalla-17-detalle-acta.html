@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Acta Final N.º 2026-001</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f;
+    --navy-900:#1b2a4a;
+    --navy-800:#26375c;
+    --navy-600:#4a5c82;
+    --navy-100:#e8ecf5;
+    --gold-500:#c9a24b;
+    --gold-600:#ab8437;
+    --gold-100:#f4ead2;
+    --bg:#f6f7fa;
+    --surface:#ffffff;
+    --text-900:#16213a;
+    --text-600:#5b6472;
+    --text-400:#8992a3;
+    --border:#dde2ea;
+    --error-600:#b3392c;
+    --error-100:#fbeae7;
+    --success-600:#2f7a4f;
+    --success-100:#e7f4ec;
+    --info-600:#3a5a99;
+    --info-100:#eaf0fb;
+    --warn-600:#a06a1a;
+    --warn-100:#fdf1e2;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --radius-sm:7px;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-h:64px;
+    --sidebar-w:248px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font-body);color:var(--text-900);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ============ HEADER ============ */
+  .app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;color:var(--navy-900);}
+  .hamburger:hover{background:var(--navy-100);}
+  .brand-mark{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:2px;}
+  .brand-glyph{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg, var(--navy-900), var(--navy-950));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .brand-glyph svg{width:16px;height:16px;}
+  .brand-word{font-family:var(--font-display);font-weight:600;font-size:18.5px;color:var(--navy-950);white-space:nowrap;}
+  .brand-word .accent{color:var(--gold-600);}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:9px;cursor:pointer;color:var(--navy-900);}
+  .icon-btn:hover{background:var(--navy-100);}
+  .icon-btn svg{width:19px;height:19px;}
+  .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--error-600);border:1.5px solid var(--surface);}
+  .balance-chip{display:flex;align-items:center;gap:7px;background:var(--gold-100);border:1px solid rgba(201,162,75,0.4);border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;color:var(--navy-950);}
+  .balance-chip:hover{background:#efe1bb;}
+  .balance-chip svg{width:15px;height:15px;color:var(--gold-600);}
+  .balance-chip .amount{font-size:13px;font-weight:700;}
+  .balance-chip .label{font-size:11px;color:var(--text-600);font-weight:500;}
+  .user-menu{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:4px 6px 4px 4px;border-radius:999px;}
+  .user-menu:hover{background:var(--navy-100);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;}
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;text-align:left;}
+  .user-meta .name{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .user-meta .role{font-size:11px;color:var(--text-400);}
+  @media (max-width:900px){.user-meta{display:none;} .balance-chip .label{display:none;}}
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 12px 20px;z-index:40;transition:transform .2s ease;}
+  .nav-group{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--text-600);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:var(--navy-100);color:var(--navy-900);}
+  .nav-item.active{background:var(--navy-900);color:#fff;font-weight:600;}
+  .nav-divider{height:1px;background:var(--border);margin:10px 4px;}
+  .nav-item.logout{color:var(--error-600);}
+  .nav-item.logout:hover{background:var(--error-100);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;top:var(--header-h);background:rgba(16,25,47,0.35);z-index:39;}
+
+  /* ============ MAIN LAYOUT ============ */
+  .app-body{padding-top:var(--header-h);}
+  .main{margin-left:var(--sidebar-w);padding:26px 32px 80px;max-width:1280px;}
+
+  .breadcrumb{font-size:12.5px;color:var(--text-400);margin:0 0 14px;font-weight:500;}
+  .breadcrumb a, .breadcrumb .bc-link{color:var(--text-400);text-decoration:none;cursor:pointer;background:none;border:none;font:inherit;padding:0;}
+  .breadcrumb .bc-link:hover{color:var(--navy-800);text-decoration:underline;}
+  .breadcrumb .sep{margin:0 5px;color:var(--border);}
+  .breadcrumb .current{color:var(--text-600);font-weight:600;}
+
+  /* ============ ALERTS ============ */
+  .alert-banner{display:none;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--radius-md);margin-bottom:18px;}
+  .alert-banner.show{display:flex;}
+  .alert-banner svg{width:19px;height:19px;flex-shrink:0;margin-top:1px;}
+  .alert-banner strong{display:block;font-size:13.5px;margin-bottom:2px;}
+  .alert-banner p{margin:0;font-size:12.5px;line-height:1.5;}
+  .alert-banner.warning{background:var(--warn-100);color:var(--warn-600);border:1px solid #f0d9ab;}
+  .alert-banner.error{background:var(--error-100);color:var(--error-600);border:1px solid #f3c9c2;}
+  .alert-reject-extra{margin-top:10px;background:rgba(255,255,255,0.6);border:1px solid #f3c9c2;border-radius:8px;padding:10px 12px;}
+  .alert-reject-extra .k{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;color:var(--error-600);margin:0 0 3px;}
+  .alert-reject-extra .v{font-size:12.5px;color:var(--text-900);margin:0 0 10px;}
+  .alert-banner .btn-secondary{margin-top:2px;}
+
+  /* ============ PAGE HEAD ============ */
+  .acta-header-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:20px;}
+  .acta-title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .acta-title-row h1{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--navy-950);margin:0;}
+  .acta-number{font-size:13.5px;color:var(--text-600);font-weight:600;margin:4px 0 2px;}
+  .acta-sub{font-size:13px;color:var(--text-600);margin:0;}
+
+  .badge-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:0.02em;white-space:nowrap;}
+  .badge-status svg{width:13px;height:13px;}
+
+  .acta-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+  .btn-primary{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:var(--radius-md);padding:10px 18px;cursor:pointer;white-space:nowrap;}
+  .btn-primary:hover:not(:disabled){background:var(--navy-800);}
+  .btn-primary:disabled{background:var(--navy-600);opacity:.6;cursor:not-allowed;}
+  .btn-secondary{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 16px;cursor:pointer;white-space:nowrap;}
+  .btn-secondary:hover:not(:disabled){border-color:var(--navy-800);background:var(--navy-100);}
+  .btn-secondary:disabled{opacity:.45;cursor:not-allowed;}
+  .btn-secondary.danger{color:var(--error-600);}
+  .btn-secondary.danger:hover{background:var(--error-100);border-color:var(--error-600);}
+  .btn-secondary svg, .btn-primary svg{width:15px;height:15px;flex-shrink:0;}
+  .btn-icon-only{width:38px;height:38px;padding:0;justify-content:center;}
+
+  .more-wrap{position:relative;}
+  .more-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 16px 40px -12px rgba(16,25,47,.28);min-width:210px;padding:6px;z-index:70;}
+  .more-menu.show{display:block;}
+  .more-menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;border-radius:7px;cursor:pointer;}
+  .more-menu button:hover{background:var(--navy-100);}
+  .more-menu button svg{width:16px;height:16px;flex-shrink:0;color:var(--text-600);}
+  .more-menu .empty-note{padding:10px;font-size:12px;color:var(--text-400);}
+
+  .edit-disabled-note{font-size:12px;color:var(--text-400);margin:8px 0 0;width:100%;}
+
+  /* ============ TWO COLUMN LAYOUT ============ */
+  .acta-layout{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start;}
+
+  /* ============ DOCUMENT SHEET ============ */
+  .acta-sheet-wrap{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:34px 24px;display:flex;flex-direction:column;align-items:center;}
+  .acta-sheet{background:#ffffff;border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 4px rgba(16,25,47,.04), 0 18px 40px -20px rgba(16,25,47,.25);padding:48px 46px 40px;max-width:600px;width:100%;font-family:var(--font-body);}
+  .sheet-institutional{text-align:center;padding-bottom:18px;border-bottom:2px solid var(--navy-950);margin-bottom:22px;}
+  .sheet-mark{width:48px;height:48px;border-radius:10px;background:linear-gradient(155deg,var(--navy-900),var(--navy-950));display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+  .sheet-mark svg{width:24px;height:24px;}
+  .sheet-univ{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--navy-950);letter-spacing:0.01em;margin:0;}
+  .sheet-univ-full{font-size:10.5px;color:var(--text-600);letter-spacing:0.04em;text-transform:uppercase;margin:3px 0 0;}
+
+  .sheet-doc-type{font-size:11px;font-weight:700;color:var(--gold-600);text-transform:uppercase;letter-spacing:0.09em;text-align:center;margin:0 0 6px;}
+  .sheet-doc-title{font-family:var(--font-display);font-size:23px;font-weight:600;color:var(--navy-950);text-align:center;margin:0 0 5px;}
+  .sheet-doc-number{font-size:12.5px;color:var(--text-600);text-align:center;font-weight:600;margin:0 0 24px;}
+
+  .sheet-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 22px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+  .sheet-data-item{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;border-bottom:1px dotted var(--border);padding-bottom:6px;}
+  .sheet-data-item .k{color:var(--text-600);font-weight:500;}
+  .sheet-data-item .v{color:var(--text-900);font-weight:700;text-align:right;}
+
+  .sheet-table-title{font-size:12.5px;font-weight:700;color:var(--navy-950);text-transform:uppercase;letter-spacing:0.03em;margin:0 0 10px;}
+  table.sheet-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+  .sheet-table th{font-size:10.5px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;background:var(--navy-900);padding:8px 9px;text-align:left;font-weight:700;}
+  .sheet-table th:nth-child(4), .sheet-table th:nth-child(1){text-align:center;}
+  .sheet-table td{font-size:12.5px;padding:8px 9px;border-bottom:1px solid var(--border);color:var(--text-900);}
+  .sheet-table td:first-child, .sheet-table td:nth-child(4){text-align:center;}
+  .sheet-table tbody tr:last-child td{border-bottom:1px solid var(--navy-950);}
+  .cell-badge{display:inline-flex;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:0.02em;}
+  .cell-badge.aprobado{background:var(--success-100);color:var(--success-600);}
+  .cell-badge.desaprobado{background:var(--error-100);color:var(--error-600);}
+  .cell-badge.ausente{background:var(--bg);color:var(--text-400);border:1px solid var(--border);}
+
+  .sheet-total{font-size:12.5px;font-weight:700;color:var(--navy-950);margin:0 0 2px;}
+  .sheet-summary{font-size:12px;color:var(--text-600);margin:0 0 26px;}
+
+  .sheet-obs-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-600);margin:0 0 6px;}
+  .sheet-obs-text{font-size:12.5px;color:var(--text-900);line-height:1.55;margin:0 0 30px;padding:12px 14px;background:var(--bg);border-radius:6px;border:1px solid var(--border);}
+
+  .sheet-signature{display:flex;flex-direction:column;align-items:flex-end;gap:2px;padding-top:22px;border-top:1px solid var(--border);}
+  .sig-line{width:210px;border-top:1.4px solid var(--text-900);margin-bottom:7px;}
+  .sig-name{font-size:13px;font-weight:700;color:var(--text-900);}
+  .sig-role{font-size:11.5px;color:var(--text-600);margin-bottom:8px;}
+  .sig-status{display:none;align-items:center;gap:6px;font-size:12px;font-weight:700;}
+  .sig-status.show{display:flex;}
+  .sig-status.validated{color:var(--success-600);}
+  .sig-status.pending{color:var(--text-400);}
+  .sig-status.rejected{color:var(--error-600);}
+  .sig-status svg{width:15px;height:15px;}
+  .sig-time{font-size:11px;color:var(--text-400);margin-top:2px;}
+
+  .sheet-expand-btn{display:none;margin-top:16px;}
+
+  /* ============ INFO COLUMN / PANELS ============ */
+  .info-col{display:flex;flex-direction:column;gap:16px;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border);}
+  .panel-title{font-size:14.5px;font-weight:700;color:var(--text-900);margin:0;}
+  .panel-body{padding:16px 20px;}
+
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+  .info-item{display:flex;flex-direction:column;gap:3px;}
+  .info-item.full{grid-column:1 / -1;}
+  .info-item .k{font-size:10.5px;color:var(--text-400);font-weight:700;text-transform:uppercase;letter-spacing:0.03em;}
+  .info-item .v{font-size:13.5px;color:var(--text-900);font-weight:600;}
+
+  .estado-row{display:flex;align-items:flex-start;gap:12px;}
+  .estado-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .estado-icon svg{width:19px;height:19px;}
+  .estado-title{font-size:13.5px;font-weight:700;color:var(--text-900);margin:0 0 3px;}
+  .estado-desc{font-size:12.5px;color:var(--text-600);line-height:1.5;margin:0;}
+
+  .panel-actions{display:flex;flex-direction:column;gap:8px;padding:16px 20px;}
+  .panel-actions .btn-secondary{width:100%;justify-content:center;}
+
+  .toggle-history{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--navy-800);background:none;border:none;cursor:pointer;padding:2px;}
+  .toggle-history svg{width:15px;height:15px;transition:transform .18s ease;}
+  .toggle-history.open svg{transform:rotate(180deg);}
+  .history-body{display:none;padding:6px 20px 16px;}
+  .history-body.open{display:block;}
+  .timeline-item{position:relative;padding:8px 0 8px 18px;border-left:2px solid var(--border);margin-left:5px;}
+  .timeline-item:last-child{border-left:2px solid transparent;padding-bottom:0;}
+  .timeline-item::before{content:'';position:absolute;left:-6px;top:13px;width:10px;height:10px;border-radius:50%;background:var(--navy-900);border:2px solid var(--surface);}
+  .timeline-date{font-size:10.5px;color:var(--text-400);font-weight:600;}
+  .timeline-action{font-size:13px;font-weight:700;color:var(--text-900);margin:2px 0;}
+  .timeline-user{font-size:12px;color:var(--text-600);}
+
+  /* ============ MODAL ============ */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(16,25,47,0.45);z-index:90;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--surface);border-radius:var(--radius-lg);max-width:420px;width:100%;padding:26px;box-shadow:0 30px 70px -20px rgba(16,25,47,0.4);}
+  .modal-icon{width:42px;height:42px;border-radius:11px;background:var(--gold-100);color:var(--gold-600);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .modal-icon svg{width:21px;height:21px;}
+  .modal h3{font-size:16.5px;font-weight:700;color:var(--text-900);margin:0 0 8px;}
+  .modal p{font-size:13.5px;color:var(--text-600);margin:0 0 16px;line-height:1.5;}
+  .modal-summary{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px;}
+  .modal-summary p{margin:0 0 3px;font-size:12.5px;color:var(--text-900);font-weight:700;}
+  .modal-summary span{font-size:12px;color:var(--text-600);}
+  .checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;cursor:pointer;}
+  .checkbox-row input[type=checkbox]{margin-top:2px;width:16px;height:16px;accent-color:var(--navy-900);cursor:pointer;flex-shrink:0;}
+  .checkbox-row span{font-size:13px;color:var(--text-900);line-height:1.4;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+
+  /* ============ TOAST ============ */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);display:flex;align-items:center;gap:10px;background:var(--navy-950);color:#fff;padding:13px 20px;border-radius:var(--radius-md);box-shadow:0 16px 40px -12px rgba(16,25,47,0.4);font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:100;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .toast svg{width:18px;height:18px;color:var(--success-600);flex-shrink:0;}
+
+  /* ============ MOBILE SHEET OVERLAY ============ */
+  .sheet-overlay{display:none;position:fixed;inset:0;background:rgba(16,25,47,.72);z-index:95;padding:16px;overflow-y:auto;}
+  .sheet-overlay.show{display:block;}
+  .sheet-overlay .close-overlay{position:sticky;top:0;margin:0 0 12px auto;display:flex;background:#fff;border-radius:50%;width:36px;height:36px;align-items:center;justify-content:center;border:1px solid var(--border);cursor:pointer;}
+  .sheet-overlay .close-overlay svg{width:16px;height:16px;}
+    .info-col{order:2;}
+    .acta-sheet-wrap{order:1;}
+  }
+  @media (max-width:900px){
+    :root{--sidebar-w:0px;}
+    .hamburger{display:flex;}
+    .sidebar{width:264px;transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:16px 0 40px rgba(16,25,47,0.18);}
+    .sidebar-backdrop.open{display:block;}
+    .main{margin-left:0;padding:20px 16px 100px;}
+  }
+  @media (max-width:640px){
+    .acta-title-row h1{font-size:21px;}
+    .acta-header-top{flex-direction:column;}
+    .acta-actions{width:100%;}
+    .acta-actions .btn-secondary, .acta-actions .btn-primary{flex:1;justify-content:center;}
+    .info-grid{grid-template-columns:1fr;}
+    .acta-sheet-wrap{padding:18px 10px;}
+    .acta-sheet{padding:30px 20px 26px;}
+    .sheet-data-grid{grid-template-columns:1fr;}
+    .sheet-table{display:block;overflow-x:auto;white-space:nowrap;}
+    .sheet-expand-btn{display:inline-flex;width:100%;justify-content:center;}
+  }
+  @media (max-width:430px){
+    .main{padding:16px 12px 100px;}
+  }
+
+  /* ============ PRINT ============ */
+  @media print{
+    .app-header, .sidebar, .sidebar-backdrop, .breadcrumb, .acta-header-top, .alert-banner,
+    .info-col, .more-menu, .toast, .modal-backdrop, .state-controls, .sheet-expand-btn, .sheet-overlay{display:none !important;}
+    body{background:#fff;}
+    .app-body{padding-top:0;}
+    .main{margin:0;padding:0;max-width:100%;}
+    .acta-layout{display:block;}
+    .acta-sheet-wrap{background:#fff;border:none;padding:0;}
+    .acta-sheet{box-shadow:none;border:none;max-width:100%;padding:0;}
+    @page{size:A4;margin:16mm;}
+  }
+
+.user-menu-wrap{position:relative;}
+  .user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 34px -10px rgba(16,25,47,0.28);min-width:200px;padding:6px;z-index:60;}
+  .user-dropdown.open{display:block;}
+  .user-dropdown button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;cursor:pointer;}
+  .user-dropdown button:hover{background:var(--navy-100);}
+  .user-dropdown button.logout{color:var(--error-600);}
+  .user-dropdown button.logout:hover{background:var(--error-100);}
+  .user-dropdown button svg{width:16px;height:16px;color:var(--text-600);flex-shrink:0;}
+  .user-dropdown button.logout svg{color:var(--error-600);}
+  .user-dropdown .dd-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5H17.5M2.5 10H17.5M2.5 14.5H17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="brand-mark" aria-label="UADEnet — ir a Inicio" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <span class="brand-glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/></svg></span>
+      <span class="brand-word">UADE<span class="accent">net</span></span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Notificaciones" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <button class="balance-chip" aria-label="Saldo institucional — ir a Cuenta institucional" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/></svg>
+      <span class="amount">$18.400</span>
+      <span class="label">Saldo</span>
+    </button>
+    <div class="user-menu-wrap"><button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu(this)">
+      <span class="avatar">MG</span>
+      <span class="user-meta"><span class="name">María González</span><span class="role">Docente</span></span>
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+      <div class="user-dropdown" id="userDropdown">
+        <button onclick="__uadenetGo('pantalla-27-perfil-docente')">
+          <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Mi perfil
+        </button>
+        <button onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+          Cuenta institucional
+        </button>
+        <div class="dd-divider"></div>
+        <button class="logout" onclick="uadenetLogout()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8V16.5H15V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-03-mis-cursos')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/><path d="M17.5 5.5V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Mis cursos
+    </a>
+    <a class="nav-item active" aria-current="page" onclick="__uadenetGo('pantalla-15-actas')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Actas
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-18-calendario')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Calendario académico
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Notificaciones
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-22-mis-compras')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 6L10 2.5L17 6L10 9.5L3 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8.2V12.5L10 14.5L14 12.5V8.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Mis compras
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+      Cuenta institucional
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-27-perfil-docente')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil
+    </a>
+    <a class="nav-item logout" onclick="uadenetLogout()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cerrar sesión
+    </a>
+  </div>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<div class="app-body">
+  <main class="main">
+
+    <p class="breadcrumb">
+      <button class="bc-link" onclick="__uadenetGo('pantalla-02-dashboard')">Inicio</button><span class="sep">/</span>
+      <button class="bc-link" onclick="__uadenetGo('pantalla-15-actas')">Actas</button><span class="sep">/</span>
+      <span class="current">Acta Final N.º 2026-001</span>
+    </p>
+
+    <!-- ENCABEZADO -->
+    <div class="acta-header-top">
+      <div class="acta-title-block">
+        <div class="acta-title-row">
+          <h1>Acta Final</h1>
+        </div>
+        <p class="acta-number">N.º 2026-001</p>
+        <p class="acta-sub">Desarrollo de Aplicaciones II · Comisión 123</p>
+      </div>
+
+      <div class="acta-actions">
+        <button class="btn-secondary" onclick="__uadenetGo('pantalla-15-actas')">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M12.5 4.5L6 10L12.5 15.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Volver a actas
+        </button>
+      </div>
+    </div>
+
+    <!-- LAYOUT DE DOS COLUMNAS -->
+    <div class="acta-layout">
+
+      <!-- COLUMNA PRINCIPAL: VISTA PREVIA DEL DOCUMENTO -->
+      <div class="acta-sheet-wrap">
+        <article class="acta-sheet" id="actaSheet" aria-label="Vista previa del acta académica">
+          <div class="sheet-institutional">
+            <div class="sheet-mark">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.3" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1" stroke-linejoin="round" opacity="0.8"/></svg>
+            </div>
+            <p class="sheet-univ">UADE</p>
+            <p class="sheet-univ-full">Universidad Argentina de la Empresa</p>
+          </div>
+
+          <p class="sheet-doc-type">Acta académica</p>
+          <h2 class="sheet-doc-title">ACTA FINAL</h2>
+          <p class="sheet-doc-number">N.º 2026-001</p>
+
+          <div class="sheet-data-grid">
+            <div class="sheet-data-item"><span class="k">Curso</span><span class="v">Desarrollo de Aplicaciones II</span></div>
+            <div class="sheet-data-item"><span class="k">Comisión</span><span class="v">123</span></div>
+            <div class="sheet-data-item"><span class="k">Período</span><span class="v">2° Cuatrimestre 2026</span></div>
+            <div class="sheet-data-item"><span class="k">Fecha</span><span class="v">25 de agosto de 2026</span></div>
+            <div class="sheet-data-item"><span class="k">Docente</span><span class="v">María González</span></div>
+          </div>
+
+          <p class="sheet-table-title">Resultados académicos</p>
+          <table class="sheet-table">
+            <thead>
+              <tr><th>N.º</th><th>Estudiante</th><th>Legajo</th><th>Resultado</th><th>Condición</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Juan Pérez</td><td>123456</td><td>8</td><td><span class="cell-badge aprobado">Aprobado</span></td></tr>
+              <tr><td>2</td><td>María Gómez</td><td>123457</td><td>7</td><td><span class="cell-badge aprobado">Aprobado</span></td></tr>
+              <tr><td>3</td><td>Lucas Fernández</td><td>123458</td><td>5</td><td><span class="cell-badge desaprobado">Desaprobado</span></td></tr>
+              <tr><td>4</td><td>Ana Rodríguez</td><td>123459</td><td>—</td><td><span class="cell-badge ausente">Ausente</span></td></tr>
+            </tbody>
+          </table>
+          <p class="sheet-total">Total de estudiantes: 32</p>
+          <p class="sheet-summary">20 aprobados · 8 desaprobados · 4 ausentes</p>
+
+          <p class="sheet-obs-title">Observaciones</p>
+          <p class="sheet-obs-text">Acta correspondiente al examen final del segundo cuatrimestre de 2026.</p>
+
+          <div class="sheet-signature">
+            <div class="sig-line"></div>
+            <p class="sig-name">María González</p>
+            <p class="sig-role">Docente responsable</p>
+            <span class="sig-time" id="sigTime">25/08/2026 · 19:42</span>
+          </div>
+        </article>
+
+        <button class="btn-secondary sheet-expand-btn" onclick="openOverlay()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M3 8V3H8M12 3H17V8M17 12V17H12M8 17H3V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Ampliar documento
+        </button>
+      </div>
+
+      <!-- COLUMNA SECUNDARIA: INFORMACIÓN Y ACCIONES -->
+      <div class="info-col">
+
+        <div class="panel">
+          <div class="panel-head"><h2 class="panel-title">Información del acta</h2></div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-item"><span class="k">Número</span><span class="v">2026-001</span></div>
+              <div class="info-item"><span class="k">Tipo</span><span class="v">Acta final</span></div>
+              <div class="info-item full"><span class="k">Curso</span><span class="v">Desarrollo de Aplicaciones II</span></div>
+              <div class="info-item"><span class="k">Comisión</span><span class="v">123</span></div>
+              <div class="info-item"><span class="k">Período</span><span class="v">2° Cuatrimestre 2026</span></div>
+              <div class="info-item"><span class="k">Fecha</span><span class="v">25/08/2026</span></div>
+              <div class="info-item full"><span class="k">Docente responsable</span><span class="v">María González</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2 class="panel-title">Acciones</h2></div>
+          <div class="panel-actions">
+            <button class="btn-secondary" onclick="downloadPdf()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 3V13M10 13L6 9M10 13L14 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15.5V16C4 16.8 4.7 17.5 5.5 17.5H14.5C15.3 17.5 16 16.8 16 16V15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Descargar PDF
+            </button>
+            <button class="btn-secondary" onclick="window.print()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M6 7V3.5H14V7" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="3.5" y="7" width="13" height="7" rx="1.3" stroke="currentColor" stroke-width="1.4"/><rect x="6" y="11" width="8" height="5.5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              Imprimir
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastMsg">Acción realizada correctamente.</span>
+</div>
+
+<!-- ============ OVERLAY DOCUMENTO (mobile) ============ -->
+<div class="sheet-overlay" id="sheetOverlay">
+  <button class="close-overlay" aria-label="Cerrar vista ampliada" onclick="closeOverlay()">
+    <svg viewBox="0 0 20 20" fill="none"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+  <div id="overlaySlot"></div>
+</div>
+
+<script>
+  /* ---------- SIDEBAR (mobile) ---------- */
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  function toggleSidebar(open){
+    sidebar.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    hamburgerBtn.setAttribute('aria-expanded', String(open));
+  }
+  hamburgerBtn.addEventListener('click', () => toggleSidebar(!sidebar.classList.contains('open')));
+  backdrop.addEventListener('click', () => toggleSidebar(false));
+
+  /* ---------- ICONS ---------- */
+  const ICONS = {
+    clock:'<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.4"/><path d="M10 6V10L12.5 11.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    eye:'<svg viewBox="0 0 20 20" fill="none"><path d="M1.5 10C3 6.5 6 4.5 10 4.5C14 4.5 17 6.5 18.5 10C17 13.5 14 15.5 10 15.5C6 15.5 3 13.5 1.5 10Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="10" r="2.4" stroke="currentColor" stroke-width="1.4"/></svg>',
+    check:'<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    lock:'<svg viewBox="0 0 20 20" fill="none"><rect x="4.5" y="8.5" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 8.5V6C6.5 4.1 8 2.5 10 2.5C12 2.5 13.5 4.1 13.5 6V8.5" stroke="currentColor" stroke-width="1.4"/></svg>',
+    alert:'<svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    send:'<svg viewBox="0 0 20 20" fill="none"><path d="M17.5 2.5L2.5 8.5L9 11L11.5 17.5L17.5 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
+  };
+
+
+  function toggleMoreMenu(){ moreMenu.classList.toggle('show'); }
+  function closeMoreMenu(){ moreMenu.classList.remove('show'); }
+  document.addEventListener('click', (e) => {
+    if(!e.target.closest('.more-wrap')) closeMoreMenu();
+  });
+
+  function toggleHistory(){
+    const body = document.getElementById('historyBody');
+    const btn = document.getElementById('toggleHistory');
+    const open = body.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.childNodes[0].textContent = open ? 'Ocultar historial ' : 'Ver historial ';
+  }
+
+  let toastTimer;
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  function downloadPdf(){
+    showToast('Generando PDF...');
+    setTimeout(() => showToast('PDF generado correctamente.'), 1200);
+  }
+
+  function openOverlay(){
+    document.getElementById('overlaySlot').innerHTML = document.getElementById('actaSheet').outerHTML;
+    document.getElementById('sheetOverlay').classList.add('show');
+  }
+  function closeOverlay(){
+    document.getElementById('sheetOverlay').classList.remove('show');
+    document.getElementById('overlaySlot').innerHTML = '';
+  }
+
+</script>
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  function closeAllUserMenus(except){
+    document.querySelectorAll('.user-dropdown.open').forEach(function(menu){
+      if(menu !== except) menu.classList.remove('open');
+    });
+    document.querySelectorAll('.user-menu.active-menu').forEach(function(btn){
+      if(!except || btn.parentElement.querySelector('.user-dropdown') !== except){
+        btn.classList.remove('active-menu');
+      }
+    });
+  }
+
+  window.toggleUserMenu = function(button){
+    var wrap = button.closest('.user-menu-wrap');
+    var menu = wrap ? wrap.querySelector('.user-dropdown') : null;
+    if(!menu) return;
+    var willOpen = !menu.classList.contains('open');
+    closeAllUserMenus(menu);
+    menu.classList.toggle('open', willOpen);
+    button.classList.toggle('active-menu', willOpen);
+  };
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.user-menu-wrap')){
+      closeAllUserMenus(null);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+
+<script>
+(function(){
+  const POOL=['Juan Pérez','María López','Carlos Fernández','Ana Núñez','Pablo Suárez','Lucía Ramírez','Julián Martínez','Sofía Torres','Diego Romero','Valentina Díaz','Martín Acosta','Camila Ríos','Tomás Medina','Julieta Sosa','Nicolás Vera','Paula Castro','Agustín Molina','Florencia Silva','Mateo Herrera','Carolina Paz','Federico Rossi','Micaela Díaz','Gonzalo Suárez','Bianca Núñez','Franco López','Santiago Gómez','Emilia Torres','Bruno Álvarez','Renata Pérez','Facundo Ruiz','Milagros Castro','Lucas Benítez','Victoria Acuña','Ramiro Ortiz','Abril Navarro','Thiago Flores','Ignacio Romero','Martina Vidal','Joaquín Arias','Candela Méndez','Valentín Costa','Malena Ibarra','Nahir Peralta','Simón Cabrera','Clara Funes','Delfina Correa','Bautista León','Agustina Pereyra','Sebastián Molina','Carla Giménez'];
+  let acta=null; try{acta=JSON.parse(sessionStorage.getItem('uadenetSelectedActa')||'null');}catch(e){}
+  if(!acta)return;
+  function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+  const course=acta.course || {name:acta.curso||'Curso',com:acta.comision||'',period:acta.periodo||'',students:0};
+  const fecha=acta.fecha || new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const numero=acta.numero||'2026-001';
+  const students=Array.isArray(acta.students)?acta.students:[];
+  document.querySelector('.breadcrumb .current').textContent=`Acta Final N.º ${numero}`;
+  document.querySelectorAll('.acta-title-row h1').forEach(e=>e.textContent='Acta Final');
+  document.querySelectorAll('.acta-number').forEach(e=>e.textContent='N.º '+numero);
+  document.querySelectorAll('.acta-sub').forEach(e=>e.textContent=`${course.name} · Comisión ${course.com}`);
+  document.querySelector('.sheet-doc-number').textContent='N.º '+numero;
+  const grid=document.querySelector('.sheet-data-grid');
+  if(grid){
+    const vals=[course.name,course.com,course.period,fecha,'María González'];
+    grid.querySelectorAll('.sheet-data-item').forEach((item,i)=>{const v=item.querySelector('.v'); if(v&&vals[i]!==undefined)v.textContent=vals[i];});
+  }
+  const info=document.querySelector('.info-col .panel .info-grid');
+  if(info){
+    const vals=[numero,'Acta final',course.name,course.com,course.period,fecha,'María González'];
+    info.querySelectorAll('.info-item').forEach((item,i)=>{const v=item.querySelector('.v'); if(v&&vals[i]!==undefined)v.textContent=vals[i];});
+  }
+  const tbody=document.querySelector('.sheet-table tbody');
+  const rows=students.map((st,i)=>{
+    const r=st.resultado||{}; const result=r.average==null?'—':String(r.average).replace('.',',');
+    const cls=r.tipo==='aprobado'?'aprobado':r.tipo==='desaprobado'?'desaprobado':'ausente';
+    return `<tr><td>${i+1}</td><td>${esc(st.nombre)}</td><td>${esc(st.legajo)}</td><td>${result}</td><td><span class="cell-badge ${cls}">${esc(r.texto||'Sin registrar')}</span></td></tr>`;
+  });
+  if(tbody)tbody.innerHTML=rows.join('');
+  const approved=students.filter(s=>s.resultado?.tipo==='aprobado').length;
+  const failed=students.filter(s=>s.resultado?.tipo==='desaprobado').length;
+  const unreg=students.length-approved-failed;
+  document.querySelector('.sheet-total').textContent=`Total de estudiantes: ${students.length}`;
+  document.querySelector('.sheet-summary').textContent=`${approved} aprobados · ${failed} desaprobados · ${unreg} sin registrar`;
+  document.querySelector('.sheet-obs-text').textContent=acta.observaciones||'Sin observaciones.';
+  document.querySelector('.sig-name').textContent='María González';
+  document.querySelector('.sig-role').textContent='Docente responsable';
+  document.getElementById('sigTime').textContent=(acta.fechaCreacionTexto||fecha);
+})();
+</script>
+
+</body>
+</html>

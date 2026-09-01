@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UADEnet — Portal del Docente | Actas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#10192f; --navy-900:#1b2a4a; --navy-800:#26375c; --navy-600:#4a5c82; --navy-100:#e8ecf5;
+    --gold-500:#c9a24b; --gold-600:#ab8437; --gold-100:#f4ead2;
+    --bg:#f6f7fa; --surface:#ffffff;
+    --text-900:#16213a; --text-600:#5b6472; --text-400:#8992a3;
+    --border:#dde2ea;
+    --error-600:#b3392c; --error-100:#fbeae7;
+    --success-600:#2f7a4f; --success-100:#e7f4ec;
+    --info-600:#3a5a99; --info-100:#eaf0fb;
+    --warn-600:#a06a1a; --warn-100:#fdf1e2;
+    --radius-lg:16px; --radius-md:10px; --radius-sm:7px;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-h:64px; --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font-body);color:var(--text-900);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ============ HEADER (shared) ============ */
+  .app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;border-radius:8px;color:var(--navy-900);}
+  .hamburger:hover{background:var(--navy-100);}
+  .brand-mark{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:2px;}
+  .brand-glyph{width:30px;height:30px;border-radius:7px;background:linear-gradient(155deg, var(--navy-900), var(--navy-950));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .brand-glyph svg{width:16px;height:16px;}
+  .brand-word{font-family:var(--font-display);font-weight:600;font-size:18.5px;color:var(--navy-950);white-space:nowrap;}
+  .brand-word .accent{color:var(--gold-600);}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:9px;cursor:pointer;color:var(--navy-900);}
+  .icon-btn:hover{background:var(--navy-100);}
+  .icon-btn svg{width:19px;height:19px;}
+  .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--error-600);border:1.5px solid var(--surface);}
+  .balance-chip{display:flex;align-items:center;gap:7px;background:var(--gold-100);border:1px solid rgba(201,162,75,0.4);border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;color:var(--navy-950);}
+  .balance-chip:hover{background:#efe1bb;}
+  .balance-chip svg{width:15px;height:15px;color:var(--gold-600);}
+  .balance-chip .amount{font-size:13px;font-weight:700;}
+  .balance-chip .label{font-size:11px;color:var(--text-600);font-weight:500;}
+  .user-menu{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:4px 6px 4px 4px;border-radius:999px;}
+  .user-menu:hover{background:var(--navy-100);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;}
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;text-align:left;}
+  .user-meta .name{font-size:12.5px;font-weight:600;color:var(--text-900);}
+  .user-meta .role{font-size:11px;color:var(--text-400);}
+  @media (max-width:900px){.user-meta{display:none;} .balance-chip .label{display:none;}}
+
+  /* ============ SIDEBAR (shared) ============ */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 12px 20px;z-index:40;transition:transform .2s ease;}
+  .nav-group{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--text-600);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:var(--navy-100);color:var(--navy-900);}
+  .nav-item.active{background:var(--navy-900);color:#fff;font-weight:600;}
+  .nav-divider{height:1px;background:var(--border);margin:10px 4px;}
+  .nav-item.logout{color:var(--error-600);}
+  .nav-item.logout:hover{background:var(--error-100);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;top:var(--header-h);background:rgba(16,25,47,0.35);z-index:39;}
+
+  /* ============ MAIN LAYOUT ============ */
+  .app-body{padding-top:var(--header-h);}
+  .main{margin-left:var(--sidebar-w);padding:28px 32px 80px;max-width:1280px;}
+
+  .breadcrumb{font-size:12.5px;color:var(--text-400);margin:0 0 6px;font-weight:500;}
+  .breadcrumb a, .breadcrumb button{color:var(--text-400);text-decoration:none;cursor:pointer;background:none;border:none;font:inherit;padding:0;}
+  .breadcrumb a:hover, .breadcrumb button:hover{color:var(--navy-800);text-decoration:underline;}
+  .breadcrumb .sep{margin:0 5px;}
+  .breadcrumb .current{color:var(--text-600);}
+
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .page-title{font-family:var(--font-display);font-size:27px;font-weight:600;color:var(--navy-950);margin:0 0 6px;}
+  .page-desc{font-size:14px;color:var(--text-600);margin:0;}
+
+  .btn-primary{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#fff;background:var(--navy-900);border:none;border-radius:var(--radius-md);padding:11px 18px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .btn-primary:hover:not(:disabled){background:var(--navy-800);}
+  .btn-primary:disabled{background:var(--navy-600);opacity:.6;cursor:not-allowed;}
+  .btn-primary svg{width:15px;height:15px;}
+  .btn-secondary{font-size:13.5px;font-weight:600;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 16px;cursor:pointer;}
+  .btn-secondary:hover{border-color:var(--navy-800);background:var(--navy-100);}
+  .btn-danger{font-size:13.5px;font-weight:600;color:#fff;background:var(--error-600);border:none;border-radius:var(--radius-md);padding:11px 18px;cursor:pointer;}
+  .btn-danger:hover{background:#96301f;}
+  .btn-ghost-link{font-size:12.5px;font-weight:600;color:var(--navy-800);background:none;border:none;cursor:pointer;white-space:nowrap;}
+  .btn-ghost-link:hover{text-decoration:underline;}
+
+  /* ============ COURSE CONTEXT BAR ============ */
+  .course-context{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--navy-100);border:1px solid rgba(27,42,74,0.12);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:22px;flex-wrap:wrap;}
+  .course-context-info{display:flex;align-items:center;gap:11px;}
+  .course-context-icon{width:34px;height:34px;border-radius:9px;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .course-context-icon svg{width:17px;height:17px;}
+  .course-context-name{font-size:13.5px;font-weight:700;color:var(--navy-950);}
+  .course-context-meta{font-size:12px;color:var(--text-600);margin-top:1px;}
+
+  /* ============ SUMMARY CARDS ============ */
+  .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+  .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:15px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:13px;transition:border-color .15s ease, box-shadow .15s ease, transform .1s ease;}
+  .summary-card:hover{border-color:var(--navy-600);box-shadow:0 8px 20px -12px rgba(16,25,47,0.25);transform:translateY(-1px);}
+  .summary-card.active-filter{border-color:var(--navy-900);box-shadow:0 0 0 2px rgba(27,42,74,0.14);}
+  .summary-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .summary-icon svg{width:18px;height:18px;}
+  .summary-icon.navy{background:var(--navy-100);color:var(--navy-900);}
+  .summary-icon.warn{background:var(--warn-100);color:var(--warn-600);}
+  .summary-icon.info{background:var(--info-100);color:var(--info-600);}
+  .summary-icon.success{background:var(--success-100);color:var(--success-600);}
+  .summary-value{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--navy-950);line-height:1.1;}
+  .summary-label{font-size:12px;color:var(--text-600);font-weight:500;margin-top:2px;}
+
+  /* ============ TOOLBAR ============ */
+  .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .search-field{position:relative;flex:1;min-width:220px;max-width:360px;}
+  .search-field svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-400);}
+  .search-field input{width:100%;font-family:var(--font-body);font-size:13.5px;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 13px 10px 36px;outline:none;transition:border-color .15s ease, box-shadow .15s ease;}
+  .search-field input::placeholder{color:var(--text-400);}
+  .search-field input:hover{border-color:var(--navy-600);}
+  .search-field input:focus{border-color:var(--navy-800);box-shadow:0 0 0 3.5px rgba(27,42,74,0.12);}
+  .filters-toggle{display:none;}
+
+  .filters-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  select.filter-select{font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:9px 32px 9px 12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5 7.5L10 12.5L15 7.5' stroke='%235b6472' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 9px center;transition:border-color .15s ease;}
+  select.filter-select:hover{border-color:var(--navy-600);}
+  select.filter-select:focus{border-color:var(--navy-800);box-shadow:0 0 0 3.5px rgba(27,42,74,0.12);}
+  .clear-filters{display:none;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--error-600);background:none;border:none;cursor:pointer;}
+  .clear-filters.show{display:inline-flex;}
+  .clear-filters:hover{text-decoration:underline;}
+  .clear-filters svg{width:13px;height:13px;}
+
+  /* ============ TABLE PANEL ============ */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+  .panel-title{font-size:15px;font-weight:700;color:var(--text-900);margin:0;}
+  .results-count{font-size:12.5px;color:var(--text-400);font-weight:500;}
+
+  table.actas-table{width:100%;border-collapse:collapse;}
+  .actas-table thead th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-400);padding:11px 16px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .actas-table thead th.sortable{cursor:pointer;user-select:none;}
+  .actas-table thead th.sortable:hover{color:var(--navy-800);}
+  .sort-ind{display:inline-block;width:10px;height:10px;margin-left:3px;vertical-align:-1px;opacity:0;}
+  .actas-table thead th.sort-active .sort-ind{opacity:1;}
+  .actas-table thead th.sort-desc .sort-ind{transform:rotate(180deg);}
+  .actas-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s ease;}
+  .actas-table tbody tr:last-child{border-bottom:none;}
+  .actas-table tbody tr:hover{background:var(--bg);}
+  .actas-table td{padding:14px 16px;font-size:13.5px;color:var(--text-900);vertical-align:middle;}
+
+  .acta-name-btn{background:none;border:none;padding:0;cursor:pointer;text-align:left;font:inherit;}
+  .acta-name{font-size:13.5px;font-weight:700;color:var(--navy-900);}
+  .acta-name-btn:hover .acta-name{text-decoration:underline;}
+  .acta-number{font-size:12px;color:var(--text-400);margin-top:2px;}
+
+  .course-cell-name{font-weight:600;font-size:13px;}
+  .course-cell-meta{font-size:12px;color:var(--text-400);margin-top:2px;}
+
+  .type-badge{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;color:var(--text-600);background:var(--bg);border:1px solid var(--border);padding:3px 10px;border-radius:999px;}
+
+  .students-cell{font-size:13px;}
+  .students-cell.incomplete{color:var(--warn-600);font-weight:600;}
+
+
+  /* row actions menu */
+  .row-actions{position:relative;}
+  .kebab-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:8px;cursor:pointer;color:var(--text-600);}
+  .kebab-btn:hover{background:var(--navy-100);color:var(--navy-900);}
+  .kebab-btn svg{width:17px;height:17px;}
+  .row-menu{display:none;position:absolute;right:0;top:38px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 16px 36px -12px rgba(16,25,47,0.28);min-width:190px;padding:6px;z-index:30;}
+  .row-menu.open{display:block;}
+  .row-menu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font-size:13px;font-weight:500;color:var(--text-900);background:none;border:none;border-radius:8px;padding:8px 10px;cursor:pointer;}
+  .row-menu button:hover{background:var(--navy-100);}
+  .row-menu button.danger{color:var(--error-600);}
+  .row-menu button.danger:hover{background:var(--error-100);}
+  .row-menu button svg{width:15px;height:15px;flex-shrink:0;color:var(--text-400);}
+  .row-menu button.danger svg{color:var(--error-600);}
+  .row-menu .menu-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  /* mobile card view of a row */
+  .mobile-view-btn{display:none;}
+
+  /* ============ PAGINATION ============ */
+  .pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+  .pagination-info{font-size:12.5px;color:var(--text-400);}
+  .pagination-controls{display:flex;align-items:center;gap:4px;}
+  .page-btn{min-width:32px;height:32px;padding:0 8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text-600);background:none;border:1.5px solid transparent;border-radius:8px;cursor:pointer;}
+  .page-btn:hover:not(:disabled){background:var(--navy-100);color:var(--navy-900);}
+  .page-btn.active{background:var(--navy-900);color:#fff;}
+  .page-btn:disabled{color:var(--text-400);cursor:not-allowed;}
+  .pagination-mobile{display:none;font-size:13px;color:var(--text-600);font-weight:500;}
+
+  /* ============ EMPTY / ERROR / SKELETON ============ */
+  .state-block{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;gap:12px;}
+  .state-block .state-icon{width:52px;height:52px;border-radius:14px;background:var(--navy-100);color:var(--navy-900);display:flex;align-items:center;justify-content:center;}
+  .state-block.error .state-icon{background:var(--error-100);color:var(--error-600);}
+  .state-block .state-icon svg{width:24px;height:24px;}
+  .state-block h3{font-size:15.5px;font-weight:700;color:var(--text-900);margin:0;}
+  .state-block p{font-size:13px;color:var(--text-600);margin:0;max-width:320px;line-height:1.5;}
+
+  .skel{background:linear-gradient(90deg,#eceef2 25%,#f4f5f8 37%,#eceef2 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;}
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+  .skel-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid var(--border);}
+
+  /* ============ TOAST ============ */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);display:flex;align-items:center;gap:10px;background:var(--navy-950);color:#fff;padding:13px 20px;border-radius:var(--radius-md);box-shadow:0 16px 40px -12px rgba(16,25,47,0.4);font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:100;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .toast .toast-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .toast .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ============ MODAL ============ */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(16,25,47,0.45);z-index:90;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--surface);border-radius:var(--radius-lg);max-width:420px;width:100%;padding:26px;box-shadow:0 30px 70px -20px rgba(16,25,47,0.4);}
+  .modal-icon{width:42px;height:42px;border-radius:11px;background:var(--gold-100);color:var(--gold-600);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .modal-icon svg{width:21px;height:21px;}
+  .modal h3{font-size:16.5px;font-weight:700;color:var(--text-900);margin:0 0 8px;}
+  .modal p{font-size:13.5px;color:var(--text-600);margin:0 0 20px;line-height:1.5;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+
+  /* state demo controls (review only) */
+  .state-controls{position:fixed;bottom:14px;left:calc(50% + var(--sidebar-w)/2);transform:translateX(-50%);z-index:60;display:flex;gap:6px;background:rgba(16,25,47,0.94);padding:8px;border-radius:10px;flex-wrap:wrap;justify-content:center;max-width:82vw;}
+  .state-controls button{font-size:11.5px;font-weight:600;color:#e8ecf5;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;cursor:pointer;}
+  .state-controls button:hover{background:rgba(255,255,255,0.18);}
+  .state-controls span{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(232,236,245,0.55);align-self:center;padding-right:2px;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    .summary-grid{grid-template-columns:repeat(2,1fr);}
+    .col-periodo, .col-estudiantes{display:none;}
+  }
+  @media (max-width:900px){
+    :root{--sidebar-w:0px;}
+    .hamburger{display:flex;}
+    .sidebar{width:264px;transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:16px 0 40px rgba(16,25,47,0.18);}
+    .sidebar-backdrop.open{display:block;}
+    .main{margin-left:0;padding:20px 16px 100px;}
+    .state-controls{left:50%;max-width:94vw;bottom:10px;}
+  }
+  @media (max-width:760px){
+    .page-title{font-size:22px;}
+    .page-head .btn-primary{width:100%;justify-content:center;}
+    .search-field{max-width:none;}
+    .filters-row{display:none;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-top:2px;}
+    .filters-row.open{display:flex;flex-direction:column;align-items:stretch;}
+    .filters-row select.filter-select{width:100%;}
+    .filters-toggle{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--text-900);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;cursor:pointer;}
+    .filters-toggle svg{width:15px;height:15px;}
+    .filters-toggle.active{border-color:var(--navy-900);color:var(--navy-900);}
+
+    /* table -> stacked cards */
+    .actas-table thead{display:none;}
+    .actas-table, .actas-table tbody, .actas-table tr, .actas-table td{display:block;width:100%;}
+    .actas-table tbody tr{border:1px solid var(--border);border-radius:var(--radius-md);margin:12px;padding:14px;position:relative;}
+    .actas-table td{padding:3px 0;border:none;}
+    .col-acta{padding-right:40px !important;}
+    .col-curso{margin-top:10px;padding-top:10px !important;border-top:1px solid var(--border) !important;}
+    .col-tipo{display:inline-block !important;margin-top:8px;margin-right:8px;}
+    .col-fecha, .col-estudiantes-mobile{font-size:12.5px;color:var(--text-600);display:flex !important;align-items:center;gap:6px;margin-top:6px;}
+    .col-fecha svg, .col-estudiantes-mobile svg{width:13px;height:13px;color:var(--text-400);}
+    .col-periodo-mobile{font-size:12.5px;color:var(--text-600);margin-top:2px;}
+    .col-estado{margin-top:10px;}
+    .col-acciones{position:absolute;top:12px;right:12px;padding:0 !important;}
+    .mobile-view-btn{display:block;width:100%;margin-top:12px;text-align:center;}
+  }
+  @media (max-width:430px){
+    .main{padding:16px 12px 100px;}
+    .summary-grid{grid-template-columns:1fr 1fr;gap:10px;}
+    .summary-card{padding:12px;}
+    .toolbar{gap:8px;}
+  }
+
+
+/* Ajuste global de selectores: flechas compactas, centradas y proporcionadas */
+select,
+.filter-select,
+.filter-select-full,
+.sort-select,
+.estado-select,
+.field select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 11px center !important;
+  background-size: 13px 13px !important;
+  padding-right: 34px !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12L14.5 7.5' stroke='%235b6472' stroke-width='1.45' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+}
+
+/* En selectores compactos, mantener la flecha todavía más cerca del borde */
+.filters-panel select,
+select.filter-select,
+select.filter-select-full,
+select.sort-select,
+select.estado-select {
+  background-position: right 10px center !important;
+  background-size: 12px 12px !important;
+  padding-right: 32px !important;
+}
+
+
+.user-menu-wrap{position:relative;}
+  .user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 34px -10px rgba(16,25,47,0.28);min-width:200px;padding:6px;z-index:60;}
+  .user-dropdown.open{display:block;}
+  .user-dropdown button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-900);background:none;border:none;cursor:pointer;}
+  .user-dropdown button:hover{background:var(--navy-100);}
+  .user-dropdown button.logout{color:var(--error-600);}
+  .user-dropdown button.logout:hover{background:var(--error-100);}
+  .user-dropdown button svg{width:16px;height:16px;color:var(--text-600);flex-shrink:0;}
+  .user-dropdown button.logout svg{color:var(--error-600);}
+  .user-dropdown .dd-divider{height:1px;background:var(--border);margin:5px 4px;}
+
+  
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5H17.5M2.5 10H17.5M2.5 14.5H17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="brand-mark" aria-label="UADEnet — ir a Inicio" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <span class="brand-glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="#f4ead2" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 3V21M3 8L12 13L21 8M3 16L12 11" stroke="#f4ead2" stroke-width="1.1" stroke-linejoin="round" opacity="0.8"/></svg></span>
+      <span class="brand-word">UADE<span class="accent">net</span></span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Notificaciones" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <button class="balance-chip" aria-label="Saldo institucional — ir a Cuenta institucional" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/></svg>
+      <span class="amount">$18.400</span><span class="label">Saldo</span>
+    </button>
+    <div class="user-menu-wrap"><button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu(this)">
+      <span class="avatar">MG</span>
+      <span class="user-meta"><span class="name">Mariana Gómez</span><span class="role">Docente</span></span>
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+      <div class="user-dropdown" id="userDropdown">
+        <button onclick="__uadenetGo('pantalla-27-perfil-docente')">
+          <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Mi perfil
+        </button>
+        <button onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+          Cuenta institucional
+        </button>
+        <div class="dd-divider"></div>
+        <button class="logout" onclick="uadenetLogout()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-02-dashboard')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8V16.5H15V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-03-mis-cursos')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 2L17.5 5.5L10 9L2.5 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 7.2V12C5.5 13.4 7.5 14.5 10 14.5C12.5 14.5 14.5 13.4 14.5 12V7.2" stroke="currentColor" stroke-width="1.4"/><path d="M17.5 5.5V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Mis cursos
+    </a>
+    <a class="nav-item active" aria-current="page" onclick="__uadenetGo('pantalla-15-actas')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Actas
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-18-calendario')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Calendario académico
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-20-notificaciones')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5C7.5 2.5 5.5 4.5 5.5 7V10L4 13.5H16L14.5 10V7C14.5 4.5 12.5 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 16.5C8.3 17.3 9.1 17.8 10 17.8C10.9 17.8 11.7 17.3 12 16.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Notificaciones
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-22-mis-compras')">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 6L10 2.5L17 6L10 9.5L3 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8.2V12.5L10 14.5L14 12.5V8.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Mis compras
+    </a>
+    <a class="nav-item" onclick="__uadenetGo('pantalla-25-cuenta-institucional')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 8.5H18" stroke="currentColor" stroke-width="1.4"/></svg>
+      Cuenta institucional
+    </a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <a class="nav-item" onclick="__uadenetGo('pantalla-27-perfil-docente')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 17C4 13.7 6.7 11.5 10 11.5C13.3 11.5 16 13.7 16 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil
+    </a>
+    <a class="nav-item logout" onclick="uadenetLogout()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M8 17.5H4.5C3.7 17.5 3 16.8 3 16V4C3 3.2 3.7 2.5 4.5 2.5H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14L17 10L13 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 10H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cerrar sesión
+    </a>
+  </div>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<div class="app-body">
+  <main class="main">
+
+    <p class="breadcrumb">
+      <button onclick="__uadenetGo('pantalla-02-dashboard')">Inicio</button><span class="sep">/</span>
+      <span class="current">Actas</span>
+    </p>
+
+    <div class="tabs" aria-label="Navegación del curso" style="display:none">
+<button class="tab-item" onclick="__uadenetGo('pantalla-05-detalle-curso')"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 9V14M10 6.5V6.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Información general</button>
+<button class="tab-item" onclick="__uadenetGo('pantalla-06-estudiantes')"><svg viewBox="0 0 20 20" fill="none"><path d="M3 16V14.5C3 12.6 5.2 11 8 11C10.8 11 13 12.6 13 14.5V16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/></svg> Estudiantes</button>
+<button class="tab-item" onclick="__uadenetGo('pantalla-07-gestion-asistencia')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 8H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Asistencia</button>
+<button class="tab-item" onclick="__uadenetGo('pantalla-09-calificaciones')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 10.5L9 13L13.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Calificaciones</button>
+<button class="tab-item" onclick="__uadenetGo('pantalla-11-examenes')"><svg viewBox="0 0 20 20" fill="none"><path d="M6 2.5V5M14 2.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/></svg> Exámenes</button>
+<button class="tab-item active"><svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Actas</button>
+</div>
+<div class="page-head">
+      <div>
+        <h1 class="page-title">Actas</h1>
+        <p class="page-desc">Consultá y generá las actas académicas de tus cursos.</p>
+      </div>
+      <button class="btn-primary" onclick="__uadenetGo('pantalla-16-generar-acta')">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Nueva acta
+      </button>
+    </div>
+
+    <!-- SUMMARY -->
+  
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-field">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="searchInput" placeholder="Buscar acta..." oninput="renderTable()">
+      </div>
+      <button class="filters-toggle" id="filtersToggle" onclick="toggleFilters()">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M3 5H17M6 10H14M8.5 15H11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Filtros
+      </button>
+    </div>
+
+    <div class="filters-row" id="filtersRow">
+      <select class="filter-select" id="filterPeriodo" onchange="renderTable()">
+        <option value="">Todos los períodos</option>
+        <option value="1° Cuatrimestre 2026">1° Cuatrimestre 2026</option>
+        <option value="2° Cuatrimestre 2026">2° Cuatrimestre 2026</option>
+      </select>
+      <button class="clear-filters" id="clearFiltersBtn" onclick="clearFilters()">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Limpiar filtros
+      </button>
+    </div>
+
+    <!-- TABLE PANEL -->
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">Listado de actas</h2>
+        <span class="results-count" id="resultsCount"></span>
+      </div>
+
+      <table class="actas-table" id="actasTable">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="setSort('numero')" data-col="numero">Acta <svg class="sort-ind" viewBox="0 0 20 20" fill="none"><path d="M10 4V16M10 16L5.5 11.5M10 16L14.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></th>
+            <th class="sortable" onclick="setSort('curso')" data-col="curso">Curso <svg class="sort-ind" viewBox="0 0 20 20" fill="none"><path d="M10 4V16M10 16L5.5 11.5M10 16L14.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></th>
+            <th class="col-periodo">Período</th>
+            <th class="sortable" onclick="setSort('fecha')" data-col="fecha">Fecha <svg class="sort-ind" viewBox="0 0 20 20" fill="none"><path d="M10 4V16M10 16L5.5 11.5M10 16L14.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="actasBody"></tbody>
+      </table>
+
+      <div class="pagination" id="paginationBar">
+        <span class="pagination-info" id="paginationInfo">1–8 de 8 actas</span>
+        <div class="pagination-controls">
+          <button class="page-btn" id="prevPageBtn" disabled aria-label="Página anterior">‹ Anterior</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" id="nextPageBtn" disabled aria-label="Página siguiente">Siguiente ›</button>
+        </div>
+        <span class="pagination-mobile">Anterior | Página 1 de 1 | Siguiente</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon"></span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+  /* ---------- sidebar (mobile) ---------- */
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  function toggleSidebar(open){
+    sidebar.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    hamburgerBtn.setAttribute('aria-expanded', String(open));
+  }
+  hamburgerBtn.addEventListener('click', () => toggleSidebar(!sidebar.classList.contains('open')));
+  backdrop.addEventListener('click', () => toggleSidebar(false));
+
+  function toggleFilters(){
+    const row = document.getElementById('filtersRow');
+    const btn = document.getElementById('filtersToggle');
+    row.classList.toggle('open');
+    btn.classList.toggle('active');
+  }
+
+  /* ---------- data ---------- */
+  const BASE_COURSES = [
+    {id:'da2', curso:'Desarrollo de Aplicaciones II', comision:'Comisión 123', periodo:'2° Cuatrimestre 2026'},
+    {id:'id1', curso:'Ingeniería de Datos I', comision:'Comisión 087', periodo:'2° Cuatrimestre 2026'},
+    {id:'isw', curso:'Ingeniería de Software', comision:'Comisión 205', periodo:'2° Cuatrimestre 2026'},
+    {id:'pr2', curso:'Programación II', comision:'Comisión 401', periodo:'2° Cuatrimestre 2026'},
+    {id:'rd', curso:'Redes de Datos', comision:'Comisión 201', periodo:'1° Cuatrimestre 2026'},
+    {id:'pr1', curso:'Programación I', comision:'Comisión 310', periodo:'1° Cuatrimestre 2026'},
+    {id:'ti', curso:'Tecnología e Innovación', comision:'Comisión 087', periodo:'1° Cuatrimestre 2026'},
+    {id:'mys', curso:'Modelado y Simulación', comision:'Comisión 045', periodo:'1° Cuatrimestre 2026'}
+  ];
+
+  function getCreatedCourses(){
+    try { return JSON.parse(sessionStorage.getItem('uadenetCreatedCourses') || '[]'); }
+    catch(e){ return []; }
+  }
+
+  const allCourses = [...getCreatedCourses(), ...BASE_COURSES].filter((c,i,a) =>
+    a.findIndex(x => String(x.id) === String(c.id)) === i
+  );
+
+  let ACTAS = allCourses.map((c, i) => {
+    const finalizada = c.periodo === '1° Cuatrimestre 2026';
+    const numeros = ['2026-184','2026-327','2026-451','2026-596','2026-713','2026-842','2026-905','2026-118'];
+    const fechas = ['28/08/2026','26/08/2026','22/08/2026','20/08/2026','15/07/2026','10/07/2026','05/07/2026','01/07/2026'];
+    return {
+      id:'acta-'+c.id,
+      nombre:'Acta Final',
+      numero:numeros[i % numeros.length],
+      curso:c.name || c.curso,
+      comision:c.com || c.comision || '',
+      periodo:c.period || c.periodo,
+      fecha: finalizada ? fechas[i % fechas.length] : '—',
+      fechaOrd: finalizada ? fechas[i % fechas.length].split('/').reverse().join('-') : '9999-12-31',
+      estado: finalizada ? 'Finalizada' : 'Pendiente'
+    };
+  });
+
+  try {
+    let generatedList=JSON.parse(sessionStorage.getItem('uadenetGeneratedActas')||'[]');
+    if(!Array.isArray(generatedList)){ generatedList=[]; }
+    const single=JSON.parse(sessionStorage.getItem('uadenetGeneratedActa')||'null');
+    if(single && single.id && !generatedList.some(a=>String(a.id)===String(single.id))) generatedList.push(single);
+    generatedList.forEach(g=>{
+      ACTAS = ACTAS.map(a=>a.id===g.id ? {...a,...g,estado:'Finalizada'} : a);
+    });
+  } catch(e){}
+
+  let sortCol = 'fecha';
+  let sortDir = 'desc';
+  let currentState = 'normal';
+
+  function setSort(col){
+    if(sortCol === col){ sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+    else { sortCol = col; sortDir = 'asc'; }
+    renderTable();
+  }
+
+
+  function clearFilters(){
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterPeriodo').value = '';
+    renderTable();
+  }
+
+  function getFiltered(){
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    const periodo = document.getElementById('filterPeriodo').value;
+
+    let rows = ACTAS.filter(a => {
+      if(periodo && a.periodo !== periodo) return false;
+      if(q){
+        const haystack = `${a.nombre} ${a.numero} ${a.curso} ${a.periodo}`.toLowerCase();
+        if(!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+
+    rows.sort((x,y)=>{
+      let vx, vy;
+      if(sortCol === 'fecha'){ vx=x.fechaOrd; vy=y.fechaOrd; }
+      else if(sortCol === 'numero'){ vx=x.numero; vy=y.numero; }
+      else { vx=x.curso; vy=y.curso; }
+      if(vx < vy) return sortDir === 'asc' ? -1 : 1;
+      if(vx > vy) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return rows;
+  }
+
+  function updateFiltersUI(){
+    const anyFilter = document.getElementById('searchInput').value || document.getElementById('filterPeriodo').value;
+    document.getElementById('clearFiltersBtn').classList.toggle('show', !!anyFilter);
+    document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active-filter'));
+    document.querySelectorAll('.actas-table thead th.sortable').forEach(th=>{
+      th.classList.toggle('sort-active', th.dataset.col === sortCol);
+      th.classList.toggle('sort-desc', th.dataset.col === sortCol && sortDir === 'desc');
+    });
+  }
+
+  function openActa(id){
+    const acta = ACTAS.find(a => a.id === id);
+    if(!acta) return;
+    sessionStorage.setItem('uadenetSelectedActa', JSON.stringify(acta));
+    if(String(acta.estado).toLowerCase() === 'pendiente') {
+      sessionStorage.setItem('uadenetActaCourseId', String(acta.id).replace(/^acta-/,''));
+      __uadenetGo('pantalla-16-generar-acta');
+    } else {
+      __uadenetGo('pantalla-17-detalle-acta');
+    }
+  }
+
+  function renderTable(){
+    if(currentState !== 'normal') return;
+    const rows = getFiltered();
+    updateFiltersUI();
+    const body = document.getElementById('actasBody');
+    const count = document.getElementById('resultsCount');
+
+    if(rows.length === 0){
+      showTableState('noresults-inline');
+      count.textContent = '';
+      document.getElementById('paginationBar').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('paginationBar').style.display = 'flex';
+    document.getElementById('paginationInfo').textContent = `1–${rows.length} de ${rows.length} actas`;
+    count.textContent = `${rows.length} ${rows.length === 1 ? 'resultado' : 'resultados'}`;
+
+    body.innerHTML = rows.map(a => `
+      <tr class="acta-row" onclick="openActa('${a.id}')" tabindex="0"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActa('${a.id}')}"
+          role="button">
+        <td class="col-acta">
+          <div class="acta-name">Acta Final</div>
+          <div class="acta-number">N.º ${a.numero}</div>
+        </td>
+        <td class="col-curso">
+          <div class="course-cell-name">${a.curso}</div>
+          ${a.comision ? `<div class="course-cell-meta">${a.comision}</div>` : ''}
+        </td>
+        <td class="col-periodo">${a.periodo}</td>
+        <td class="col-fecha">${a.fecha}</td>
+        <td class="col-estado"><span class="status-badge ${a.estado === 'Finalizada' ? 'status-finalized' : 'status-pending'}">${a.estado}</span></td>
+      </tr>
+    `).join('');
+
+    showTableState('normal');
+  }
+
+  /* ---------- modals ---------- */
+  let pendingActaId = null;
+  function openModal(id, actaId){
+    pendingActaId = actaId;
+    document.getElementById(id).classList.add('show');
+  }
+  function closeModal(id){
+    document.getElementById(id).classList.remove('show');
+    pendingActaId = null;
+  }
+  function confirmAction(kind){
+    const acta = ACTAS.find(a => a.id === pendingActaId);
+    if(acta){
+      renderTable();
+    }
+  }
+
+  /* ---------- toast / download ---------- */
+  const toast = document.getElementById('toast');
+  const toastIcon = document.getElementById('toastIcon');
+  const toastMsg = document.getElementById('toastMsg');
+  function showToast(type, msg, persistent){
+    toastIcon.innerHTML = type === 'loading'
+      ? '<span class="spinner"></span>'
+      : '<svg viewBox="0 0 20 20" fill="none" width="18" height="18"><path d="M3 10L8 15L17 5" stroke="var(--success-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    if(!persistent){
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(()=> toast.classList.remove('show'), 2800);
+    }
+  }
+  function downloadActa(numero){
+    showToast('loading', 'Generando acta...', true);
+    setTimeout(()=>{
+      showToast('success', 'Acta descargada correctamente.');
+    }, 1200);
+  }
+
+  /* ---------- states ---------- */
+  function skeletonRows(n){
+    let html = '';
+    for(let i=0;i<n;i++){
+      html += `<div class="skel-row">
+        <div class="skel" style="width:130px;height:14px;"></div>
+        <div class="skel" style="width:160px;height:14px;"></div>
+        <div class="skel" style="width:70px;height:14px;"></div>
+        <div class="skel" style="width:90px;height:14px;"></div>
+        <div class="skel" style="width:90px;height:14px;margin-left:auto;"></div>
+      </div>`;
+    }
+    return html;
+  }
+
+  function showTableState(kind){
+    const body = document.getElementById('actasBody');
+    if(kind === 'normal'){
+      // handled by renderTable itself
+      return;
+    }
+    if(kind === 'noresults-inline'){
+      body.innerHTML = `<tr><td colspan="7" style="padding:0;">
+        <div class="state-block">
+          <span class="state-icon"><svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <h3>No encontramos actas</h3>
+          <p>Probá modificando los filtros o el término de búsqueda.</p>
+          <button class="btn-secondary" onclick="clearFilters()">Limpiar filtros</button>
+        </div>
+      </td></tr>`;
+    }
+  }
+
+  function setState(name){
+    currentState = name;
+    closeAllMenus();
+    const body = document.getElementById('actasBody');
+    const summary = document.getElementById('summaryGrid');
+    const pagination = document.getElementById('paginationBar');
+    const count = document.getElementById('resultsCount');
+
+    if(name === 'normal'){
+      pagination.style.display = 'flex';
+      renderTable();
+      return;
+    }
+
+    if(name === 'loading'){
+      count.textContent = '';
+      pagination.style.display = 'none';
+      body.innerHTML = `<tr><td colspan="7" style="padding:0;">${skeletonRows(4)}</td></tr>`;
+      return;
+    }
+
+    if(name === 'empty'){
+      count.textContent = '';
+      pagination.style.display = 'none';
+      body.innerHTML = `<tr><td colspan="7" style="padding:0;">
+        <div class="state-block">
+          <span class="state-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5H12L15.5 6V17.5H5V2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.3 9.5H12.7M7.3 12.3H12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+          <h3>No hay actas registradas</h3>
+          <p>Todavía no se generaron actas para este curso.</p>
+          <button class="btn-primary" onclick="__uadenetGo('pantalla-16-generar-acta')">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Nueva acta
+          </button>
+        </div>
+      </td></tr>`;
+      return;
+    }
+
+    if(name === 'noresults'){
+      count.textContent = '';
+      pagination.style.display = 'none';
+      showTableState('noresults-inline');
+      return;
+    }
+
+    if(name === 'error'){
+      count.textContent = '';
+      pagination.style.display = 'none';
+      body.innerHTML = `<tr><td colspan="7" style="padding:0;">
+        <div class="state-block error">
+          <span class="state-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M10 6.5V10.5M10 14H10.01M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>No pudimos cargar las actas</h3>
+          <p>Ocurrió un problema al obtener la información. Intentá nuevamente.</p>
+          <button class="btn-secondary" onclick="setState('normal')">Reintentar</button>
+        </div>
+      </td></tr>`;
+      return;
+    }
+  }
+
+  /* ---------- init ---------- */
+  renderTable();
+</script>
+
+
+<script>
+  // Puente de navegación integrado: todos los enlaces de una vista pasan por el visor principal.
+  (function(){
+    const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+    window.__uadenetGo = function(slug){
+      slug = NAV_ALIASES[slug] || slug;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'uadenet-navigate', screen:slug }, '*');
+      } else {
+        console.log('Navegar a: ' + slug);
+      }
+    };
+  })();
+</script>
+
+<script>
+(function(){
+  const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+
+  window.__uadenetGo = function(slug){
+    slug = NAV_ALIASES[slug] || slug;
+
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({type:'uadenet-navigate', screen:slug}, '*');
+      return;
+    }
+
+    const file = NAV_FILES[slug];
+    if(file){
+      window.location.href = file;
+    } else {
+      console.warn('Pantalla no encontrada:', slug);
+    }
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  function closeAllUserMenus(except){
+    document.querySelectorAll('.user-dropdown.open').forEach(function(menu){
+      if(menu !== except) menu.classList.remove('open');
+    });
+    document.querySelectorAll('.user-menu.active-menu').forEach(function(btn){
+      if(!except || btn.parentElement.querySelector('.user-dropdown') !== except){
+        btn.classList.remove('active-menu');
+      }
+    });
+  }
+
+  window.toggleUserMenu = function(button){
+    var wrap = button.closest('.user-menu-wrap');
+    var menu = wrap ? wrap.querySelector('.user-dropdown') : null;
+    if(!menu) return;
+    var willOpen = !menu.classList.contains('open');
+    closeAllUserMenus(menu);
+    menu.classList.toggle('open', willOpen);
+    button.classList.toggle('active-menu', willOpen);
+  };
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.user-menu-wrap')){
+      closeAllUserMenus(null);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const __navOriginal = window.__uadenetGo;
+  if (typeof __navOriginal === 'function') {
+    window.__uadenetGo = function(slug){
+      if(slug === 'pantalla-01-login') {
+        try { sessionStorage.removeItem('uadenetSessionCourses'); sessionStorage.removeItem('uadenetAttendanceRecords'); sessionStorage.removeItem('uadenetGradesByCourse');
+    sessionStorage.removeItem('uadenetSessionExams'); } catch(e) {}
+      }
+      return __navOriginal(slug);
+    };
+  }
+})();
+</script>
+
+<script>
+  // Los cursos creados son temporales: se eliminan al cerrar sesión.
+  function uadenetLogout(){
+    sessionStorage.removeItem('uadenetCreatedCourses');
+    sessionStorage.removeItem('uadenetGradesByCourse');
+    localStorage.removeItem('uadenetCreatedCourses'); // limpia datos de versiones anteriores
+    localStorage.removeItem('uadenetSelectedCourse');
+    sessionStorage.removeItem('uadenetSelectedCourse');
+    if (typeof __uadenetGo === 'function') __uadenetGo('pantalla-01-login');
+  }
+</script>
+<script>
+(function(){
+const K='uadenetInstitutionalAccount', D=18400, INITIAL=[{"id":1,"opNumber":"MOV-2026-00482","date":"25/08/2026","time":"12:34","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18400,"prevBalance":22900,"related":"REF-2026-00124"},{"id":2,"opNumber":"MOV-2026-00481","date":"24/08/2026","time":"09:15","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":10100,"balance":22900,"prevBalance":12800,"related":"REF-2026-00045"},{"id":3,"opNumber":"MOV-2026-00479","date":"22/08/2026","time":"17:42","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-8500,"balance":12800,"prevBalance":21300,"related":"REF-2026-00119"},{"id":4,"opNumber":"MOV-2026-00475","date":"20/08/2026","time":"11:20","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":4000,"balance":21300,"prevBalance":17300,"related":"REF-2026-00039"},{"id":5,"opNumber":"MOV-2026-00470","date":"18/08/2026","time":"08:05","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":17300,"prevBalance":21300,"related":"REF-2026-00110"},{"id":6,"opNumber":"MOV-2026-00466","date":"15/08/2026","time":"10:30","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":5000,"balance":21300,"prevBalance":16300,"related":"REF-2026-00036"},{"id":7,"opNumber":"MOV-2026-00460","date":"12/08/2026","time":"13:50","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-2200,"balance":16300,"prevBalance":18500,"related":"REF-2026-00098"},{"id":8,"opNumber":"MOV-2026-00455","date":"10/08/2026","time":"16:12","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4500,"balance":18500,"prevBalance":23000,"related":"REF-2026-00091"},{"id":9,"opNumber":"MOV-2026-00450","date":"08/08/2026","time":"09:00","concept":"Recarga institucional","type":"ingreso","typeLabel":"Ingreso","amount":15000,"balance":23000,"prevBalance":8000,"related":"REF-2026-00041"},{"id":10,"opNumber":"MOV-2026-00444","date":"05/08/2026","time":"14:22","concept":"Compra en tienda virtual","type":"egreso","typeLabel":"Egreso","amount":-4000,"balance":8000,"prevBalance":12000,"related":"REF-2026-00082"}];
+function money(n){return '$'+Math.abs(Number(n)||0).toLocaleString('es-AR');}
+function state(){try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&Array.isArray(s.movimientos)&&typeof s.balance==='number')return s;}catch(e){}const s={balance:D,movimientos:INITIAL};try{sessionStorage.setItem(K,JSON.stringify(s));}catch(e){}return s;}
+const s=state(); document.querySelectorAll('.balance-chip .amount').forEach(e=>e.textContent=money(s.balance));
+window.__uadenetAccount={key:K,get:state,money:money};
+})();
+</script>
+</body>
+</html>

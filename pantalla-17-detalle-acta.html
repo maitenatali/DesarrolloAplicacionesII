@@ -332,7 +332,7 @@
     </button>
     <div class="user-menu-wrap"><button class="user-menu" id="userMenuBtn" aria-label="Menú de usuario" onclick="toggleUserMenu(this)">
       <span class="avatar">MG</span>
-      <span class="user-meta"><span class="name">María González</span><span class="role">Docente</span></span>
+      <span class="user-meta"><span class="name">María Gómez</span><span class="role">Docente</span></span>
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="color:var(--text-400)"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
       <div class="user-dropdown" id="userDropdown">
@@ -455,7 +455,7 @@
             <div class="sheet-data-item"><span class="k">Comisión</span><span class="v">123</span></div>
             <div class="sheet-data-item"><span class="k">Período</span><span class="v">2° Cuatrimestre 2026</span></div>
             <div class="sheet-data-item"><span class="k">Fecha</span><span class="v">25 de agosto de 2026</span></div>
-            <div class="sheet-data-item"><span class="k">Docente</span><span class="v">María González</span></div>
+            <div class="sheet-data-item"><span class="k">Docente</span><span class="v">María Gómez</span></div>
           </div>
 
           <p class="sheet-table-title">Resultados académicos</p>
@@ -478,7 +478,7 @@
 
           <div class="sheet-signature">
             <div class="sig-line"></div>
-            <p class="sig-name">María González</p>
+            <p class="sig-name">María Gómez</p>
             <p class="sig-role">Docente responsable</p>
             <span class="sig-time" id="sigTime">25/08/2026 · 19:42</span>
           </div>
@@ -503,7 +503,7 @@
               <div class="info-item"><span class="k">Comisión</span><span class="v">123</span></div>
               <div class="info-item"><span class="k">Período</span><span class="v">2° Cuatrimestre 2026</span></div>
               <div class="info-item"><span class="k">Fecha</span><span class="v">25/08/2026</span></div>
-              <div class="info-item full"><span class="k">Docente responsable</span><span class="v">María González</span></div>
+              <div class="info-item full"><span class="k">Docente responsable</span><span class="v">María Gómez</span></div>
             </div>
           </div>
         </div>
@@ -623,7 +623,7 @@
 <script>
 (function(){
   const NAV_ALIASES = {"pantalla-10-cargar-calificacion":"pantalla-09-calificaciones","pantalla-11-examenes":"pantalla-10-examenes","pantalla-12-formulario-examen":"pantalla-11-formulario-examen","pantalla-13-detalle-examen":"pantalla-12-detalle-examen","pantalla-14-resultados-examen":"pantalla-12-detalle-examen","pantala-20-notificaciones":"pantalla-20-notificaciones","componente-28-menu-usuario":"pantalla-27-perfil-docente","componente-29-centro-notificaciones":"pantalla-20-notificaciones"};
-  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-04-crear-curso":"pantalla-04-crear-curso.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
+  const NAV_FILES = {"pantalla-01-login":"pantalla-01-login.html","pantalla-01b-recuperar-contrasena":"pantalla-01b-recuperar-contrasena.html","pantalla-02-dashboard":"pantalla-02-dashboard.html","pantalla-03-mis-cursos":"pantalla-03-mis-cursos.html","pantalla-05-detalle-curso":"pantalla-05-detalle-curso.html","pantalla-06-estudiantes":"pantalla-06-estudiantes.html","pantalla-07-gestion-asistencia":"pantalla-07-gestion-asistencia.html","pantalla-08-historial-asistencia":"pantalla-08-historial-asistencia.html","pantalla-09-calificaciones":"pantalla-09-calificaciones.html","pantalla-10-examenes":"pantalla-10-examenes.html","pantalla-11-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-12-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-15-actas":"pantalla-15-actas.html","pantalla-16-generar-acta":"pantalla-16-generar-acta.html","pantalla-17-detalle-acta":"pantalla-17-detalle-acta.html","pantalla-18-calendario":"pantalla-18-calendario.html","pantalla-20-notificaciones":"pantalla-20-notificaciones.html","pantalla-22-mis-compras":"pantalla-22-mis-compras.html","pantalla-23-detalle-compra":"pantalla-23-detalle-compra.html","pantalla-25-cuenta-institucional":"pantalla-25-cuenta-institucional.html","pantalla-26-cargar-saldo":"pantalla-26-cargar-saldo.html","pantalla-27-perfil-docente":"pantalla-27-perfil-docente.html","pantalla-10-cargar-calificacion":"pantalla-09-calificaciones.html","pantalla-11-examenes":"pantalla-10-examenes.html","pantalla-12-formulario-examen":"pantalla-11-formulario-examen.html","pantalla-13-detalle-examen":"pantalla-12-detalle-examen.html","pantalla-14-resultados-examen":"pantalla-12-detalle-examen.html","pantala-20-notificaciones":"pantalla-20-notificaciones.html","componente-28-menu-usuario":"pantalla-27-perfil-docente.html","componente-29-centro-notificaciones":"pantalla-20-notificaciones.html"};
 
   window.__uadenetGo = function(slug){
     slug = NAV_ALIASES[slug] || slug;
@@ -728,12 +728,12 @@ window.__uadenetAccount={key:K,get:state,money:money};
   document.querySelector('.sheet-doc-number').textContent='N.º '+numero;
   const grid=document.querySelector('.sheet-data-grid');
   if(grid){
-    const vals=[course.name,course.com,course.period,fecha,'María González'];
+    const vals=[course.name,course.com,course.period,fecha,'María Gómez'];
     grid.querySelectorAll('.sheet-data-item').forEach((item,i)=>{const v=item.querySelector('.v'); if(v&&vals[i]!==undefined)v.textContent=vals[i];});
   }
   const info=document.querySelector('.info-col .panel .info-grid');
   if(info){
-    const vals=[numero,'Acta final',course.name,course.com,course.period,fecha,'María González'];
+    const vals=[numero,'Acta final',course.name,course.com,course.period,fecha,'María Gómez'];
     info.querySelectorAll('.info-item').forEach((item,i)=>{const v=item.querySelector('.v'); if(v&&vals[i]!==undefined)v.textContent=vals[i];});
   }
   const tbody=document.querySelector('.sheet-table tbody');
@@ -749,7 +749,7 @@ window.__uadenetAccount={key:K,get:state,money:money};
   document.querySelector('.sheet-total').textContent=`Total de estudiantes: ${students.length}`;
   document.querySelector('.sheet-summary').textContent=`${approved} aprobados · ${failed} desaprobados · ${unreg} sin registrar`;
   document.querySelector('.sheet-obs-text').textContent=acta.observaciones||'Sin observaciones.';
-  document.querySelector('.sig-name').textContent='María González';
+  document.querySelector('.sig-name').textContent='María Gómez';
   document.querySelector('.sig-role').textContent='Docente responsable';
   document.getElementById('sigTime').textContent=(acta.fechaCreacionTexto||fecha);
 })();

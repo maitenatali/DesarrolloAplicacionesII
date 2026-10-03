@@ -35,7 +35,6 @@ Por ejemplo:
 - `pantalla-01b-recuperar-contrasena.html`
 - `pantalla-02-dashboard.html`
 - `pantalla-03-mis-cursos.html`
-- `pantalla-04-crear-curso.html`
 - `pantalla-05-detalle-curso.html`
 - `pantalla-06-estudiantes.html`
 - `pantalla-07-gestion-asistencia.html`

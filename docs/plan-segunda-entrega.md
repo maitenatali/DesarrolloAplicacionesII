@@ -28,6 +28,8 @@ Estado al 14/10/2026. Marcar cada punto al terminarlo.
 Hoy no existe: el frontend guarda todo en el localStorage del navegador.
 
 - [x] Elegir tecnología: Java + Spring Boot, un microservicio `teacher-service` (ver [guia-backend-entities.md](guia-backend-entities.md))
+- [x] Proyecto base en [../backend/](../backend/): entities, enums, vistas y repositorios
+- [ ] Compilar y arrancar el backend contra Supabase (verifica que las entities coincidan con las tablas)
 - [ ] Ruta de resultados por alumno para el Portal del Estudiante (vista `resultado_por_alumno`)
 - [ ] Rutas bajo `/api/v1/...`. CORE las publica como `/api/v1/teacher/...` a través de su gateway
 - [ ] Validar el token de CORE (claves públicas en `GET /.well-known/jwks.json`)

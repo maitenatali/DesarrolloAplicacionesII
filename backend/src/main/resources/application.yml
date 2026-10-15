@@ -1,0 +1,28 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: teacher-service
+  # Lee las variables de backend/.env si existe (ver .env.example).
+  # Dos rutas: arrancando desde backend/ (Maven) o desde la raíz del repo (IntelliJ).
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:backend/.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Las tablas las crea db/schema.sql. Hibernate solo verifica que las
+      # entities coincidan con ellas; nunca usar create ni update.
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

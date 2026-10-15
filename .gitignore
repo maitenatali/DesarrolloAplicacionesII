@@ -1,0 +1,15 @@
+# Configuración personal de IDEs
+.idea/
+*.iml
+.vscode/
+
+# Variables de entorno con contraseñas
+.env
+
+# Compilados
+target/
+out/
+
+# Sistema
+.DS_Store
+Thumbs.db

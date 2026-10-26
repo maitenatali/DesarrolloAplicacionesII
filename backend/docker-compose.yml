@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16
+    environment: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: teacher }
+    ports: ["5432:5432"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres"], interval: 5s, retries: 10 }
+  api:
+    build: .
+    env_file: .env
+    environment: { DATABASE_URL: "postgresql+psycopg://postgres:postgres@db:5432/teacher" }
+    depends_on: { db: { condition: service_healthy } }
+    command: sh -c "flask db upgrade && gunicorn -b 0.0.0.0:8080 -w 3 --timeout 60 wsgi:app"
+    ports: ["8080:8080"]
+  outbox-worker:   # run exactly ONE of these
+    build: .
+    env_file: .env
+    environment: { DATABASE_URL: "postgresql+psycopg://postgres:postgres@db:5432/teacher" }
+    depends_on: { db: { condition: service_healthy } }
+    command: flask outbox-worker

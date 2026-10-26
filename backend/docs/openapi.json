@@ -1,0 +1,7035 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "teacher-service",
+    "description": "Portal Docente (UADEnet) - asistencia, exámenes, calificaciones y actas.",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Courses"
+    },
+    {
+      "name": "Exams"
+    },
+    {
+      "name": "Grades"
+    },
+    {
+      "name": "Attendance"
+    },
+    {
+      "name": "Actas"
+    },
+    {
+      "name": "Results"
+    }
+  ],
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "summary": "health <GET>",
+        "operationId": "get__api_v1_health",
+        "description": "",
+        "tags": [
+          "Health"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto.9cd60ed"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "summary": "ready <GET>",
+        "operationId": "get__api_v1_health_ready",
+        "description": "",
+        "tags": [
+          "Health"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyDto.9cd60ed"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto.9cd60ed"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "summary": "me <GET>",
+        "operationId": "get__api_v1_me",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/periods": {
+      "get": {
+        "summary": "periods <GET>",
+        "operationId": "get__api_v1_periods",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodList.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exam-turns": {
+      "get": {
+        "summary": "exam_turns <GET>",
+        "operationId": "get__api_v1_exam-turns",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamTurnList.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exam-types": {
+      "get": {
+        "summary": "exam_types <GET>",
+        "operationId": "get__api_v1_exam-types",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamTypeList.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses": {
+      "get": {
+        "summary": "list_courses <GET>",
+        "operationId": "get__api_v1_courses",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "periodId",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Periodid"
+            },
+            "required": false,
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseList.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}": {
+      "get": {
+        "summary": "get_course <GET>",
+        "operationId": "get__api_v1_courses_{course_id}",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDto.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/students": {
+      "get": {
+        "summary": "students <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_students",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RosterList.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/prerequisites": {
+      "get": {
+        "summary": "prerequisites <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_prerequisites",
+        "description": "",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrerequisiteList.7121510"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/exams": {
+      "get": {
+        "summary": "list_exams <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_exams",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamList.2db25b2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "create_exam <POST>",
+        "operationId": "post__api_v1_courses_{course_id}_exams",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamDto.2db25b2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExamCreateRequest.2db25b2"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/exams/{exam_id}": {
+      "get": {
+        "summary": "get_exam <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_exams_{exam_id}",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamDetailDto.2db25b2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "patch_exam <PATCH>",
+        "operationId": "patch__api_v1_courses_{course_id}_exams_{exam_id}",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamDto.2db25b2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExamPatchRequest.2db25b2"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/exams/{exam_id}/cancellation": {
+      "post": {
+        "summary": "cancel_exam <POST>",
+        "operationId": "post__api_v1_courses_{course_id}_exams_{exam_id}_cancellation",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamDto.2db25b2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest.2db25b2"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/exams": {
+      "get": {
+        "summary": "my_exams <GET>",
+        "operationId": "get__api_v1_exams",
+        "description": "",
+        "tags": [
+          "Exams"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "From"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "To"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "phase",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ExamQuery.2db25b2.ExamPhase"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "includeCancelled",
+            "in": "query",
+            "schema": {
+              "default": false,
+              "title": "Includecancelled",
+              "type": "boolean"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 50,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Limit"
+            },
+            "required": false,
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamWithCourseList.2db25b2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/exams/{exam_id}/grades": {
+      "get": {
+        "summary": "get_grades <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_exams_{exam_id}_grades",
+        "description": "",
+        "tags": [
+          "Grades"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GradesResponse.128e64d"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "put_grades <PUT>",
+        "operationId": "put__api_v1_courses_{course_id}_exams_{exam_id}_grades",
+        "description": "",
+        "tags": [
+          "Grades"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GradesUpsertResponse.128e64d"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GradesUpsertRequest.128e64d"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/grades": {
+      "get": {
+        "summary": "grade_matrix <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_grades",
+        "description": "",
+        "tags": [
+          "Grades"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GradeMatrix.128e64d"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/attendances": {
+      "get": {
+        "summary": "list_attendances <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_attendances",
+        "description": "",
+        "tags": [
+          "Attendance"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceList.a3de9a0"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/attendances/{day}": {
+      "get": {
+        "summary": "get_attendance <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_attendances_{day}",
+        "description": "",
+        "tags": [
+          "Attendance"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceDto.a3de9a0"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "put_attendance <PUT>",
+        "operationId": "put__api_v1_courses_{course_id}_attendances_{day}",
+        "description": "",
+        "tags": [
+          "Attendance"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          },
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceDto.a3de9a0"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceDto.a3de9a0"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendancePutRequest.a3de9a0"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/attendance-summary": {
+      "get": {
+        "summary": "attendance_summary <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_attendance-summary",
+        "description": "",
+        "tags": [
+          "Attendance"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSummaryDto.a3de9a0"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/actas": {
+      "get": {
+        "summary": "list_actas <GET>",
+        "operationId": "get__api_v1_actas",
+        "description": "",
+        "tags": [
+          "Actas"
+        ],
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Courseid"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "periodId",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Periodid"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ActaQuery.7b594f4.ActaType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ActaQuery.7b594f4.ActaStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "required": false,
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActaPage.7b594f4"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "create_acta <POST>",
+        "operationId": "post__api_v1_actas",
+        "description": "",
+        "tags": [
+          "Actas"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActaCreatedDto.7b594f4"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActaCreateRequest.7b594f4"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/actas/{acta_id}": {
+      "get": {
+        "summary": "get_acta <GET>",
+        "operationId": "get__api_v1_actas_{acta_id}",
+        "description": "",
+        "tags": [
+          "Actas"
+        ],
+        "parameters": [
+          {
+            "name": "acta_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActaDto.7b594f4"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/actas/{acta_id}/annulment": {
+      "post": {
+        "summary": "annul_acta <POST>",
+        "operationId": "post__api_v1_actas_{acta_id}_annulment",
+        "description": "",
+        "tags": [
+          "Actas"
+        ],
+        "parameters": [
+          {
+            "name": "acta_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActaDto.7b594f4"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnnulRequest.7b594f4"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/actas/{acta_id}/sync": {
+      "post": {
+        "summary": "sync_acta <POST>",
+        "operationId": "post__api_v1_actas_{acta_id}_sync",
+        "description": "",
+        "tags": [
+          "Actas"
+        ],
+        "parameters": [
+          {
+            "name": "acta_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncResponse.7b594f4"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/students/{student_id}/results": {
+      "get": {
+        "summary": "student_results <GET>",
+        "operationId": "get__api_v1_students_{student_id}_results",
+        "description": "",
+        "tags": [
+          "Results"
+        ],
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": ""
+          },
+          {
+            "name": "courseId",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Courseid"
+            },
+            "required": false,
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultList.77f77bb"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}/results": {
+      "get": {
+        "summary": "course_results <GET>",
+        "operationId": "get__api_v1_courses_{course_id}_results",
+        "description": "",
+        "tags": [
+          "Results"
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultList.77f77bb"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActaQuery.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "courseId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Courseid"
+          },
+          "periodId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Periodid"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActaQuery.7b594f4.ActaType"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActaQuery.7b594f4.ActaStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "title": "ActaQuery",
+        "type": "object"
+      },
+      "ActaPage.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ActaPage.7b594f4.ActaSummaryDto"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "ActaPage",
+        "type": "object"
+      },
+      "ProblemDetail.c2a0d71": {
+        "additionalProperties": true,
+        "description": "application/problem+json (RFC 7807-style).",
+        "properties": {
+          "type": {
+            "default": "about:blank",
+            "title": "Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "correlationId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Correlationid"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71.ProblemError"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Errors"
+          }
+        },
+        "required": [
+          "title",
+          "status",
+          "code",
+          "detail"
+        ],
+        "title": "ProblemDetail",
+        "type": "object"
+      },
+      "ActaDto.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActaDto.7b594f4.ActaType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActaDto.7b594f4.ActaStatus"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "subjectId": {
+            "title": "Subjectid",
+            "type": "integer"
+          },
+          "periodId": {
+            "title": "Periodid",
+            "type": "integer"
+          },
+          "examId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Examid"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "commission": {
+            "title": "Commission",
+            "type": "string"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          },
+          "teacherId": {
+            "title": "Teacherid",
+            "type": "string"
+          },
+          "teacherName": {
+            "title": "Teachername",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "generatedAt": {
+            "title": "Generatedat",
+            "type": "string"
+          },
+          "annulledAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Annulledat"
+          },
+          "annulmentReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Annulmentreason"
+          },
+          "sync": {
+            "$ref": "#/components/schemas/ActaDto.7b594f4.ActaSync"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ActaDto.7b594f4.ActaCounts"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ActaDto.7b594f4.ActaRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "type",
+          "status",
+          "courseId",
+          "subjectId",
+          "periodId",
+          "subject",
+          "commission",
+          "period",
+          "teacherId",
+          "teacherName",
+          "date",
+          "generatedAt",
+          "sync",
+          "counts",
+          "rows"
+        ],
+        "title": "ActaDto",
+        "type": "object"
+      },
+      "ActaCreateRequest.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActaCreateRequest.7b594f4.ActaType"
+          },
+          "examId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Examid"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          }
+        },
+        "required": [
+          "courseId",
+          "type"
+        ],
+        "title": "ActaCreateRequest",
+        "type": "object"
+      },
+      "ActaCreatedDto.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActaCreatedDto.7b594f4.ActaType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActaCreatedDto.7b594f4.ActaStatus"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "subjectId": {
+            "title": "Subjectid",
+            "type": "integer"
+          },
+          "periodId": {
+            "title": "Periodid",
+            "type": "integer"
+          },
+          "examId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Examid"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "commission": {
+            "title": "Commission",
+            "type": "string"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          },
+          "teacherId": {
+            "title": "Teacherid",
+            "type": "string"
+          },
+          "teacherName": {
+            "title": "Teachername",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "generatedAt": {
+            "title": "Generatedat",
+            "type": "string"
+          },
+          "annulledAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Annulledat"
+          },
+          "annulmentReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Annulmentreason"
+          },
+          "sync": {
+            "$ref": "#/components/schemas/ActaCreatedDto.7b594f4.ActaSync"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ActaCreatedDto.7b594f4.ActaCounts"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ActaCreatedDto.7b594f4.ActaRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "type",
+          "status",
+          "courseId",
+          "subjectId",
+          "periodId",
+          "subject",
+          "commission",
+          "period",
+          "teacherId",
+          "teacherName",
+          "date",
+          "generatedAt",
+          "sync",
+          "counts",
+          "rows"
+        ],
+        "title": "ActaCreatedDto",
+        "type": "object"
+      },
+      "AnnulRequest.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "AnnulRequest",
+        "type": "object"
+      },
+      "SyncResponse.7b594f4": {
+        "additionalProperties": false,
+        "properties": {
+          "sync": {
+            "$ref": "#/components/schemas/SyncResponse.7b594f4.ActaSync"
+          }
+        },
+        "required": [
+          "sync"
+        ],
+        "title": "SyncResponse",
+        "type": "object"
+      },
+      "AttendanceList.a3de9a0": {
+        "items": {
+          "$ref": "#/components/schemas/AttendanceList.a3de9a0.AttendanceListItem"
+        },
+        "title": "AttendanceList",
+        "type": "array"
+      },
+      "AttendanceDto.a3de9a0": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceDto.a3de9a0.AttendanceRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "date",
+          "records"
+        ],
+        "title": "AttendanceDto",
+        "type": "object"
+      },
+      "AttendancePutRequest.a3de9a0": {
+        "additionalProperties": false,
+        "properties": {
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/AttendancePutRequest.a3de9a0.AttendanceRecord"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "records"
+        ],
+        "title": "AttendancePutRequest",
+        "type": "object"
+      },
+      "AttendanceSummaryDto.a3de9a0": {
+        "additionalProperties": false,
+        "properties": {
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "students": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceSummaryDto.a3de9a0.StudentAttendanceSummary"
+            },
+            "title": "Students",
+            "type": "array"
+          }
+        },
+        "required": [
+          "threshold",
+          "students"
+        ],
+        "title": "AttendanceSummaryDto",
+        "type": "object"
+      },
+      "MeDto.7121510": {
+        "additionalProperties": false,
+        "properties": {
+          "userId": {
+            "title": "Userid",
+            "type": "string"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Email"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "teacherIds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Teacherids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "userId",
+          "roles",
+          "teacherIds"
+        ],
+        "title": "MeDto",
+        "type": "object"
+      },
+      "PeriodList.7121510": {
+        "items": {
+          "$ref": "#/components/schemas/PeriodList.7121510.PeriodDto"
+        },
+        "title": "PeriodList",
+        "type": "array"
+      },
+      "ExamTurnList.7121510": {
+        "items": {
+          "$ref": "#/components/schemas/ExamTurnList.7121510.ExamTurnDto"
+        },
+        "title": "ExamTurnList",
+        "type": "array"
+      },
+      "ExamTypeList.7121510": {
+        "items": {
+          "$ref": "#/components/schemas/ExamTypeList.7121510.ExamTypeDto"
+        },
+        "title": "ExamTypeList",
+        "type": "array"
+      },
+      "PeriodQuery.7121510": {
+        "additionalProperties": false,
+        "properties": {
+          "periodId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Periodid"
+          }
+        },
+        "title": "PeriodQuery",
+        "type": "object"
+      },
+      "CourseList.7121510": {
+        "items": {
+          "$ref": "#/components/schemas/CourseList.7121510.CourseDto"
+        },
+        "title": "CourseList",
+        "type": "array"
+      },
+      "CourseDto.7121510": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/CourseDto.7121510.SubjectDto"
+          },
+          "period": {
+            "$ref": "#/components/schemas/CourseDto.7121510.PeriodDto"
+          },
+          "campusId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Campusid"
+          },
+          "modality": {
+            "title": "Modality",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "maxSeats": {
+            "title": "Maxseats",
+            "type": "integer"
+          },
+          "enrolled": {
+            "title": "Enrolled",
+            "type": "integer"
+          },
+          "startDate": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Startdate"
+          },
+          "endDate": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Enddate"
+          },
+          "schedule": {
+            "items": {
+              "$ref": "#/components/schemas/CourseDto.7121510.ScheduleDto"
+            },
+            "title": "Schedule",
+            "type": "array"
+          },
+          "teachers": {
+            "items": {
+              "$ref": "#/components/schemas/CourseDto.7121510.TeacherDto"
+            },
+            "title": "Teachers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "subject",
+          "period",
+          "modality",
+          "status",
+          "maxSeats",
+          "enrolled",
+          "schedule",
+          "teachers"
+        ],
+        "title": "CourseDto",
+        "type": "object"
+      },
+      "RosterList.7121510": {
+        "items": {
+          "$ref": "#/components/schemas/RosterList.7121510.RosterStudentDto"
+        },
+        "title": "RosterList",
+        "type": "array"
+      },
+      "PrerequisiteList.7121510": {
+        "items": {
+          "$ref": "#/components/schemas/PrerequisiteList.7121510.PrerequisiteDto"
+        },
+        "title": "PrerequisiteList",
+        "type": "array"
+      },
+      "ExamList.2db25b2": {
+        "items": {
+          "$ref": "#/components/schemas/ExamList.2db25b2.ExamDto"
+        },
+        "title": "ExamList",
+        "type": "array"
+      },
+      "ExamCreateRequest.2db25b2": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "startTime": {
+            "format": "time",
+            "title": "Starttime",
+            "type": "string"
+          },
+          "durationMinutes": {
+            "maximum": 600,
+            "minimum": 1,
+            "title": "Durationminutes",
+            "type": "integer"
+          },
+          "modality": {
+            "$ref": "#/components/schemas/ExamCreateRequest.2db25b2.Modality"
+          }
+        },
+        "required": [
+          "type",
+          "date",
+          "startTime",
+          "durationMinutes",
+          "modality"
+        ],
+        "title": "ExamCreateRequest",
+        "type": "object"
+      },
+      "ExamDto.2db25b2": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "durationMinutes": {
+            "title": "Durationminutes",
+            "type": "integer"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          },
+          "modality": {
+            "$ref": "#/components/schemas/ExamDto.2db25b2.Modality"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExamDto.2db25b2.ExamStatus"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ExamDto.2db25b2.ExamPhase"
+          },
+          "gradedCount": {
+            "title": "Gradedcount",
+            "type": "integer"
+          },
+          "createdAt": {
+            "title": "Createdat",
+            "type": "string"
+          },
+          "updatedAt": {
+            "title": "Updatedat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "courseId",
+          "type",
+          "name",
+          "date",
+          "startTime",
+          "durationMinutes",
+          "endTime",
+          "modality",
+          "status",
+          "phase",
+          "gradedCount",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "ExamDto",
+        "type": "object"
+      },
+      "ExamDetailDto.2db25b2": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "durationMinutes": {
+            "title": "Durationminutes",
+            "type": "integer"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          },
+          "modality": {
+            "$ref": "#/components/schemas/ExamDetailDto.2db25b2.Modality"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExamDetailDto.2db25b2.ExamStatus"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ExamDetailDto.2db25b2.ExamPhase"
+          },
+          "gradedCount": {
+            "title": "Gradedcount",
+            "type": "integer"
+          },
+          "createdAt": {
+            "title": "Createdat",
+            "type": "string"
+          },
+          "updatedAt": {
+            "title": "Updatedat",
+            "type": "string"
+          },
+          "gradingProgress": {
+            "$ref": "#/components/schemas/ExamDetailDto.2db25b2.GradingProgress"
+          }
+        },
+        "required": [
+          "id",
+          "courseId",
+          "type",
+          "name",
+          "date",
+          "startTime",
+          "durationMinutes",
+          "endTime",
+          "modality",
+          "status",
+          "phase",
+          "gradedCount",
+          "createdAt",
+          "updatedAt",
+          "gradingProgress"
+        ],
+        "title": "ExamDetailDto",
+        "type": "object"
+      },
+      "ExamPatchRequest.2db25b2": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Type"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Date"
+          },
+          "startTime": {
+            "anyOf": [
+              {
+                "format": "time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Starttime"
+          },
+          "durationMinutes": {
+            "anyOf": [
+              {
+                "maximum": 600,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Durationminutes"
+          },
+          "modality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExamPatchRequest.2db25b2.Modality"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ExamPatchRequest",
+        "type": "object"
+      },
+      "CancelRequest.2db25b2": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reason"
+          }
+        },
+        "title": "CancelRequest",
+        "type": "object"
+      },
+      "ExamQuery.2db25b2": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExamQuery.2db25b2.ExamPhase"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "includeCancelled": {
+            "default": false,
+            "title": "Includecancelled",
+            "type": "boolean"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Limit"
+          }
+        },
+        "title": "ExamQuery",
+        "type": "object"
+      },
+      "ExamWithCourseList.2db25b2": {
+        "items": {
+          "$ref": "#/components/schemas/ExamWithCourseList.2db25b2.ExamWithCourseDto"
+        },
+        "title": "ExamWithCourseList",
+        "type": "array"
+      },
+      "GradesResponse.128e64d": {
+        "additionalProperties": false,
+        "properties": {
+          "examId": {
+            "title": "Examid",
+            "type": "integer"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/GradesResponse.128e64d.GradeEntryOut"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/GradesResponse.128e64d.GradesSummary"
+          }
+        },
+        "required": [
+          "examId",
+          "entries",
+          "summary"
+        ],
+        "title": "GradesResponse",
+        "type": "object"
+      },
+      "GradesUpsertRequest.128e64d": {
+        "additionalProperties": false,
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/GradesUpsertRequest.128e64d.GradeEntry"
+            },
+            "maxItems": 500,
+            "minItems": 1,
+            "title": "Entries",
+            "type": "array"
+          }
+        },
+        "required": [
+          "entries"
+        ],
+        "title": "GradesUpsertRequest",
+        "type": "object"
+      },
+      "GradesUpsertResponse.128e64d": {
+        "additionalProperties": false,
+        "properties": {
+          "saved": {
+            "title": "Saved",
+            "type": "integer"
+          },
+          "cleared": {
+            "title": "Cleared",
+            "type": "integer"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/GradesUpsertResponse.128e64d.SavedGradeEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          }
+        },
+        "required": [
+          "saved",
+          "cleared",
+          "entries"
+        ],
+        "title": "GradesUpsertResponse",
+        "type": "object"
+      },
+      "GradeMatrix.128e64d": {
+        "additionalProperties": false,
+        "properties": {
+          "exams": {
+            "items": {
+              "$ref": "#/components/schemas/GradeMatrix.128e64d.MatrixExam"
+            },
+            "title": "Exams",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/GradeMatrix.128e64d.MatrixRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "exams",
+          "rows"
+        ],
+        "title": "GradeMatrix",
+        "type": "object"
+      },
+      "HealthDto.9cd60ed": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthDto",
+        "type": "object"
+      },
+      "ReadyDto.9cd60ed": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "integrations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Integrations",
+            "type": "object"
+          },
+          "migrationHead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Migrationhead"
+          },
+          "outboxPending": {
+            "default": 0,
+            "title": "Outboxpending",
+            "type": "integer"
+          },
+          "outboxFailed": {
+            "default": 0,
+            "title": "Outboxfailed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "status",
+          "integrations"
+        ],
+        "title": "ReadyDto",
+        "type": "object"
+      },
+      "ResultQuery.77f77bb": {
+        "additionalProperties": false,
+        "properties": {
+          "courseId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Courseid"
+          }
+        },
+        "title": "ResultQuery",
+        "type": "object"
+      },
+      "ResultList.77f77bb": {
+        "items": {
+          "$ref": "#/components/schemas/ResultList.77f77bb.ResultDto"
+        },
+        "title": "ResultList",
+        "type": "array"
+      },
+      "ActaQuery.7b594f4.ActaStatus": {
+        "enum": [
+          "GENERADA",
+          "ANULADA"
+        ],
+        "title": "ActaStatus",
+        "type": "string"
+      },
+      "ActaQuery.7b594f4.ActaType": {
+        "enum": [
+          "CURSADA",
+          "FINAL"
+        ],
+        "title": "ActaType",
+        "type": "string"
+      },
+      "ActaPage.7b594f4.ActaCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "integer"
+          },
+          "failed": {
+            "title": "Failed",
+            "type": "integer"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "regular": {
+            "title": "Regular",
+            "type": "integer"
+          },
+          "free": {
+            "title": "Free",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "approved",
+          "failed",
+          "absent",
+          "regular",
+          "free"
+        ],
+        "title": "ActaCounts",
+        "type": "object"
+      },
+      "ActaPage.7b594f4.ActaStatus": {
+        "enum": [
+          "GENERADA",
+          "ANULADA"
+        ],
+        "title": "ActaStatus",
+        "type": "string"
+      },
+      "ActaPage.7b594f4.ActaSummaryDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActaPage.7b594f4.ActaType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActaPage.7b594f4.ActaStatus"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "subjectId": {
+            "title": "Subjectid",
+            "type": "integer"
+          },
+          "periodId": {
+            "title": "Periodid",
+            "type": "integer"
+          },
+          "examId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Examid"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "commission": {
+            "title": "Commission",
+            "type": "string"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          },
+          "teacherId": {
+            "title": "Teacherid",
+            "type": "string"
+          },
+          "teacherName": {
+            "title": "Teachername",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "generatedAt": {
+            "title": "Generatedat",
+            "type": "string"
+          },
+          "annulledAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Annulledat"
+          },
+          "annulmentReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Annulmentreason"
+          },
+          "sync": {
+            "$ref": "#/components/schemas/ActaPage.7b594f4.ActaSync"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ActaPage.7b594f4.ActaCounts"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "type",
+          "status",
+          "courseId",
+          "subjectId",
+          "periodId",
+          "subject",
+          "commission",
+          "period",
+          "teacherId",
+          "teacherName",
+          "date",
+          "generatedAt",
+          "sync",
+          "counts"
+        ],
+        "title": "ActaSummaryDto",
+        "type": "object"
+      },
+      "ActaPage.7b594f4.ActaSync": {
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "integer"
+          },
+          "error": {
+            "title": "Error",
+            "type": "integer"
+          },
+          "lastAttemptAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lastattemptat"
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ],
+        "title": "ActaSync",
+        "type": "object"
+      },
+      "ActaPage.7b594f4.ActaType": {
+        "enum": [
+          "CURSADA",
+          "FINAL"
+        ],
+        "title": "ActaType",
+        "type": "string"
+      },
+      "ProblemDetail.c2a0d71.ProblemError": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "code",
+          "message"
+        ],
+        "title": "ProblemError",
+        "type": "object"
+      },
+      "ActaDto.7b594f4.ActaCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "integer"
+          },
+          "failed": {
+            "title": "Failed",
+            "type": "integer"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "regular": {
+            "title": "Regular",
+            "type": "integer"
+          },
+          "free": {
+            "title": "Free",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "approved",
+          "failed",
+          "absent",
+          "regular",
+          "free"
+        ],
+        "title": "ActaCounts",
+        "type": "object"
+      },
+      "ActaDto.7b594f4.ActaRow": {
+        "additionalProperties": false,
+        "properties": {
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "studentName": {
+            "title": "Studentname",
+            "type": "string"
+          },
+          "studentFileNumber": {
+            "title": "Studentfilenumber",
+            "type": "string"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ActaDto.7b594f4.Result"
+          }
+        },
+        "required": [
+          "order",
+          "studentId",
+          "studentName",
+          "studentFileNumber",
+          "result"
+        ],
+        "title": "ActaRow",
+        "type": "object"
+      },
+      "ActaDto.7b594f4.ActaStatus": {
+        "enum": [
+          "GENERADA",
+          "ANULADA"
+        ],
+        "title": "ActaStatus",
+        "type": "string"
+      },
+      "ActaDto.7b594f4.ActaSync": {
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "integer"
+          },
+          "error": {
+            "title": "Error",
+            "type": "integer"
+          },
+          "lastAttemptAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lastattemptat"
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ],
+        "title": "ActaSync",
+        "type": "object"
+      },
+      "ActaDto.7b594f4.ActaType": {
+        "enum": [
+          "CURSADA",
+          "FINAL"
+        ],
+        "title": "ActaType",
+        "type": "string"
+      },
+      "ActaDto.7b594f4.Result": {
+        "enum": [
+          "APROBADO",
+          "DESAPROBADO",
+          "REGULAR",
+          "LIBRE",
+          "AUSENTE"
+        ],
+        "title": "Result",
+        "type": "string"
+      },
+      "ActaCreateRequest.7b594f4.ActaType": {
+        "enum": [
+          "CURSADA",
+          "FINAL"
+        ],
+        "title": "ActaType",
+        "type": "string"
+      },
+      "ActaCreatedDto.7b594f4.ActaCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "integer"
+          },
+          "failed": {
+            "title": "Failed",
+            "type": "integer"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "regular": {
+            "title": "Regular",
+            "type": "integer"
+          },
+          "free": {
+            "title": "Free",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "approved",
+          "failed",
+          "absent",
+          "regular",
+          "free"
+        ],
+        "title": "ActaCounts",
+        "type": "object"
+      },
+      "ActaCreatedDto.7b594f4.ActaRow": {
+        "additionalProperties": false,
+        "properties": {
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "studentName": {
+            "title": "Studentname",
+            "type": "string"
+          },
+          "studentFileNumber": {
+            "title": "Studentfilenumber",
+            "type": "string"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ActaCreatedDto.7b594f4.Result"
+          }
+        },
+        "required": [
+          "order",
+          "studentId",
+          "studentName",
+          "studentFileNumber",
+          "result"
+        ],
+        "title": "ActaRow",
+        "type": "object"
+      },
+      "ActaCreatedDto.7b594f4.ActaStatus": {
+        "enum": [
+          "GENERADA",
+          "ANULADA"
+        ],
+        "title": "ActaStatus",
+        "type": "string"
+      },
+      "ActaCreatedDto.7b594f4.ActaSync": {
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "integer"
+          },
+          "error": {
+            "title": "Error",
+            "type": "integer"
+          },
+          "lastAttemptAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lastattemptat"
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ],
+        "title": "ActaSync",
+        "type": "object"
+      },
+      "ActaCreatedDto.7b594f4.ActaType": {
+        "enum": [
+          "CURSADA",
+          "FINAL"
+        ],
+        "title": "ActaType",
+        "type": "string"
+      },
+      "ActaCreatedDto.7b594f4.Result": {
+        "enum": [
+          "APROBADO",
+          "DESAPROBADO",
+          "REGULAR",
+          "LIBRE",
+          "AUSENTE"
+        ],
+        "title": "Result",
+        "type": "string"
+      },
+      "SyncResponse.7b594f4.ActaSync": {
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "integer"
+          },
+          "error": {
+            "title": "Error",
+            "type": "integer"
+          },
+          "lastAttemptAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lastattemptat"
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ],
+        "title": "ActaSync",
+        "type": "object"
+      },
+      "AttendanceList.a3de9a0.AttendanceListItem": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "present": {
+            "title": "Present",
+            "type": "integer"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "justified": {
+            "title": "Justified",
+            "type": "integer"
+          },
+          "updatedAt": {
+            "title": "Updatedat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "total",
+          "present",
+          "absent",
+          "justified",
+          "updatedAt"
+        ],
+        "title": "AttendanceListItem",
+        "type": "object"
+      },
+      "AttendanceDto.a3de9a0.AttendanceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Studentid",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AttendanceDto.a3de9a0.AttendanceStatus"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          }
+        },
+        "required": [
+          "studentId",
+          "status"
+        ],
+        "title": "AttendanceRecord",
+        "type": "object"
+      },
+      "AttendanceDto.a3de9a0.AttendanceStatus": {
+        "enum": [
+          "PRESENTE",
+          "AUSENTE",
+          "JUSTIFICADO"
+        ],
+        "title": "AttendanceStatus",
+        "type": "string"
+      },
+      "AttendancePutRequest.a3de9a0.AttendanceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Studentid",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AttendancePutRequest.a3de9a0.AttendanceStatus"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          }
+        },
+        "required": [
+          "studentId",
+          "status"
+        ],
+        "title": "AttendanceRecord",
+        "type": "object"
+      },
+      "AttendancePutRequest.a3de9a0.AttendanceStatus": {
+        "enum": [
+          "PRESENTE",
+          "AUSENTE",
+          "JUSTIFICADO"
+        ],
+        "title": "AttendanceStatus",
+        "type": "string"
+      },
+      "AttendanceSummaryDto.a3de9a0.Condition": {
+        "enum": [
+          "REGULAR",
+          "LIBRE"
+        ],
+        "title": "Condition",
+        "type": "string"
+      },
+      "AttendanceSummaryDto.a3de9a0.StudentAttendanceSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "classesRecorded": {
+            "title": "Classesrecorded",
+            "type": "integer"
+          },
+          "present": {
+            "title": "Present",
+            "type": "integer"
+          },
+          "justified": {
+            "title": "Justified",
+            "type": "integer"
+          },
+          "absences": {
+            "title": "Absences",
+            "type": "integer"
+          },
+          "attendancePercentage": {
+            "title": "Attendancepercentage",
+            "type": "number"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/AttendanceSummaryDto.a3de9a0.Condition"
+          }
+        },
+        "required": [
+          "studentId",
+          "classesRecorded",
+          "present",
+          "justified",
+          "absences",
+          "attendancePercentage",
+          "condition"
+        ],
+        "title": "StudentAttendanceSummary",
+        "type": "object"
+      },
+      "PeriodList.7121510.PeriodDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "startDate": {
+            "format": "date",
+            "title": "Startdate",
+            "type": "string"
+          },
+          "endDate": {
+            "format": "date",
+            "title": "Enddate",
+            "type": "string"
+          },
+          "enrollmentFrom": {
+            "format": "date",
+            "title": "Enrollmentfrom",
+            "type": "string"
+          },
+          "enrollmentUntil": {
+            "format": "date",
+            "title": "Enrollmentuntil",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "year",
+          "number",
+          "label",
+          "startDate",
+          "endDate",
+          "enrollmentFrom",
+          "enrollmentUntil"
+        ],
+        "title": "PeriodDto",
+        "type": "object"
+      },
+      "ExamTurnList.7121510.ExamTurnDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "startDate": {
+            "format": "date",
+            "title": "Startdate",
+            "type": "string"
+          },
+          "endDate": {
+            "format": "date",
+            "title": "Enddate",
+            "type": "string"
+          },
+          "enrollmentFrom": {
+            "format": "date",
+            "title": "Enrollmentfrom",
+            "type": "string"
+          },
+          "enrollmentUntil": {
+            "format": "date",
+            "title": "Enrollmentuntil",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "startDate",
+          "endDate",
+          "enrollmentFrom",
+          "enrollmentUntil"
+        ],
+        "title": "ExamTurnDto",
+        "type": "object"
+      },
+      "ExamTypeList.7121510.ExamTypeDto": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "name",
+          "category"
+        ],
+        "title": "ExamTypeDto",
+        "type": "object"
+      },
+      "CourseList.7121510.CourseDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/CourseList.7121510.SubjectDto"
+          },
+          "period": {
+            "$ref": "#/components/schemas/CourseList.7121510.PeriodDto"
+          },
+          "campusId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Campusid"
+          },
+          "modality": {
+            "title": "Modality",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "maxSeats": {
+            "title": "Maxseats",
+            "type": "integer"
+          },
+          "enrolled": {
+            "title": "Enrolled",
+            "type": "integer"
+          },
+          "startDate": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Startdate"
+          },
+          "endDate": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Enddate"
+          },
+          "schedule": {
+            "items": {
+              "$ref": "#/components/schemas/CourseList.7121510.ScheduleDto"
+            },
+            "title": "Schedule",
+            "type": "array"
+          },
+          "teachers": {
+            "items": {
+              "$ref": "#/components/schemas/CourseList.7121510.TeacherDto"
+            },
+            "title": "Teachers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "subject",
+          "period",
+          "modality",
+          "status",
+          "maxSeats",
+          "enrolled",
+          "schedule",
+          "teachers"
+        ],
+        "title": "CourseDto",
+        "type": "object"
+      },
+      "CourseList.7121510.PeriodDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "startDate": {
+            "format": "date",
+            "title": "Startdate",
+            "type": "string"
+          },
+          "endDate": {
+            "format": "date",
+            "title": "Enddate",
+            "type": "string"
+          },
+          "enrollmentFrom": {
+            "format": "date",
+            "title": "Enrollmentfrom",
+            "type": "string"
+          },
+          "enrollmentUntil": {
+            "format": "date",
+            "title": "Enrollmentuntil",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "year",
+          "number",
+          "label",
+          "startDate",
+          "endDate",
+          "enrollmentFrom",
+          "enrollmentUntil"
+        ],
+        "title": "PeriodDto",
+        "type": "object"
+      },
+      "CourseList.7121510.ScheduleDto": {
+        "additionalProperties": false,
+        "properties": {
+          "roomId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Roomid"
+          },
+          "weekday": {
+            "title": "Weekday",
+            "type": "string"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          }
+        },
+        "required": [
+          "weekday",
+          "startTime",
+          "endTime"
+        ],
+        "title": "ScheduleDto",
+        "type": "object"
+      },
+      "CourseList.7121510.SubjectDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "title": "SubjectDto",
+        "type": "object"
+      },
+      "CourseList.7121510.TeacherDto": {
+        "additionalProperties": false,
+        "properties": {
+          "teacherId": {
+            "title": "Teacherid",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "teacherId",
+          "role"
+        ],
+        "title": "TeacherDto",
+        "type": "object"
+      },
+      "CourseDto.7121510.PeriodDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "startDate": {
+            "format": "date",
+            "title": "Startdate",
+            "type": "string"
+          },
+          "endDate": {
+            "format": "date",
+            "title": "Enddate",
+            "type": "string"
+          },
+          "enrollmentFrom": {
+            "format": "date",
+            "title": "Enrollmentfrom",
+            "type": "string"
+          },
+          "enrollmentUntil": {
+            "format": "date",
+            "title": "Enrollmentuntil",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "year",
+          "number",
+          "label",
+          "startDate",
+          "endDate",
+          "enrollmentFrom",
+          "enrollmentUntil"
+        ],
+        "title": "PeriodDto",
+        "type": "object"
+      },
+      "CourseDto.7121510.ScheduleDto": {
+        "additionalProperties": false,
+        "properties": {
+          "roomId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Roomid"
+          },
+          "weekday": {
+            "title": "Weekday",
+            "type": "string"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          }
+        },
+        "required": [
+          "weekday",
+          "startTime",
+          "endTime"
+        ],
+        "title": "ScheduleDto",
+        "type": "object"
+      },
+      "CourseDto.7121510.SubjectDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "title": "SubjectDto",
+        "type": "object"
+      },
+      "CourseDto.7121510.TeacherDto": {
+        "additionalProperties": false,
+        "properties": {
+          "teacherId": {
+            "title": "Teacherid",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "teacherId",
+          "role"
+        ],
+        "title": "TeacherDto",
+        "type": "object"
+      },
+      "RosterList.7121510.AttendanceStatsDto": {
+        "additionalProperties": false,
+        "properties": {
+          "classesRecorded": {
+            "title": "Classesrecorded",
+            "type": "integer"
+          },
+          "present": {
+            "title": "Present",
+            "type": "integer"
+          },
+          "justified": {
+            "title": "Justified",
+            "type": "integer"
+          },
+          "absences": {
+            "title": "Absences",
+            "type": "integer"
+          },
+          "attendancePercentage": {
+            "title": "Attendancepercentage",
+            "type": "number"
+          },
+          "condition": {
+            "title": "Condition",
+            "type": "string"
+          }
+        },
+        "required": [
+          "classesRecorded",
+          "present",
+          "justified",
+          "absences",
+          "attendancePercentage",
+          "condition"
+        ],
+        "title": "AttendanceStatsDto",
+        "type": "object"
+      },
+      "RosterList.7121510.FinalResultDto": {
+        "additionalProperties": false,
+        "properties": {
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "actaNumber": {
+            "title": "Actanumber",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result",
+          "actaNumber",
+          "date"
+        ],
+        "title": "FinalResultDto",
+        "type": "object"
+      },
+      "RosterList.7121510.RosterStudentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RosterList.7121510.StudentProfileDto"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "enrollmentStatus": {
+            "title": "Enrollmentstatus",
+            "type": "string"
+          },
+          "attendance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RosterList.7121510.AttendanceStatsDto"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "finalResult": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RosterList.7121510.FinalResultDto"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "studentId",
+          "enrollmentStatus"
+        ],
+        "title": "RosterStudentDto",
+        "type": "object"
+      },
+      "RosterList.7121510.StudentProfileDto": {
+        "additionalProperties": false,
+        "properties": {
+          "firstName": {
+            "title": "Firstname",
+            "type": "string"
+          },
+          "lastName": {
+            "title": "Lastname",
+            "type": "string"
+          },
+          "fullName": {
+            "title": "Fullname",
+            "type": "string"
+          },
+          "document": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Document"
+          },
+          "fileNumber": {
+            "title": "Filenumber",
+            "type": "string"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Email"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "fullName",
+          "fileNumber"
+        ],
+        "title": "StudentProfileDto",
+        "type": "object"
+      },
+      "PrerequisiteList.7121510.PrerequisiteDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "prerequisiteSubjectId": {
+            "title": "Prerequisitesubjectid",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "prerequisiteSubjectId",
+          "kind"
+        ],
+        "title": "PrerequisiteDto",
+        "type": "object"
+      },
+      "ExamList.2db25b2.ExamDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "durationMinutes": {
+            "title": "Durationminutes",
+            "type": "integer"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          },
+          "modality": {
+            "$ref": "#/components/schemas/ExamList.2db25b2.Modality"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExamList.2db25b2.ExamStatus"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ExamList.2db25b2.ExamPhase"
+          },
+          "gradedCount": {
+            "title": "Gradedcount",
+            "type": "integer"
+          },
+          "createdAt": {
+            "title": "Createdat",
+            "type": "string"
+          },
+          "updatedAt": {
+            "title": "Updatedat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "courseId",
+          "type",
+          "name",
+          "date",
+          "startTime",
+          "durationMinutes",
+          "endTime",
+          "modality",
+          "status",
+          "phase",
+          "gradedCount",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "ExamDto",
+        "type": "object"
+      },
+      "ExamList.2db25b2.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "ExamList.2db25b2.ExamStatus": {
+        "enum": [
+          "PROGRAMADO",
+          "CANCELADO"
+        ],
+        "title": "ExamStatus",
+        "type": "string"
+      },
+      "ExamList.2db25b2.Modality": {
+        "enum": [
+          "PRESENCIAL",
+          "VIRTUAL"
+        ],
+        "title": "Modality",
+        "type": "string"
+      },
+      "ExamCreateRequest.2db25b2.Modality": {
+        "enum": [
+          "PRESENCIAL",
+          "VIRTUAL"
+        ],
+        "title": "Modality",
+        "type": "string"
+      },
+      "ExamDto.2db25b2.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "ExamDto.2db25b2.ExamStatus": {
+        "enum": [
+          "PROGRAMADO",
+          "CANCELADO"
+        ],
+        "title": "ExamStatus",
+        "type": "string"
+      },
+      "ExamDto.2db25b2.Modality": {
+        "enum": [
+          "PRESENCIAL",
+          "VIRTUAL"
+        ],
+        "title": "Modality",
+        "type": "string"
+      },
+      "ExamDetailDto.2db25b2.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "ExamDetailDto.2db25b2.ExamStatus": {
+        "enum": [
+          "PROGRAMADO",
+          "CANCELADO"
+        ],
+        "title": "ExamStatus",
+        "type": "string"
+      },
+      "ExamDetailDto.2db25b2.GradingProgress": {
+        "additionalProperties": false,
+        "properties": {
+          "enrolled": {
+            "title": "Enrolled",
+            "type": "integer"
+          },
+          "graded": {
+            "title": "Graded",
+            "type": "integer"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "pending": {
+            "title": "Pending",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "enrolled",
+          "graded",
+          "absent",
+          "pending"
+        ],
+        "title": "GradingProgress",
+        "type": "object"
+      },
+      "ExamDetailDto.2db25b2.Modality": {
+        "enum": [
+          "PRESENCIAL",
+          "VIRTUAL"
+        ],
+        "title": "Modality",
+        "type": "string"
+      },
+      "ExamPatchRequest.2db25b2.Modality": {
+        "enum": [
+          "PRESENCIAL",
+          "VIRTUAL"
+        ],
+        "title": "Modality",
+        "type": "string"
+      },
+      "ExamQuery.2db25b2.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "ExamWithCourseList.2db25b2.CourseRef": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "subjectName": {
+            "title": "Subjectname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "subjectName"
+        ],
+        "title": "CourseRef",
+        "type": "object"
+      },
+      "ExamWithCourseList.2db25b2.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "ExamWithCourseList.2db25b2.ExamStatus": {
+        "enum": [
+          "PROGRAMADO",
+          "CANCELADO"
+        ],
+        "title": "ExamStatus",
+        "type": "string"
+      },
+      "ExamWithCourseList.2db25b2.ExamWithCourseDto": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "durationMinutes": {
+            "title": "Durationminutes",
+            "type": "integer"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          },
+          "modality": {
+            "$ref": "#/components/schemas/ExamWithCourseList.2db25b2.Modality"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExamWithCourseList.2db25b2.ExamStatus"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ExamWithCourseList.2db25b2.ExamPhase"
+          },
+          "gradedCount": {
+            "title": "Gradedcount",
+            "type": "integer"
+          },
+          "createdAt": {
+            "title": "Createdat",
+            "type": "string"
+          },
+          "updatedAt": {
+            "title": "Updatedat",
+            "type": "string"
+          },
+          "course": {
+            "$ref": "#/components/schemas/ExamWithCourseList.2db25b2.CourseRef"
+          }
+        },
+        "required": [
+          "id",
+          "courseId",
+          "type",
+          "name",
+          "date",
+          "startTime",
+          "durationMinutes",
+          "endTime",
+          "modality",
+          "status",
+          "phase",
+          "gradedCount",
+          "createdAt",
+          "updatedAt",
+          "course"
+        ],
+        "title": "ExamWithCourseDto",
+        "type": "object"
+      },
+      "ExamWithCourseList.2db25b2.Modality": {
+        "enum": [
+          "PRESENCIAL",
+          "VIRTUAL"
+        ],
+        "title": "Modality",
+        "type": "string"
+      },
+      "GradesResponse.128e64d.GradeEntryOut": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "studentName": {
+            "title": "Studentname",
+            "type": "string"
+          },
+          "fileNumber": {
+            "title": "Filenumber",
+            "type": "string"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "boolean"
+          },
+          "gradedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gradedat"
+          },
+          "gradedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gradedby"
+          }
+        },
+        "required": [
+          "studentId",
+          "studentName",
+          "fileNumber",
+          "absent"
+        ],
+        "title": "GradeEntryOut",
+        "type": "object"
+      },
+      "GradesResponse.128e64d.GradesSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "enrolled": {
+            "title": "Enrolled",
+            "type": "integer"
+          },
+          "graded": {
+            "title": "Graded",
+            "type": "integer"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "pending": {
+            "title": "Pending",
+            "type": "integer"
+          },
+          "average": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Average"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "integer"
+          },
+          "failed": {
+            "title": "Failed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "enrolled",
+          "graded",
+          "absent",
+          "pending",
+          "passed",
+          "failed"
+        ],
+        "title": "GradesSummary",
+        "type": "object"
+      },
+      "GradesUpsertRequest.128e64d.GradeEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Studentid",
+            "type": "string"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "absent": {
+            "default": false,
+            "title": "Absent",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "studentId"
+        ],
+        "title": "GradeEntry",
+        "type": "object"
+      },
+      "GradesUpsertResponse.128e64d.SavedGradeEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "studentId",
+          "absent"
+        ],
+        "title": "SavedGradeEntry",
+        "type": "object"
+      },
+      "GradeMatrix.128e64d.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "GradeMatrix.128e64d.MatrixCell": {
+        "additionalProperties": false,
+        "properties": {
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "absent"
+        ],
+        "title": "MatrixCell",
+        "type": "object"
+      },
+      "GradeMatrix.128e64d.MatrixExam": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/GradeMatrix.128e64d.ExamPhase"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "name",
+          "date",
+          "phase"
+        ],
+        "title": "MatrixExam",
+        "type": "object"
+      },
+      "GradeMatrix.128e64d.MatrixRow": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "studentName": {
+            "title": "Studentname",
+            "type": "string"
+          },
+          "fileNumber": {
+            "title": "Filenumber",
+            "type": "string"
+          },
+          "grades": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GradeMatrix.128e64d.MatrixCell"
+            },
+            "title": "Grades",
+            "type": "object"
+          },
+          "average": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Average"
+          }
+        },
+        "required": [
+          "studentId",
+          "studentName",
+          "fileNumber",
+          "grades"
+        ],
+        "title": "MatrixRow",
+        "type": "object"
+      },
+      "ResultList.77f77bb.ResultDto": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "subjectId": {
+            "title": "Subjectid",
+            "type": "integer"
+          },
+          "periodId": {
+            "title": "Periodid",
+            "type": "integer"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "commission": {
+            "title": "Commission",
+            "type": "string"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "actaType": {
+            "title": "Actatype",
+            "type": "string"
+          },
+          "actaNumber": {
+            "title": "Actanumber",
+            "type": "string"
+          },
+          "resultDate": {
+            "format": "date",
+            "title": "Resultdate",
+            "type": "string"
+          }
+        },
+        "required": [
+          "studentId",
+          "courseId",
+          "subjectId",
+          "periodId",
+          "subject",
+          "commission",
+          "period",
+          "result",
+          "actaType",
+          "actaNumber",
+          "resultDate"
+        ],
+        "title": "ResultDto",
+        "type": "object"
+      }
+    }
+  },
+  "security": []
+}

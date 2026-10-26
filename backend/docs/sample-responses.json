@@ -1,0 +1,1580 @@
+{
+  "responses": [
+    {
+      "request": "GET /api/v1/health",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      }
+    },
+    {
+      "request": "GET /api/v1/health/ready",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "integrations": {
+          "academic": "mock",
+          "coreEvents": "mock",
+          "studentDirectory": "mock"
+        },
+        "migrationHead": "0002",
+        "outboxFailed": 0,
+        "outboxPending": 0,
+        "status": "ok"
+      }
+    },
+    {
+      "request": "GET /api/v1/me",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "userId": "docente-123",
+        "email": null,
+        "roles": [
+          "ROLE_DOCENTE"
+        ],
+        "teacherIds": [
+          "docente-123"
+        ]
+      }
+    },
+    {
+      "request": "GET /api/v1/periods",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "id": 7,
+          "year": 2026,
+          "number": 1,
+          "label": "1° Cuatrimestre 2026",
+          "startDate": "2026-03-01",
+          "endDate": "2026-07-15",
+          "enrollmentFrom": "2026-02-01",
+          "enrollmentUntil": "2026-02-28"
+        },
+        {
+          "id": 8,
+          "year": 2026,
+          "number": 2,
+          "label": "2° Cuatrimestre 2026",
+          "startDate": "2026-08-01",
+          "endDate": "2026-11-30",
+          "enrollmentFrom": "2026-07-01",
+          "enrollmentUntil": "2026-07-31"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/exam-turns",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "id": 7,
+          "name": "Turno final diciembre",
+          "startDate": "2026-12-01",
+          "endDate": "2026-12-15",
+          "enrollmentFrom": "2026-11-10",
+          "enrollmentUntil": "2026-11-25"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/exam-types",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "type": "PARCIAL_1",
+          "name": "Parcial 1",
+          "category": "PARCIAL"
+        },
+        {
+          "type": "PARCIAL_2",
+          "name": "Parcial 2",
+          "category": "PARCIAL"
+        },
+        {
+          "type": "RECUP_1",
+          "name": "Recuperatorio Parcial 1",
+          "category": "RECUPERATORIO"
+        },
+        {
+          "type": "RECUP_2",
+          "name": "Recuperatorio Parcial 2",
+          "category": "RECUPERATORIO"
+        },
+        {
+          "type": "TP_1",
+          "name": "TP1",
+          "category": "INTEGRADOR"
+        },
+        {
+          "type": "TP_2",
+          "name": "TP2",
+          "category": "INTEGRADOR"
+        },
+        {
+          "type": "FINAL",
+          "name": "Final",
+          "category": "FINAL"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "id": 44,
+          "code": "BD1-A",
+          "subject": {
+            "id": 16,
+            "code": "BD1",
+            "name": "Bases de Datos I"
+          },
+          "period": {
+            "id": 8,
+            "year": 2026,
+            "number": 2,
+            "label": "2° Cuatrimestre 2026",
+            "startDate": "2026-08-01",
+            "endDate": "2026-11-30",
+            "enrollmentFrom": "2026-07-01",
+            "enrollmentUntil": "2026-07-31"
+          },
+          "campusId": 1,
+          "modality": "VIRTUAL",
+          "status": "CANCELADO",
+          "maxSeats": 30,
+          "enrolled": 0,
+          "startDate": "2026-08-10",
+          "endDate": "2026-11-30",
+          "schedule": [],
+          "teachers": [
+            {
+              "teacherId": "docente-123",
+              "role": "TITULAR"
+            }
+          ]
+        },
+        {
+          "id": 42,
+          "code": "DDA2-A",
+          "subject": {
+            "id": 15,
+            "code": "DDA2",
+            "name": "Desarrollo de Aplicaciones II"
+          },
+          "period": {
+            "id": 8,
+            "year": 2026,
+            "number": 2,
+            "label": "2° Cuatrimestre 2026",
+            "startDate": "2026-08-01",
+            "endDate": "2026-11-30",
+            "enrollmentFrom": "2026-07-01",
+            "enrollmentUntil": "2026-07-31"
+          },
+          "campusId": 2,
+          "modality": "PRESENCIAL",
+          "status": "EN_CURSO",
+          "maxSeats": 45,
+          "enrolled": 3,
+          "startDate": "2026-08-10",
+          "endDate": "2026-11-30",
+          "schedule": [
+            {
+              "roomId": 4,
+              "weekday": "MONDAY",
+              "startTime": "18:00",
+              "endTime": "20:00"
+            }
+          ],
+          "teachers": [
+            {
+              "teacherId": "docente-123",
+              "role": "TITULAR"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "code": "BD1-B",
+          "subject": {
+            "id": 16,
+            "code": "BD1",
+            "name": "Bases de Datos I"
+          },
+          "period": {
+            "id": 7,
+            "year": 2026,
+            "number": 1,
+            "label": "1° Cuatrimestre 2026",
+            "startDate": "2026-03-01",
+            "endDate": "2026-07-15",
+            "enrollmentFrom": "2026-02-01",
+            "enrollmentUntil": "2026-02-28"
+          },
+          "campusId": 1,
+          "modality": "PRESENCIAL",
+          "status": "FINALIZADO",
+          "maxSeats": 30,
+          "enrolled": 2,
+          "startDate": "2026-03-10",
+          "endDate": "2026-07-15",
+          "schedule": [
+            {
+              "roomId": 2,
+              "weekday": "FRIDAY",
+              "startTime": "08:00",
+              "endTime": "10:00"
+            }
+          ],
+          "teachers": [
+            {
+              "teacherId": "docente-123",
+              "role": "ADJUNTO"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses/42",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "id": 42,
+        "code": "DDA2-A",
+        "subject": {
+          "id": 15,
+          "code": "DDA2",
+          "name": "Desarrollo de Aplicaciones II"
+        },
+        "period": {
+          "id": 8,
+          "year": 2026,
+          "number": 2,
+          "label": "2° Cuatrimestre 2026",
+          "startDate": "2026-08-01",
+          "endDate": "2026-11-30",
+          "enrollmentFrom": "2026-07-01",
+          "enrollmentUntil": "2026-07-31"
+        },
+        "campusId": 2,
+        "modality": "PRESENCIAL",
+        "status": "EN_CURSO",
+        "maxSeats": 45,
+        "enrolled": 3,
+        "startDate": "2026-08-10",
+        "endDate": "2026-11-30",
+        "schedule": [
+          {
+            "roomId": 4,
+            "weekday": "MONDAY",
+            "startTime": "18:00",
+            "endTime": "20:00"
+          }
+        ],
+        "teachers": [
+          {
+            "teacherId": "docente-123",
+            "role": "TITULAR"
+          }
+        ]
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/students",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "studentId": "alumno-456",
+          "profile": {
+            "firstName": "Juan",
+            "lastName": "Pérez",
+            "fullName": "Juan Pérez",
+            "document": "40123456",
+            "fileNumber": "123456",
+            "email": "juan.perez@uade.edu.ar"
+          },
+          "enrollmentStatus": "CURSANDO",
+          "attendance": {
+            "classesRecorded": 4,
+            "present": 4,
+            "justified": 0,
+            "absences": 0,
+            "attendancePercentage": 100.0,
+            "condition": "REGULAR"
+          },
+          "finalResult": null
+        },
+        {
+          "studentId": "alumno-457",
+          "profile": {
+            "firstName": "Lucas",
+            "lastName": "Fernández",
+            "fullName": "Lucas Fernández",
+            "document": "40123458",
+            "fileNumber": "123458",
+            "email": "lucas.fernandez@uade.edu.ar"
+          },
+          "enrollmentStatus": "CURSANDO",
+          "attendance": {
+            "classesRecorded": 4,
+            "present": 2,
+            "justified": 0,
+            "absences": 2,
+            "attendancePercentage": 50.0,
+            "condition": "LIBRE"
+          },
+          "finalResult": null
+        },
+        {
+          "studentId": "alumno-458",
+          "profile": {
+            "firstName": "Ana",
+            "lastName": "Rodríguez",
+            "fullName": "Ana Rodríguez",
+            "document": "40123459",
+            "fileNumber": "123459",
+            "email": "ana.rodriguez@uade.edu.ar"
+          },
+          "enrollmentStatus": "CURSANDO",
+          "attendance": {
+            "classesRecorded": 4,
+            "present": 3,
+            "justified": 1,
+            "absences": 0,
+            "attendancePercentage": 100.0,
+            "condition": "REGULAR"
+          },
+          "finalResult": null
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses/42/prerequisites",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "id": 5,
+          "prerequisiteSubjectId": 12,
+          "kind": "APROBADA"
+        },
+        {
+          "id": 6,
+          "prerequisiteSubjectId": 13,
+          "kind": "REGULAR"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses/43",
+      "note": "curso de otro docente -> 403",
+      "requestBody": null,
+      "status": 403,
+      "response": {
+        "code": "COURSE_NOT_ASSIGNED",
+        "correlationId": "03f38af9-1331-4b01-a388-b717153225f5",
+        "detail": "No estás asignado a este curso.",
+        "status": 403,
+        "title": "Forbidden",
+        "type": "about:blank"
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/attendances",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "date": "2026-09-01",
+          "notes": null,
+          "total": 3,
+          "present": 2,
+          "absent": 1,
+          "justified": 0,
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        },
+        {
+          "date": "2026-08-25",
+          "notes": null,
+          "total": 3,
+          "present": 3,
+          "absent": 0,
+          "justified": 0,
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        },
+        {
+          "date": "2026-08-18",
+          "notes": null,
+          "total": 3,
+          "present": 1,
+          "absent": 1,
+          "justified": 1,
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        },
+        {
+          "date": "2026-08-11",
+          "notes": null,
+          "total": 3,
+          "present": 3,
+          "absent": 0,
+          "justified": 0,
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses/42/attendances/2026-08-18",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "date": "2026-08-18",
+        "notes": null,
+        "records": [
+          {
+            "studentId": "alumno-456",
+            "status": "PRESENTE",
+            "note": null
+          },
+          {
+            "studentId": "alumno-457",
+            "status": "AUSENTE",
+            "note": null
+          },
+          {
+            "studentId": "alumno-458",
+            "status": "JUSTIFICADO",
+            "note": "Certificado médico"
+          }
+        ]
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/attendance-summary",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "threshold": 75.0,
+        "students": [
+          {
+            "studentId": "alumno-456",
+            "classesRecorded": 4,
+            "present": 4,
+            "justified": 0,
+            "absences": 0,
+            "attendancePercentage": 100.0,
+            "condition": "REGULAR"
+          },
+          {
+            "studentId": "alumno-457",
+            "classesRecorded": 4,
+            "present": 2,
+            "justified": 0,
+            "absences": 2,
+            "attendancePercentage": 50.0,
+            "condition": "LIBRE"
+          },
+          {
+            "studentId": "alumno-458",
+            "classesRecorded": 4,
+            "present": 3,
+            "justified": 1,
+            "absences": 0,
+            "attendancePercentage": 100.0,
+            "condition": "REGULAR"
+          }
+        ]
+      }
+    },
+    {
+      "request": "PUT /api/v1/courses/42/attendances/2026-10-12",
+      "note": "",
+      "requestBody": {
+        "notes": "Clase de repaso",
+        "records": [
+          {
+            "studentId": "alumno-456",
+            "status": "PRESENTE"
+          },
+          {
+            "studentId": "alumno-457",
+            "status": "AUSENTE"
+          },
+          {
+            "studentId": "alumno-458",
+            "status": "JUSTIFICADO",
+            "note": "Certificado médico"
+          }
+        ]
+      },
+      "status": 201,
+      "response": {
+        "date": "2026-10-12",
+        "notes": "Clase de repaso",
+        "records": [
+          {
+            "studentId": "alumno-456",
+            "status": "PRESENTE",
+            "note": null
+          },
+          {
+            "studentId": "alumno-457",
+            "status": "AUSENTE",
+            "note": null
+          },
+          {
+            "studentId": "alumno-458",
+            "status": "JUSTIFICADO",
+            "note": "Certificado médico"
+          }
+        ]
+      }
+    },
+    {
+      "request": "PUT /api/v1/courses/42/attendances/2026-10-12",
+      "note": "roster incompleto -> 400",
+      "requestBody": {
+        "records": [
+          {
+            "studentId": "alumno-456",
+            "status": "PRESENTE"
+          }
+        ]
+      },
+      "status": 400,
+      "response": {
+        "code": "INCOMPLETE_ROSTER",
+        "correlationId": "f79ba715-ff46-4551-94c9-80682c61808a",
+        "detail": "La asistencia debe incluir a todos los alumnos del curso.",
+        "errors": [
+          {
+            "code": "INCOMPLETE_ROSTER",
+            "field": "records",
+            "message": "Falta alumno-457."
+          },
+          {
+            "code": "INCOMPLETE_ROSTER",
+            "field": "records",
+            "message": "Falta alumno-458."
+          }
+        ],
+        "status": 400,
+        "title": "Bad Request",
+        "type": "about:blank"
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/exams",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "id": 1,
+          "courseId": 42,
+          "type": "PARCIAL_1",
+          "name": "Primer Parcial",
+          "description": null,
+          "date": "2026-08-25",
+          "startTime": "18:00",
+          "durationMinutes": 120,
+          "endTime": "20:00",
+          "modality": "PRESENCIAL",
+          "status": "PROGRAMADO",
+          "phase": "COMPLETED",
+          "gradedCount": 2,
+          "createdAt": "2026-10-20T14:27:24.536890Z",
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        },
+        {
+          "id": 2,
+          "courseId": 42,
+          "type": "PARCIAL_2",
+          "name": "Segundo Parcial",
+          "description": null,
+          "date": "2026-10-14",
+          "startTime": "18:00",
+          "durationMinutes": 120,
+          "endTime": "20:00",
+          "modality": "PRESENCIAL",
+          "status": "PROGRAMADO",
+          "phase": "COMPLETED",
+          "gradedCount": 0,
+          "createdAt": "2026-10-20T14:27:24.536890Z",
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        },
+        {
+          "id": 3,
+          "courseId": 42,
+          "type": "FINAL",
+          "name": "Final",
+          "description": null,
+          "date": "2026-12-03",
+          "startTime": "18:00",
+          "durationMinutes": 120,
+          "endTime": "20:00",
+          "modality": "PRESENCIAL",
+          "status": "PROGRAMADO",
+          "phase": "UPCOMING",
+          "gradedCount": 0,
+          "createdAt": "2026-10-20T14:27:24.536890Z",
+          "updatedAt": "2026-10-20T14:27:24.536890Z"
+        }
+      ]
+    },
+    {
+      "request": "POST /api/v1/courses/42/exams",
+      "note": "",
+      "requestBody": {
+        "type": "tp 1",
+        "date": "2026-11-05",
+        "startTime": "18:00",
+        "durationMinutes": 90,
+        "modality": "VIRTUAL"
+      },
+      "status": 201,
+      "response": {
+        "id": 4,
+        "courseId": 42,
+        "type": "TP_1",
+        "name": "TP1",
+        "description": null,
+        "date": "2026-11-05",
+        "startTime": "18:00",
+        "durationMinutes": 90,
+        "endTime": "19:30",
+        "modality": "VIRTUAL",
+        "status": "PROGRAMADO",
+        "phase": "UPCOMING",
+        "gradedCount": 0,
+        "createdAt": "2026-10-20T14:27:24.879943Z",
+        "updatedAt": "2026-10-20T14:27:24.879943Z"
+      }
+    },
+    {
+      "request": "POST /api/v1/courses/42/exams",
+      "note": "duplicado -> 409",
+      "requestBody": {
+        "type": "TP_1",
+        "date": "2026-11-05",
+        "startTime": "18:00",
+        "durationMinutes": 90,
+        "modality": "VIRTUAL"
+      },
+      "status": 409,
+      "response": {
+        "code": "EXAM_TYPE_ALREADY_EXISTS",
+        "correlationId": "0391e055-1d5a-4201-91bb-ed806898b614",
+        "detail": "Ya existe un examen activo de este tipo en el curso.",
+        "status": 409,
+        "title": "Conflict",
+        "type": "about:blank"
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/exams/4",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "id": 4,
+        "courseId": 42,
+        "type": "TP_1",
+        "name": "TP1",
+        "description": null,
+        "date": "2026-11-05",
+        "startTime": "18:00",
+        "durationMinutes": 90,
+        "endTime": "19:30",
+        "modality": "VIRTUAL",
+        "status": "PROGRAMADO",
+        "phase": "UPCOMING",
+        "gradedCount": 0,
+        "createdAt": "2026-10-20T14:27:24.879943Z",
+        "updatedAt": "2026-10-20T14:27:24.879943Z",
+        "gradingProgress": {
+          "enrolled": 3,
+          "graded": 0,
+          "absent": 0,
+          "pending": 3
+        }
+      }
+    },
+    {
+      "request": "GET /api/v1/exams?phase=UPCOMING",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "id": 4,
+          "courseId": 42,
+          "type": "TP_1",
+          "name": "TP1",
+          "description": null,
+          "date": "2026-11-05",
+          "startTime": "18:00",
+          "durationMinutes": 90,
+          "endTime": "19:30",
+          "modality": "VIRTUAL",
+          "status": "PROGRAMADO",
+          "phase": "UPCOMING",
+          "gradedCount": 0,
+          "createdAt": "2026-10-20T14:27:24.879943Z",
+          "updatedAt": "2026-10-20T14:27:24.879943Z",
+          "course": {
+            "id": 42,
+            "code": "DDA2-A",
+            "subjectName": "Desarrollo de Aplicaciones II"
+          }
+        },
+        {
+          "id": 3,
+          "courseId": 42,
+          "type": "FINAL",
+          "name": "Final",
+          "description": null,
+          "date": "2026-12-03",
+          "startTime": "18:00",
+          "durationMinutes": 120,
+          "endTime": "20:00",
+          "modality": "PRESENCIAL",
+          "status": "PROGRAMADO",
+          "phase": "UPCOMING",
+          "gradedCount": 0,
+          "createdAt": "2026-10-20T14:27:24.536890Z",
+          "updatedAt": "2026-10-20T14:27:24.536890Z",
+          "course": {
+            "id": 42,
+            "code": "DDA2-A",
+            "subjectName": "Desarrollo de Aplicaciones II"
+          }
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses/42/exams/1/grades",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "examId": 1,
+        "entries": [
+          {
+            "studentId": "alumno-456",
+            "studentName": "Juan Pérez",
+            "fileNumber": "123456",
+            "grade": 8.0,
+            "absent": false,
+            "gradedAt": "2026-10-20T14:27:24.536890Z",
+            "gradedBy": "docente-123"
+          },
+          {
+            "studentId": "alumno-457",
+            "studentName": "Lucas Fernández",
+            "fileNumber": "123458",
+            "grade": 5.0,
+            "absent": false,
+            "gradedAt": "2026-10-20T14:27:24.536890Z",
+            "gradedBy": "docente-123"
+          },
+          {
+            "studentId": "alumno-458",
+            "studentName": "Ana Rodríguez",
+            "fileNumber": "123459",
+            "grade": null,
+            "absent": true,
+            "gradedAt": "2026-10-20T14:27:24.536890Z",
+            "gradedBy": "docente-123"
+          }
+        ],
+        "summary": {
+          "enrolled": 3,
+          "graded": 2,
+          "absent": 1,
+          "pending": 0,
+          "average": 6.5,
+          "passed": 2,
+          "failed": 0
+        }
+      }
+    },
+    {
+      "request": "PUT /api/v1/courses/42/exams/3/grades",
+      "note": "",
+      "requestBody": {
+        "entries": [
+          {
+            "studentId": "alumno-456",
+            "grade": 8
+          },
+          {
+            "studentId": "alumno-457",
+            "grade": 3
+          },
+          {
+            "studentId": "alumno-458",
+            "absent": true
+          }
+        ]
+      },
+      "status": 200,
+      "response": {
+        "saved": 3,
+        "cleared": 0,
+        "entries": [
+          {
+            "studentId": "alumno-456",
+            "grade": 8.0,
+            "absent": false
+          },
+          {
+            "studentId": "alumno-457",
+            "grade": 3.0,
+            "absent": false
+          },
+          {
+            "studentId": "alumno-458",
+            "grade": null,
+            "absent": true
+          }
+        ]
+      }
+    },
+    {
+      "request": "PUT /api/v1/courses/42/exams/3/grades",
+      "note": "nota inválida -> 400",
+      "requestBody": {
+        "entries": [
+          {
+            "studentId": "alumno-456",
+            "grade": 11
+          }
+        ]
+      },
+      "status": 400,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "correlationId": "cbcae580-9aa8-4bb7-9d03-9664f1102aa9",
+        "detail": "La solicitud no es válida.",
+        "errors": [
+          {
+            "code": "LESS_THAN_EQUAL",
+            "field": "entries[0].grade",
+            "message": "Debe ser menor o igual a 10."
+          }
+        ],
+        "status": 400,
+        "title": "Bad Request",
+        "type": "about:blank"
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/grades",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "exams": [
+          {
+            "id": 1,
+            "type": "PARCIAL_1",
+            "name": "Primer Parcial",
+            "date": "2026-08-25",
+            "phase": "COMPLETED"
+          },
+          {
+            "id": 2,
+            "type": "PARCIAL_2",
+            "name": "Segundo Parcial",
+            "date": "2026-10-14",
+            "phase": "COMPLETED"
+          },
+          {
+            "id": 4,
+            "type": "TP_1",
+            "name": "TP1",
+            "date": "2026-11-05",
+            "phase": "UPCOMING"
+          },
+          {
+            "id": 3,
+            "type": "FINAL",
+            "name": "Final",
+            "date": "2026-12-03",
+            "phase": "UPCOMING"
+          }
+        ],
+        "rows": [
+          {
+            "studentId": "alumno-456",
+            "studentName": "Juan Pérez",
+            "fileNumber": "123456",
+            "grades": {
+              "1": {
+                "grade": 8.0,
+                "absent": false
+              },
+              "3": {
+                "grade": 8.0,
+                "absent": false
+              }
+            },
+            "average": 8.0
+          },
+          {
+            "studentId": "alumno-457",
+            "studentName": "Lucas Fernández",
+            "fileNumber": "123458",
+            "grades": {
+              "1": {
+                "grade": 5.0,
+                "absent": false
+              },
+              "3": {
+                "grade": 3.0,
+                "absent": false
+              }
+            },
+            "average": 4.0
+          },
+          {
+            "studentId": "alumno-458",
+            "studentName": "Ana Rodríguez",
+            "fileNumber": "123459",
+            "grades": {
+              "1": {
+                "grade": null,
+                "absent": true
+              },
+              "3": {
+                "grade": null,
+                "absent": true
+              }
+            },
+            "average": null
+          }
+        ]
+      }
+    },
+    {
+      "request": "POST /api/v1/actas",
+      "note": "",
+      "requestBody": {
+        "courseId": 42,
+        "type": "FINAL",
+        "examId": 3,
+        "notes": "Acta final"
+      },
+      "status": 201,
+      "response": {
+        "id": 1,
+        "number": "2026-001",
+        "type": "FINAL",
+        "status": "GENERADA",
+        "courseId": 42,
+        "subjectId": 15,
+        "periodId": 8,
+        "examId": 3,
+        "subject": "Desarrollo de Aplicaciones II",
+        "commission": "DDA2-A",
+        "period": "2° Cuatrimestre 2026",
+        "teacherId": "docente-123",
+        "teacherName": "María Gómez",
+        "date": "2026-10-19",
+        "notes": "Acta final",
+        "generatedAt": "2026-10-19T15:00:01.420996Z",
+        "annulledAt": null,
+        "annulmentReason": null,
+        "sync": {
+          "ok": 2,
+          "error": 0,
+          "lastAttemptAt": "2026-10-19T15:00:01.460269Z"
+        },
+        "counts": {
+          "approved": 1,
+          "failed": 1,
+          "absent": 1,
+          "regular": 0,
+          "free": 0
+        },
+        "rows": [
+          {
+            "order": 1,
+            "studentId": "alumno-456",
+            "studentName": "Juan Pérez",
+            "studentFileNumber": "123456",
+            "grade": 8.0,
+            "result": "APROBADO"
+          },
+          {
+            "order": 2,
+            "studentId": "alumno-457",
+            "studentName": "Lucas Fernández",
+            "studentFileNumber": "123458",
+            "grade": 3.0,
+            "result": "DESAPROBADO"
+          },
+          {
+            "order": 3,
+            "studentId": "alumno-458",
+            "studentName": "Ana Rodríguez",
+            "studentFileNumber": "123459",
+            "grade": null,
+            "result": "AUSENTE"
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "request": "POST /api/v1/actas",
+      "note": "duplicada -> 409",
+      "requestBody": {
+        "courseId": 42,
+        "type": "FINAL",
+        "examId": 3
+      },
+      "status": 409,
+      "response": {
+        "code": "ACTA_ALREADY_EXISTS",
+        "correlationId": "dea3bb96-70dd-4d02-93fe-3de8399d4dcf",
+        "detail": "Ya existe un acta generada para este curso y tipo.",
+        "existingActaId": 1,
+        "status": 409,
+        "title": "Conflict",
+        "type": "about:blank"
+      }
+    },
+    {
+      "request": "GET /api/v1/actas",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "id": 1,
+            "number": "2026-001",
+            "type": "FINAL",
+            "status": "GENERADA",
+            "courseId": 42,
+            "subjectId": 15,
+            "periodId": 8,
+            "examId": 3,
+            "subject": "Desarrollo de Aplicaciones II",
+            "commission": "DDA2-A",
+            "period": "2° Cuatrimestre 2026",
+            "teacherId": "docente-123",
+            "teacherName": "María Gómez",
+            "date": "2026-10-19",
+            "notes": "Acta final",
+            "generatedAt": "2026-10-19T15:00:01.420996Z",
+            "annulledAt": null,
+            "annulmentReason": null,
+            "sync": {
+              "ok": 2,
+              "error": 0,
+              "lastAttemptAt": "2026-10-19T15:00:01.460269Z"
+            },
+            "counts": {
+              "approved": 1,
+              "failed": 1,
+              "absent": 1,
+              "regular": 0,
+              "free": 0
+            }
+          }
+        ],
+        "total": 1,
+        "limit": 50,
+        "offset": 0
+      }
+    },
+    {
+      "request": "GET /api/v1/actas/1",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "id": 1,
+        "number": "2026-001",
+        "type": "FINAL",
+        "status": "GENERADA",
+        "courseId": 42,
+        "subjectId": 15,
+        "periodId": 8,
+        "examId": 3,
+        "subject": "Desarrollo de Aplicaciones II",
+        "commission": "DDA2-A",
+        "period": "2° Cuatrimestre 2026",
+        "teacherId": "docente-123",
+        "teacherName": "María Gómez",
+        "date": "2026-10-19",
+        "notes": "Acta final",
+        "generatedAt": "2026-10-19T15:00:01.420996Z",
+        "annulledAt": null,
+        "annulmentReason": null,
+        "sync": {
+          "ok": 2,
+          "error": 0,
+          "lastAttemptAt": "2026-10-19T15:00:01.460269Z"
+        },
+        "counts": {
+          "approved": 1,
+          "failed": 1,
+          "absent": 1,
+          "regular": 0,
+          "free": 0
+        },
+        "rows": [
+          {
+            "order": 1,
+            "studentId": "alumno-456",
+            "studentName": "Juan Pérez",
+            "studentFileNumber": "123456",
+            "grade": 8.0,
+            "result": "APROBADO"
+          },
+          {
+            "order": 2,
+            "studentId": "alumno-457",
+            "studentName": "Lucas Fernández",
+            "studentFileNumber": "123458",
+            "grade": 3.0,
+            "result": "DESAPROBADO"
+          },
+          {
+            "order": 3,
+            "studentId": "alumno-458",
+            "studentName": "Ana Rodríguez",
+            "studentFileNumber": "123459",
+            "grade": null,
+            "result": "AUSENTE"
+          }
+        ]
+      }
+    },
+    {
+      "request": "POST /api/v1/actas/1/sync",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": {
+        "sync": {
+          "ok": 2,
+          "error": 0,
+          "lastAttemptAt": "2026-10-19T15:00:01.521746Z"
+        }
+      }
+    },
+    {
+      "request": "GET /api/v1/students/alumno-456/results",
+      "note": "token de servicio (Portal Estudiante)",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "studentId": "alumno-456",
+          "courseId": 42,
+          "subjectId": 15,
+          "periodId": 8,
+          "subject": "Desarrollo de Aplicaciones II",
+          "commission": "DDA2-A",
+          "period": "2° Cuatrimestre 2026",
+          "grade": 8.0,
+          "result": "APROBADO",
+          "actaType": "FINAL",
+          "actaNumber": "2026-001",
+          "resultDate": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/courses/42/results",
+      "note": "",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "studentId": "alumno-456",
+          "courseId": 42,
+          "subjectId": 15,
+          "periodId": 8,
+          "subject": "Desarrollo de Aplicaciones II",
+          "commission": "DDA2-A",
+          "period": "2° Cuatrimestre 2026",
+          "grade": 8.0,
+          "result": "APROBADO",
+          "actaType": "FINAL",
+          "actaNumber": "2026-001",
+          "resultDate": "2026-10-19"
+        },
+        {
+          "studentId": "alumno-457",
+          "courseId": 42,
+          "subjectId": 15,
+          "periodId": 8,
+          "subject": "Desarrollo de Aplicaciones II",
+          "commission": "DDA2-A",
+          "period": "2° Cuatrimestre 2026",
+          "grade": 3.0,
+          "result": "DESAPROBADO",
+          "actaType": "FINAL",
+          "actaNumber": "2026-001",
+          "resultDate": "2026-10-19"
+        },
+        {
+          "studentId": "alumno-458",
+          "courseId": 42,
+          "subjectId": 15,
+          "periodId": 8,
+          "subject": "Desarrollo de Aplicaciones II",
+          "commission": "DDA2-A",
+          "period": "2° Cuatrimestre 2026",
+          "grade": null,
+          "result": "AUSENTE",
+          "actaType": "FINAL",
+          "actaNumber": "2026-001",
+          "resultDate": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "request": "GET /api/v1/students/alumno-456/results",
+      "note": "token docente -> 403",
+      "requestBody": null,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "correlationId": "67c75f80-03c4-4fca-80b2-bb077c62a8fb",
+        "detail": "Solo disponible para servicios.",
+        "status": 403,
+        "title": "Forbidden",
+        "type": "about:blank"
+      }
+    },
+    {
+      "request": "POST /api/v1/actas/1/annulment",
+      "note": "",
+      "requestBody": {
+        "reason": "Error en una nota."
+      },
+      "status": 200,
+      "response": {
+        "id": 1,
+        "number": "2026-001",
+        "type": "FINAL",
+        "status": "ANULADA",
+        "courseId": 42,
+        "subjectId": 15,
+        "periodId": 8,
+        "examId": 3,
+        "subject": "Desarrollo de Aplicaciones II",
+        "commission": "DDA2-A",
+        "period": "2° Cuatrimestre 2026",
+        "teacherId": "docente-123",
+        "teacherName": "María Gómez",
+        "date": "2026-10-19",
+        "notes": "Acta final",
+        "generatedAt": "2026-10-19T15:00:01.420996Z",
+        "annulledAt": "2026-10-19T15:00:01.560368Z",
+        "annulmentReason": "Error en una nota.",
+        "sync": {
+          "ok": 2,
+          "error": 0,
+          "lastAttemptAt": "2026-10-19T15:00:01.521746Z"
+        },
+        "counts": {
+          "approved": 1,
+          "failed": 1,
+          "absent": 1,
+          "regular": 0,
+          "free": 0
+        },
+        "rows": [
+          {
+            "order": 1,
+            "studentId": "alumno-456",
+            "studentName": "Juan Pérez",
+            "studentFileNumber": "123456",
+            "grade": 8.0,
+            "result": "APROBADO"
+          },
+          {
+            "order": 2,
+            "studentId": "alumno-457",
+            "studentName": "Lucas Fernández",
+            "studentFileNumber": "123458",
+            "grade": 3.0,
+            "result": "DESAPROBADO"
+          },
+          {
+            "order": 3,
+            "studentId": "alumno-458",
+            "studentName": "Ana Rodríguez",
+            "studentFileNumber": "123459",
+            "grade": null,
+            "result": "AUSENTE"
+          }
+        ]
+      }
+    },
+    {
+      "request": "GET /api/v1/courses/42/students",
+      "note": "tras anular el acta",
+      "requestBody": null,
+      "status": 200,
+      "response": [
+        {
+          "studentId": "alumno-456",
+          "profile": {
+            "firstName": "Juan",
+            "lastName": "Pérez",
+            "fullName": "Juan Pérez",
+            "document": "40123456",
+            "fileNumber": "123456",
+            "email": "juan.perez@uade.edu.ar"
+          },
+          "enrollmentStatus": "CURSANDO",
+          "attendance": {
+            "classesRecorded": 5,
+            "present": 5,
+            "justified": 0,
+            "absences": 0,
+            "attendancePercentage": 100.0,
+            "condition": "REGULAR"
+          },
+          "finalResult": null
+        },
+        {
+          "studentId": "alumno-457",
+          "profile": {
+            "firstName": "Lucas",
+            "lastName": "Fernández",
+            "fullName": "Lucas Fernández",
+            "document": "40123458",
+            "fileNumber": "123458",
+            "email": "lucas.fernandez@uade.edu.ar"
+          },
+          "enrollmentStatus": "CURSANDO",
+          "attendance": {
+            "classesRecorded": 5,
+            "present": 2,
+            "justified": 0,
+            "absences": 3,
+            "attendancePercentage": 40.0,
+            "condition": "LIBRE"
+          },
+          "finalResult": null
+        },
+        {
+          "studentId": "alumno-458",
+          "profile": {
+            "firstName": "Ana",
+            "lastName": "Rodríguez",
+            "fullName": "Ana Rodríguez",
+            "document": "40123459",
+            "fileNumber": "123459",
+            "email": "ana.rodriguez@uade.edu.ar"
+          },
+          "enrollmentStatus": "CURSANDO",
+          "attendance": {
+            "classesRecorded": 5,
+            "present": 3,
+            "justified": 2,
+            "absences": 0,
+            "attendancePercentage": 100.0,
+            "condition": "REGULAR"
+          },
+          "finalResult": null
+        }
+      ]
+    }
+  ],
+  "outboxEvents": [
+    {
+      "data": {
+        "date": "2026-10-12",
+        "counts": {
+          "absent": 1,
+          "present": 1,
+          "justified": 1
+        },
+        "records": [
+          {
+            "status": "PRESENTE",
+            "studentId": "alumno-456"
+          },
+          {
+            "status": "AUSENTE",
+            "studentId": "alumno-457"
+          },
+          {
+            "status": "JUSTIFICADO",
+            "studentId": "alumno-458"
+          }
+        ],
+        "courseId": 42
+      },
+      "actor": {
+        "id": "docente-123",
+        "type": "user"
+      },
+      "source": "teacher",
+      "eventId": "d71d6cfc-f6a9-4ac2-8817-fcb76199c72a",
+      "subject": "course/42/attendance/2026-10-12",
+      "eventType": "teacher.attendance-recorded.v1",
+      "occurredAt": "2026-10-19T15:00:01.226963Z",
+      "causationId": null,
+      "specVersion": "1.0",
+      "correlationId": "46f4a7f8-ca12-446e-9aef-59ea924358ad"
+    },
+    {
+      "data": {
+        "date": "2026-11-05",
+        "name": "TP1",
+        "type": "TP_1",
+        "examId": 4,
+        "courseId": 42,
+        "modality": "VIRTUAL",
+        "startTime": "18:00",
+        "durationMinutes": 90
+      },
+      "actor": {
+        "id": "docente-123",
+        "type": "user"
+      },
+      "source": "teacher",
+      "eventId": "0230f773-93e5-4ed8-b302-771bf2514658",
+      "subject": "exam/4",
+      "eventType": "teacher.exam-created.v1",
+      "occurredAt": "2026-10-19T15:00:01.288011Z",
+      "causationId": null,
+      "specVersion": "1.0",
+      "correlationId": "376da8bc-df70-4118-9e50-9336723ad55b"
+    },
+    {
+      "data": {
+        "examId": 3,
+        "grades": [
+          {
+            "grade": 8.0,
+            "status": "APROBADO",
+            "studentId": "alumno-456"
+          },
+          {
+            "grade": 3.0,
+            "status": "DESAPROBADO",
+            "studentId": "alumno-457"
+          }
+        ],
+        "courseId": 42,
+        "examType": "FINAL"
+      },
+      "actor": {
+        "id": "docente-123",
+        "type": "user"
+      },
+      "source": "teacher",
+      "eventId": "851a641c-5d95-4a64-88cc-bf61ebf3f036",
+      "subject": "exam/3",
+      "eventType": "teacher.grade-published.v1",
+      "occurredAt": "2026-10-19T15:00:01.374329Z",
+      "causationId": null,
+      "specVersion": "1.0",
+      "correlationId": "0ff7d92e-f61b-4a13-8869-258333c17649"
+    },
+    {
+      "data": {
+        "date": "2026-10-19",
+        "type": "FINAL",
+        "actaId": 1,
+        "counts": {
+          "free": 0,
+          "absent": 1,
+          "failed": 1,
+          "regular": 0,
+          "approved": 1
+        },
+        "examId": 3,
+        "number": "2026-001",
+        "status": "GENERADA",
+        "results": [
+          {
+            "grade": 8.0,
+            "result": "APROBADO",
+            "studentId": "alumno-456"
+          },
+          {
+            "grade": 3.0,
+            "result": "DESAPROBADO",
+            "studentId": "alumno-457"
+          },
+          {
+            "grade": null,
+            "result": "AUSENTE",
+            "studentId": "alumno-458"
+          }
+        ],
+        "courseId": 42,
+        "teacherId": "docente-123"
+      },
+      "actor": {
+        "id": "docente-123",
+        "type": "user"
+      },
+      "source": "teacher",
+      "eventId": "d51a54cf-5f03-4d8d-a3bc-4139afdeff7b",
+      "subject": "acta/1",
+      "eventType": "teacher.acta-generated.v1",
+      "occurredAt": "2026-10-19T15:00:01.445097Z",
+      "causationId": null,
+      "specVersion": "1.0",
+      "correlationId": "59e26132-50c9-4f44-a618-97649bfc1ab1"
+    },
+    {
+      "data": {
+        "actaId": 1,
+        "number": "2026-001",
+        "reason": "Error en una nota.",
+        "courseId": 42,
+        "annulledAt": "2026-10-19T15:00:01.560368Z"
+      },
+      "actor": {
+        "id": "docente-123",
+        "type": "user"
+      },
+      "source": "teacher",
+      "eventId": "131e37ab-c589-41ba-a870-6bdba6b943c3",
+      "subject": "acta/1",
+      "eventType": "teacher.acta-annulled.v1",
+      "occurredAt": "2026-10-19T15:00:01.560552Z",
+      "causationId": null,
+      "specVersion": "1.0",
+      "correlationId": "5f221017-57ed-4788-ab90-1310cc291687"
+    }
+  ]
+}

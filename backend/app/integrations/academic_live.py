@@ -42,6 +42,14 @@ def _date(v: Any) -> date | None:
     return date.fromisoformat(str(v)[:10]) if v else None
 
 
+def _req_date(d: dict, *keys: str) -> date:
+    """Mandatory date in a GA payload; a missing one is an upstream contract break (502), not our bug."""
+    v = _date(_pick(d, *keys))
+    if v is None:
+        raise UpstreamError("academic", f"Gestión Académica no envió {keys[0]}.", code="UPSTREAM_REJECTED")
+    return v
+
+
 def _time(v: Any) -> time:
     return time.fromisoformat(str(v)) if v else time(0, 0)
 
@@ -55,8 +63,8 @@ def _period(d: dict) -> Period:
         id=int(d["id"]),
         year=int(_pick(d, "anio", "año", "year")),
         number=int(_pick(d, "numero", "cuatrimestre", "number")),
-        start=_date(_pick(d, "fechaInicio", "inicio")),
-        end=_date(_pick(d, "fechaFin", "fin")),
+        start=_req_date(d, "fechaInicio", "inicio"),
+        end=_req_date(d, "fechaFin", "fin"),
         enroll_from=_date(_pick(d, "inscripcionDesde", "fechaInscripcionDesde")),
         enroll_until=_date(_pick(d, "inscripcionHasta", "fechaInscripcionHasta")),
     )
@@ -113,10 +121,10 @@ class AcademicLive(AcademicClient):
                 ExamTurn(
                     id=int(t["id"]),
                     name=str(_pick(t, "nombre", "titulo", default="")),
-                    start=_date(_pick(t, "fechaInicio")),
-                    end=_date(_pick(t, "fechaFin")),
-                    enroll_from=_date(_pick(t, "inscripcionDesde", "fechaInscripcionDesde")),
-                    enroll_until=_date(_pick(t, "inscripcionHasta", "fechaInscripcionHasta")),
+                    start=_req_date(t, "fechaInicio"),
+                    end=_req_date(t, "fechaFin"),
+                    enroll_from=_req_date(t, "inscripcionDesde", "fechaInscripcionDesde"),
+                    enroll_until=_req_date(t, "inscripcionHasta", "fechaInscripcionHasta"),
                 )
             )
         return out

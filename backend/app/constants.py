@@ -1,4 +1,5 @@
-"""Domain constants. Event type strings are PROVISIONAL (see design §12.2) - single edit point."""
+"""Domain constants. Event types follow CORE naming `source.entity-action.v1` (see CORE /docs) and must be
+registered in CORE's catalog before going live - single edit point."""
 
 from __future__ import annotations
 
@@ -71,6 +72,7 @@ EVENT_TYPES = SimpleNamespace(
     exam_created="teacher.exam-created.v1",
     acta_generated="teacher.acta-generated.v1",
     acta_annulled="teacher.acta-annulled.v1",
+    course_result_published="teacher.course-result-published.v1",
 )
 
 EXAM_TYPE_CATALOG = [

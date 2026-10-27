@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from flask import Blueprint, g, request
+from flask import Blueprint, g
 
 from app.extensions import spec
-from app.routes._common import resp
+from app.routes._common import resp, validated
 from app.schemas.common import json_response
 from app.schemas.exams import (
     CancelRequest,
@@ -34,7 +34,7 @@ def list_exams(course_id: int):
 @require_teacher
 @spec.validate(json=ExamCreateRequest, resp=resp(HTTP_201=ExamDto), tags=["Exams"])
 def create_exam(course_id: int):
-    dto = exam_service.create_exam(g.principal, course_id, request.context.json)
+    dto = exam_service.create_exam(g.principal, course_id, validated().json)
     return json_response(dto, 201, {"Location": f"/api/v1/courses/{course_id}/exams/{dto.id}"})
 
 
@@ -51,7 +51,7 @@ def get_exam(course_id: int, exam_id: int):
 @require_teacher
 @spec.validate(json=ExamPatchRequest, resp=resp(HTTP_200=ExamDto), tags=["Exams"])
 def patch_exam(course_id: int, exam_id: int):
-    return json_response(exam_service.patch_exam(g.principal, course_id, exam_id, request.context.json))
+    return json_response(exam_service.patch_exam(g.principal, course_id, exam_id, validated().json))
 
 
 @bp.post("/courses/<int:course_id>/exams/<int:exam_id>/cancellation")
@@ -59,7 +59,7 @@ def patch_exam(course_id: int, exam_id: int):
 @require_teacher
 @spec.validate(json=CancelRequest, resp=resp(HTTP_200=ExamDto), tags=["Exams"])
 def cancel_exam(course_id: int, exam_id: int):
-    return json_response(exam_service.cancel_exam(g.principal, course_id, exam_id, request.context.json))
+    return json_response(exam_service.cancel_exam(g.principal, course_id, exam_id, validated().json))
 
 
 @bp.get("/exams")
@@ -67,4 +67,4 @@ def cancel_exam(course_id: int, exam_id: int):
 @require_teacher
 @spec.validate(query=ExamQuery, resp=resp(HTTP_200=ExamWithCourseList), tags=["Exams"])
 def my_exams():
-    return json_response(exam_service.list_my_exams(g.principal, request.context.query))
+    return json_response(exam_service.list_my_exams(g.principal, validated().query))

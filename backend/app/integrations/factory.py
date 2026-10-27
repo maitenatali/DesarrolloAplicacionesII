@@ -8,10 +8,12 @@ from app.config import Settings
 
 from .academic_live import AcademicLive
 from .academic_mock import AcademicMock
-from .base import AcademicClient, CoreEventsClient, StudentDirectoryClient
+from .base import AcademicClient, CampusClient, CoreEventsClient, NotificationsClient, StudentDirectoryClient
+from .campus_mock import CampusMock
 from .core_events_live import CoreEventsLive
 from .core_events_mock import CoreEventsMock
 from .http import HttpClient
+from .notifications import NotificationsLive, NotificationsMock
 from .outbound_auth import NoAuth, OutboundAuth, ServiceTokenAuth, StaticBearer
 from .student_directory_live import StudentDirectoryLive
 from .student_directory_mock import StudentDirectoryMock
@@ -24,6 +26,8 @@ class Integrations:
     core_events: CoreEventsClient
     directory: StudentDirectoryClient
     modes: dict[str, str]
+    notifications: NotificationsClient
+    campus: CampusClient
 
 
 def _auth(kind: str, static_token: str, provider: TokenProvider | None) -> OutboundAuth:
@@ -37,7 +41,12 @@ def _auth(kind: str, static_token: str, provider: TokenProvider | None) -> Outbo
 def build_integrations(cfg: Settings) -> Integrations:
     timeout = (cfg.http_timeout_connect, cfg.http_timeout_read)
     provider = None
-    if "live" in (cfg.academic_mode, cfg.core_events_mode, cfg.student_directory_mode):
+    if "live" in (
+        cfg.academic_mode,
+        cfg.core_events_mode,
+        cfg.student_directory_mode,
+        cfg.notifications_mode,
+    ):
         provider = TokenProvider(
             cfg.core_base_url, cfg.core_service_client_id, cfg.core_service_client_secret, timeout=timeout
         )
@@ -84,6 +93,19 @@ def build_integrations(cfg: Settings) -> Integrations:
     else:
         directory = StudentDirectoryMock()
 
+    if cfg.notifications_mode == "live":
+        notifications: NotificationsClient = NotificationsLive(
+            HttpClient(
+                "core",
+                cfg.core_base_url,
+                _auth("service_token", "", provider),
+                timeout=timeout,
+                max_retries=cfg.http_max_retries,
+            )
+        )
+    else:
+        notifications = NotificationsMock()
+
     return Integrations(
         academic,
         events,
@@ -92,7 +114,12 @@ def build_integrations(cfg: Settings) -> Integrations:
             "academic": cfg.academic_mode,
             "coreEvents": cfg.core_events_mode,
             "studentDirectory": cfg.student_directory_mode,
+            "notifications": cfg.notifications_mode,
+            "campus": "mock",  # TODO(Eventos/Comedor/Tienda): live adapters when modules are connected
+            "core": "mock" if cfg.mock_core_enabled else "external",
         },
+        notifications,
+        CampusMock(),
     )
 
 

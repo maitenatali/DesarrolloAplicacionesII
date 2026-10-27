@@ -134,11 +134,21 @@ def me(principal: Principal) -> MeDto:
             matched.extend(t.teacher_id for t in d.teachers if t.teacher_id in keys)
     except UpstreamError:
         pass
+    profile: StudentProfile | None = None
+    try:  # "Falta consumir los datos del usuario logueado (Backoffice)" -> directory by userId
+        profile = get_integrations().directory.get_profiles([principal.user_id]).get(principal.user_id)
+    except UpstreamError:
+        profile = None
     return MeDto(
         user_id=principal.user_id,
-        email=principal.email,
+        email=principal.email or (profile.email if profile else None),
         roles=sorted(principal.roles),
+        permissions=sorted(principal.permissions),
         teacher_ids=sorted(set(matched)) or keys,
+        first_name=profile.first_name if profile else None,
+        last_name=profile.last_name if profile else None,
+        full_name=profile.full_name if profile else principal.name,
+        file_number=profile.file_number if profile else None,
     )
 
 

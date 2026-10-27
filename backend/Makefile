@@ -10,7 +10,7 @@ seed:
 test:
 	$(PY) -m pytest --cov=app --cov-fail-under=85
 lint:
-	ruff check . && ruff format --check . && mypy app/services app/security app/integrations
+	ruff check . && ruff format --check . && mypy app
 openapi:
 	flask openapi --out docs/openapi.json
 outbox:

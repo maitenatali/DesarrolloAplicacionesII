@@ -28,7 +28,9 @@ class CoreIntrospectionVerifier(TokenVerifier):
         self._url = f"{base_url.rstrip('/')}{me_path}"
         self._timeout = timeout
         self._session = session or requests.Session()
-        self._cache: TTLCache = TTLCache(maxsize=cache_max, ttl=max(cache_ttl, 1)) if cache_ttl > 0 else None
+        self._cache: TTLCache | None = (
+            TTLCache(maxsize=cache_max, ttl=max(cache_ttl, 1)) if cache_ttl > 0 else None
+        )
         self._lock = threading.Lock()
 
     def verify(self, token: str) -> Principal:

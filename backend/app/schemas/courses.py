@@ -11,7 +11,12 @@ class MeDto(ApiModel):
     user_id: str
     email: str | None = None
     roles: list[str]
+    permissions: list[str] = []
     teacher_ids: list[str]
+    first_name: str | None = None
+    last_name: str | None = None
+    full_name: str | None = None
+    file_number: str | None = None
 
 
 class PeriodDto(ApiModel):
@@ -21,8 +26,8 @@ class PeriodDto(ApiModel):
     label: str
     start_date: dt.date
     end_date: dt.date
-    enrollment_from: dt.date
-    enrollment_until: dt.date
+    enrollment_from: dt.date | None = None
+    enrollment_until: dt.date | None = None
 
 
 class PeriodList(RootModel[list[PeriodDto]]):

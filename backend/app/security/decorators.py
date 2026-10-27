@@ -99,19 +99,44 @@ def require_teacher(fn):
     return wrapper
 
 
+def _is_allowed_service(principal: Principal, cfg) -> bool:
+    if principal.is_service:
+        return principal.service in set(cfg.service_modules) or bool(principal.roles & set(cfg.service_roles))
+    return bool(principal.roles & set(cfg.service_roles))
+
+
 def require_service(fn):
-    """Static SERVICE_TOKENS (constant-time compare) first; else a verified principal with a SERVICE_ROLES role."""
+    """Service-to-service routes (/results): static SERVICE_TOKENS (constant-time compare) first; else a CORE
+    service token (kind=service) whose module is in SERVICE_MODULES."""
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
         cfg = _settings()
         token = _bearer()
         if token and any(hmac.compare_digest(token.encode(), t.encode()) for t in cfg.service_tokens):
-            _set(Principal(user_id="service", is_service=True, roles=frozenset(cfg.service_roles)))
+            _set(
+                Principal(
+                    user_id="service", is_service=True, service="static", roles=frozenset(cfg.service_roles)
+                )
+            )
             return fn(*args, **kwargs)
         principal = _authenticate()
-        if not (principal.is_service or principal.roles & set(cfg.service_roles)):
+        if not _is_allowed_service(principal, cfg):
             raise Forbidden("Solo disponible para servicios.", code="FORBIDDEN")
+        _set(principal)
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
+def require_service_token(fn):
+    """Any CORE service token (kind=service). Used by the CORE simulator's /internal/v1/* routes."""
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        principal = _authenticate()
+        if not principal.is_service:
+            raise Forbidden("Solo disponible para tokens de servicio.", code="AUTH_FORBIDDEN")
         _set(principal)
         return fn(*args, **kwargs)
 

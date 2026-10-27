@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from flask import Blueprint, g, request
+from flask import Blueprint, g
 
 from app.extensions import spec
-from app.routes._common import parse_day, resp
+from app.routes._common import parse_day, resp, validated
 from app.schemas.attendance import AttendanceDto, AttendanceList, AttendancePutRequest, AttendanceSummaryDto
 from app.schemas.common import json_response
 from app.security.decorators import require_auth, require_teacher
@@ -35,9 +35,7 @@ def get_attendance(course_id: int, day: str):
     json=AttendancePutRequest, resp=resp(HTTP_200=AttendanceDto, HTTP_201=AttendanceDto), tags=["Attendance"]
 )
 def put_attendance(course_id: int, day: str):
-    dto, created = attendance_service.put_attendance(
-        g.principal, course_id, parse_day(day), request.context.json
-    )
+    dto, created = attendance_service.put_attendance(g.principal, course_id, parse_day(day), validated().json)
     return json_response(dto, 201 if created else 200)
 
 

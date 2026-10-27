@@ -74,7 +74,10 @@ def app(database_url):
     return application
 
 
-TABLES = "acta_detalle, acta, calificacion, examen, asistencia, clase, outbox_event"
+TABLES = (
+    "acta_detalle, acta, calificacion, examen, asistencia, clase, outbox_event, "
+    "mock_core_user, mock_core_session, mock_core_wallet_tx, mock_core_notification"
+)
 
 
 @pytest.fixture(autouse=True)
@@ -126,3 +129,27 @@ def seeded_with_acta(app):
 def db_session(app):
     with app.app_context():
         yield db.session
+
+
+# ---------------------------------------------------------------- end-to-end (real JWT, local CORE)
+STUDENT_CLIENT = ("student-service", "student-secret")
+
+
+@pytest.fixture()
+def e2e_app(app, database_url):
+    """App as it runs in this delivery: RS256 JWTs signed by the local CORE simulator, all modules mocked."""
+    from app.mock_core import keys
+    from app.seed import load_mock_core_seed
+
+    keys.reset_cache()
+    application = make_app(
+        database_url,
+        APP_ENV="development",
+        AUTH_VERIFIER="jwt",
+        MOCK_CORE_ENABLED="true",
+        MOCK_CORE_SERVICE_CLIENTS=f"{STUDENT_CLIENT[0]}:{STUDENT_CLIENT[1]}",
+        EVENTS_INLINE_DISPATCH="false",
+    )
+    with application.app_context():
+        load_mock_core_seed()
+    return application

@@ -23,9 +23,9 @@ def exam_id(client, tipo, course=42, headers=H):
 def grade_final(client, grades=None):
     eid = exam_id(client, "FINAL")
     grades = grades or [
-        {"studentId": "alumno-456", "grade": 8},
-        {"studentId": "alumno-457", "grade": 3},
-        {"studentId": "alumno-458", "absent": True},
+        {"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 8},
+        {"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": 3},
+        {"studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "absent": True},
     ]
     r = client.put(f"{EX}/{eid}/grades", headers=H, json={"entries": grades})
     assert r.status_code == 200, r.get_data(as_text=True)
@@ -55,16 +55,16 @@ def test_final_happy_path(client, seeded, integ):
         and a["date"] == "2026-10-19"
     )
     assert rows(a) == {
-        "alumno-456": (8.0, "APROBADO"),
-        "alumno-457": (3.0, "DESAPROBADO"),
-        "alumno-458": (None, "AUSENTE"),
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08": (8.0, "APROBADO"),
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": (3.0, "DESAPROBADO"),
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": (None, "AUSENTE"),
     }
     assert [x["order"] for x in a["rows"]] == [1, 2, 3]
     assert a["subject"] == "Desarrollo de Aplicaciones II" and a["commission"] == "DDA2-A"
     assert (
         a["period"] == "2° Cuatrimestre 2026"
         and a["teacherName"] == "María Gómez"
-        and a["teacherId"] == "docente-123"
+        and a["teacherId"] == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
     )
     assert a["counts"] == {"approved": 1, "failed": 1, "absent": 1, "regular": 0, "free": 0}
     assert a["sync"]["ok"] == 2 and a["sync"]["error"] == 0 and a["warnings"] == []
@@ -72,55 +72,66 @@ def test_final_happy_path(client, seeded, integ):
         (u["student_id"], u["status"], u["final_grade"] and float(u["final_grade"]))
         for u in integ.academic.updates
     }
-    assert sent == {("alumno-456", "APROBADO", 8.0), ("alumno-457", "DESAPROBADO", 3.0)}  # AUSENTE never sent
+    assert sent == {
+        ("ba310c57-a684-4dbf-a4a4-905fcfbefa08", "APROBADO", 8.0),
+        ("c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "DESAPROBADO", 3.0),
+    }  # AUSENTE never sent
 
 
 def test_attendance_gate_libre(client, seeded):
     eid = grade_final(
         client,
         [
-            {"studentId": "alumno-456", "grade": 8},
-            {"studentId": "alumno-457", "grade": 8},
-            {"studentId": "alumno-458", "grade": 3},
+            {"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 8},
+            {"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": 8},
+            {"studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "grade": 3},
         ],
     )
     a = gen_final(client, eid).get_json()
     # 457 has 50% attendance (LIBRE): passed the exam but the course is NOT approved
-    assert rows(a)["alumno-457"] == (8.0, "LIBRE")
-    assert rows(a)["alumno-456"] == (8.0, "APROBADO") and rows(a)["alumno-458"] == (3.0, "DESAPROBADO")
+    assert rows(a)["c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"] == (8.0, "LIBRE")
+    assert rows(a)["ba310c57-a684-4dbf-a4a4-905fcfbefa08"] == (8.0, "APROBADO") and rows(a)[
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"
+    ] == (3.0, "DESAPROBADO")
     assert a["counts"]["free"] == 1
 
 
 def test_boundary_4_and_399(client, seeded):
     eid = grade_final(
-        client, [{"studentId": "alumno-456", "grade": 4}, {"studentId": "alumno-458", "grade": 3.99}]
+        client,
+        [
+            {"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 4},
+            {"studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "grade": 3.99},
+        ],
     )
     a = gen_final(client, eid).get_json()
-    assert rows(a)["alumno-456"] == (4.0, "APROBADO") and rows(a)["alumno-458"] == (3.99, "DESAPROBADO")
-    assert rows(a)["alumno-457"] == (None, "AUSENTE")  # enrolled with no grade row
+    assert rows(a)["ba310c57-a684-4dbf-a4a4-905fcfbefa08"] == (4.0, "APROBADO") and rows(a)[
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"
+    ] == (3.99, "DESAPROBADO")
+    assert rows(a)["c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"] == (None, "AUSENTE")  # enrolled with no grade row
 
 
 def test_final_requires_regular_off(database_url, seeded):
     app = make_app(database_url, FINAL_REQUIRES_REGULAR="false")
     c = app.test_client()
-    eid = grade_final(c, [{"studentId": "alumno-457", "grade": 8}])
-    assert rows(gen_final(c, eid).get_json())["alumno-457"] == (8.0, "APROBADO")
+    eid = grade_final(c, [{"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": 8}])
+    assert rows(gen_final(c, eid).get_json())["c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"] == (8.0, "APROBADO")
 
 
 def test_no_attendance_rows_means_libre_for_final(client, seeded):
-    h = as_teacher("docente-124")
+    h = as_teacher("7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34")
     r = client.post("/api/v1/courses/43/exams", headers=h, json=exam_body(type="FINAL", date="2026-12-03"))
     assert r.status_code == 201
     eid = r.get_json()["id"]
     client.put(
         f"/api/v1/courses/43/exams/{eid}/grades",
         headers=h,
-        json={"entries": [{"studentId": "alumno-101", "grade": 8}]},
+        json={"entries": [{"studentId": "00000000-0000-4000-a000-000000000101", "grade": 8}]},
     )
     a = client.post(
         "/api/v1/actas", headers=h, json={"courseId": 43, "type": "FINAL", "examId": eid}
     ).get_json()
-    assert rows(a)["alumno-101"] == (8.0, "LIBRE")
+    assert rows(a)["00000000-0000-4000-a000-000000000101"] == (8.0, "LIBRE")
 
 
 def test_precondition_errors(client, seeded):
@@ -139,7 +150,7 @@ def test_precondition_errors(client, seeded):
     assert post({"courseId": 42, "type": "FINAL", "examId": p2}).get_json()["code"] == "EXAM_CANCELLED"
     assert post({"courseId": 43, "type": "CURSADA"}).status_code == 403
     assert post({"courseId": 44, "type": "CURSADA"}).get_json()["code"] == "COURSE_CANCELLED"
-    r = post({"courseId": 43, "type": "CURSADA"}, as_teacher("docente-124"))
+    r = post({"courseId": 43, "type": "CURSADA"}, as_teacher("7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34"))
     assert r.status_code == 409 and r.get_json()["code"] == "NO_ATTENDANCE_RECORDED"
     assert post({"courseId": 9999, "type": "CURSADA"}).get_json()["code"] == "COURSE_NOT_FOUND"
 
@@ -156,15 +167,15 @@ def test_cursada_uses_attendance_only(client, seeded, integ):
     assert r.status_code == 201, r.get_data(as_text=True)
     a = r.get_json()
     assert rows(a) == {
-        "alumno-456": (None, "REGULAR"),
-        "alumno-457": (None, "LIBRE"),
-        "alumno-458": (None, "REGULAR"),
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08": (None, "REGULAR"),
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": (None, "LIBRE"),
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": (None, "REGULAR"),
     }
     assert a["counts"] == {"approved": 0, "failed": 0, "absent": 0, "regular": 2, "free": 1}
     assert {(u["student_id"], u["status"], u["final_grade"]) for u in integ.academic.updates} == {
-        ("alumno-456", "REGULAR", None),
-        ("alumno-457", "LIBRE", None),
-        ("alumno-458", "REGULAR", None),
+        ("ba310c57-a684-4dbf-a4a4-905fcfbefa08", "REGULAR", None),
+        ("c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "LIBRE", None),
+        ("d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "REGULAR", None),
     }
     assert a["sync"]["ok"] == 3
 
@@ -179,7 +190,11 @@ def test_duplicate_then_annul_then_next_number(client, seeded):
         f"/api/v1/actas/{first['id']}/annulment", headers=H, json={"reason": "Error en una nota."}
     )
     assert r.status_code == 200 and r.get_json()["status"] == "ANULADA" and r.get_json()["annulmentReason"]
-    client.put(f"{EX}/{eid}/grades", headers=H, json={"entries": [{"studentId": "alumno-457", "grade": 5}]})
+    client.put(
+        f"{EX}/{eid}/grades",
+        headers=H,
+        json={"entries": [{"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": 5}]},
+    )
     second = gen_final(client, eid).get_json()
     assert second["number"] == "2026-002"  # the annulled number is never reused
 
@@ -201,10 +216,14 @@ def test_results_view_reverts_to_previous_valid_acta(client, seeded):
     cursada = client.post("/api/v1/actas", headers=H, json={"courseId": 42, "type": "CURSADA"}).get_json()
     eid = grade_final(client)
     final = gen_final(client, eid).get_json()
-    res = client.get("/api/v1/students/alumno-456/results", headers=as_service()).get_json()
+    res = client.get(
+        "/api/v1/students/ba310c57-a684-4dbf-a4a4-905fcfbefa08/results", headers=as_service()
+    ).get_json()
     assert res[0]["actaType"] == "FINAL" and res[0]["result"] == "APROBADO" and res[0]["grade"] == 8.0
     client.post(f"/api/v1/actas/{final['id']}/annulment", headers=H, json={"reason": "Motivo suficiente"})
-    res = client.get("/api/v1/students/alumno-456/results", headers=as_service()).get_json()
+    res = client.get(
+        "/api/v1/students/ba310c57-a684-4dbf-a4a4-905fcfbefa08/results", headers=as_service()
+    ).get_json()
     assert (
         res[0]["actaType"] == "CURSADA"
         and res[0]["result"] == "REGULAR"
@@ -212,12 +231,17 @@ def test_results_view_reverts_to_previous_valid_acta(client, seeded):
     )
     assert res[0]["resultDate"] == "2026-10-19" and res[0]["commission"] == "DDA2-A"
     client.post(f"/api/v1/actas/{cursada['id']}/annulment", headers=H, json={"reason": "Motivo suficiente"})
-    assert client.get("/api/v1/students/alumno-456/results", headers=as_service()).get_json() == []
+    assert (
+        client.get(
+            "/api/v1/students/ba310c57-a684-4dbf-a4a4-905fcfbefa08/results", headers=as_service()
+        ).get_json()
+        == []
+    )
 
 
 def test_sync_failure_keeps_acta_and_retry(client, seeded, integ, db_session):
     eid = grade_final(client)
-    integ.academic.fail_for = {"alumno-457"}
+    integ.academic.fail_for = {"c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"}
     r = gen_final(client, eid)
     assert r.status_code == 201
     a = r.get_json()
@@ -251,11 +275,11 @@ def test_directory_down_aborts_without_acta(client, seeded, integ, db_session):
 
 def test_missing_profile_uses_placeholder_and_warns(client, seeded, integ):
     eid = grade_final(client)
-    del integ.directory.profiles["alumno-458"]
+    del integ.directory.profiles["d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"]
     a = gen_final(client, eid).get_json()
-    assert a["warnings"] == ["PROFILE_MISSING:alumno-458"]
-    row = next(r for r in a["rows"] if r["studentId"] == "alumno-458")
-    assert row["studentName"] == "alumno-458" and row["studentFileNumber"] == "S/D"
+    assert a["warnings"] == ["PROFILE_MISSING:d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"]
+    row = next(r for r in a["rows"] if r["studentId"] == "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58")
+    assert row["studentName"] == "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58" and row["studentFileNumber"] == "S/D"
 
 
 def test_snapshots_survive_course_changes(client, seeded, integ):
@@ -288,7 +312,7 @@ def test_list_and_visibility(client, seeded_with_acta):
     assert "rows" not in body["items"][0] and body["items"][0]["number"] == "2026-001"
     assert client.get("/api/v1/actas?type=CURSADA", headers=H).get_json()["total"] == 0
     assert client.get("/api/v1/actas?courseId=42&status=GENERADA&limit=1", headers=H).get_json()["total"] == 1
-    other = as_teacher("docente-124")
+    other = as_teacher("7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34")
     assert client.get("/api/v1/actas", headers=other).get_json()["total"] == 0
     aid = body["items"][0]["id"]
     assert client.get(f"/api/v1/actas/{aid}", headers=other).status_code == 404
@@ -328,9 +352,9 @@ def test_parallel_generation_one_winner(app, seeded):
 
 def test_parallel_numbering_unique_and_gap_free(app, seeded):
     """CURSADA actas for two different courses generated at the same time get distinct, consecutive numbers."""
-    h124 = as_teacher("docente-124")
+    h124 = as_teacher("7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34")
     c = app.test_client()
-    ids = [f"alumno-{100 + i}" for i in range(1, 21)]
+    ids = [f"00000000-0000-4000-a000-{100 + i:012d}" for i in range(1, 21)]
     r = c.put(
         "/api/v1/courses/43/attendances/2026-10-12",
         headers=h124,

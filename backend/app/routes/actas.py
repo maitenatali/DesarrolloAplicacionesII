@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from flask import Blueprint, g, request
+from flask import Blueprint, g
 
 from app.extensions import spec
-from app.routes._common import resp
+from app.routes._common import resp, validated
 from app.schemas.actas import (
     ActaCreatedDto,
     ActaCreateRequest,
@@ -25,7 +25,7 @@ bp = Blueprint("actas", __name__)
 @require_teacher
 @spec.validate(query=ActaQuery, resp=resp(HTTP_200=ActaPage), tags=["Actas"])
 def list_actas():
-    return json_response(acta_service.list_actas(g.principal, request.context.query))
+    return json_response(acta_service.list_actas(g.principal, validated().query))
 
 
 @bp.get("/actas/<int:acta_id>")
@@ -41,7 +41,7 @@ def get_acta(acta_id: int):
 @require_teacher
 @spec.validate(json=ActaCreateRequest, resp=resp(HTTP_201=ActaCreatedDto), tags=["Actas"])
 def create_acta():
-    dto = acta_service.generate_acta(g.principal, request.context.json)
+    dto = acta_service.generate_acta(g.principal, validated().json)
     return json_response(dto, 201, {"Location": f"/api/v1/actas/{dto.id}"})
 
 
@@ -50,7 +50,7 @@ def create_acta():
 @require_teacher
 @spec.validate(json=AnnulRequest, resp=resp(HTTP_200=ActaDto), tags=["Actas"])
 def annul_acta(acta_id: int):
-    return json_response(acta_service.annul_acta(g.principal, acta_id, request.context.json))
+    return json_response(acta_service.annul_acta(g.principal, acta_id, validated().json))
 
 
 @bp.post("/actas/<int:acta_id>/sync")

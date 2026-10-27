@@ -30,9 +30,10 @@ def bearer(t="tok-abc"):
 
 def me_ok(**over):
     return {
-        "id": "u-1",
-        "email": "docente-123@uade.edu.ar",
-        "roles": ["ROLE_DOCENTE"],
+        "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
+        "email": "maria.gomez@uade.edu.ar",
+        "careerIds": [],
+        "roles": ["TEACHER"],
         "permissions": [],
         "status": "ACTIVE",
         **over,
@@ -53,7 +54,7 @@ def test_valid_token_caches_and_maps_owner(core_app):
         r1 = c.get("/api/v1/courses", headers=bearer())
         r2 = c.get("/api/v1/courses/42", headers=bearer())
         assert r1.status_code == 200 and [x["id"] for x in r1.get_json()].count(42) == 1
-        assert r2.status_code == 200  # email local-part "docente-123" matched the GA docenteId
+        assert r2.status_code == 200  # CORE user id == GA docenteId (Backoffice UUID)
         assert m.call_count == 1  # second call within TTL did not hit CORE
         assert m.request_history[0].headers["Authorization"] == "Bearer tok-abc"
 
@@ -82,7 +83,7 @@ def test_inactive_user_is_401(core_app):
 
 def test_non_teacher_role_is_403(core_app):
     with requests_mock.Mocker() as m:
-        m.get(ME, json=me_ok(roles=["ROLE_ALUMNO"]))
+        m.get(ME, json=me_ok(roles=["STUDENT"]))
         r = core_app.test_client().get("/api/v1/courses", headers=bearer())
         assert r.status_code == 403 and r.get_json()["code"] == "FORBIDDEN"
 
@@ -108,7 +109,7 @@ def test_invalid_token_rate_limit(database_url):
 
 # ---------------------------------------------------------------- service routes
 def test_service_routes(client, seeded_with_acta):
-    url = "/api/v1/students/alumno-456/results"
+    url = "/api/v1/students/ba310c57-a684-4dbf-a4a4-905fcfbefa08/results"
     assert client.get(url, headers=as_service()).status_code == 200
     assert client.get(url, headers={"Authorization": "Bearer wrong"}).status_code == 401
     assert client.get(url, headers=as_teacher()).status_code == 403  # teacher token
@@ -116,7 +117,11 @@ def test_service_routes(client, seeded_with_acta):
     ok = client.get(url, headers={"Authorization": "Bearer svc-token-2"})  # overlap for rotation
     assert ok.status_code == 200
     body = client.get("/api/v1/courses/42/results", headers=as_service()).get_json()
-    assert {r["studentId"] for r in body} == {"alumno-456", "alumno-457", "alumno-458"}
+    assert {r["studentId"] for r in body} == {
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
+    }
     assert client.get("/api/v1/courses/42/results", headers=as_teacher()).status_code == 403
     only = client.get(f"{url}?courseId=999", headers=as_service()).get_json()
     assert only == []
@@ -131,13 +136,19 @@ def test_dev_verifier_refused_in_production(database_url):
 
 # ---------------------------------------------------------------- error conventions
 def test_problem_json_shape_and_correlation_id(client):
-    r = client.get("/api/v1/courses/42", headers={**as_teacher("docente-999"), "X-Correlation-Id": "abc-123"})
+    cid = "6f1c2d3e-77aa-4b10-90ce-5c4d1e77a201"
+    r = client.get(
+        "/api/v1/courses/42",
+        headers={**as_teacher("99999999-9999-4999-8999-999999999999"), "X-Correlation-Id": cid},
+    )
     body = r.get_json()
     assert r.status_code == 403 and r.mimetype == "application/problem+json"
-    assert (
-        body["code"] == "COURSE_NOT_ASSIGNED" and body["correlationId"] == "abc-123" and body["status"] == 403
-    )
-    assert body["title"] == "Forbidden" and body["detail"] and r.headers["X-Correlation-Id"] == "abc-123"
+    assert body["code"] == "COURSE_NOT_ASSIGNED" and body["correlationId"] == cid and body["status"] == 403
+    assert body["title"] == "Forbidden" and body["detail"] and r.headers["X-Correlation-Id"] == cid
+    assert body["instance"] == "/api/v1/courses/42"
+    # CORE requires UUID correlation ids: a non-UUID inbound value is replaced
+    r2 = client.get("/api/v1/courses/42", headers={**as_teacher(), "X-Correlation-Id": "abc-123"})
+    assert r2.headers["X-Correlation-Id"] != "abc-123" and len(r2.headers["X-Correlation-Id"]) == 36
 
 
 def test_unknown_field_and_malformed_json_are_400(client):
@@ -160,7 +171,12 @@ def test_validation_error_paths_are_camel_case(client, seeded):
     r = client.put(
         f"/api/v1/courses/42/exams/{eid}/grades",
         headers=as_teacher(),
-        json={"entries": [{"studentId": "alumno-456", "grade": 5}, {"studentId": "alumno-457", "grade": 11}]},
+        json={
+            "entries": [
+                {"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 5},
+                {"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": 11},
+            ]
+        },
     )
     e = r.get_json()["errors"][0]
     assert e["field"] == "entries[1].grade" and e["code"]
@@ -206,7 +222,12 @@ def _enqueue(app, n=1):
     with app.app_context():
         for i in range(n):
             event_service.enqueue(
-                db.session, "teacher.exam-created.v1", f"exam/{i}", {"i": i}, "docente-123", "cid"
+                db.session,
+                "teacher.exam-created.v1",
+                f"exam/{i}",
+                {"i": i},
+                "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
+                "cid",
             )
         db.session.commit()
 
@@ -303,12 +324,12 @@ def test_validation_messages_are_spanish(client, seeded):
         assert r.status_code == 400
         return {e["field"]: e["message"] for e in r.get_json()["errors"]}
 
-    assert msgs({"entries": [{"studentId": "alumno-456", "grade": 11}]}) == {
+    assert msgs({"entries": [{"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 11}]}) == {
         "entries[0].grade": "Debe ser menor o igual a 10."
     }
-    assert msgs({"entries": [{"studentId": "alumno-456", "grade": 7.123}]})["entries[0].grade"] == (
-        "Admite como máximo 2 decimales."
-    )
+    assert msgs({"entries": [{"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 7.123}]})[
+        "entries[0].grade"
+    ] == ("Admite como máximo 2 decimales.")
     assert msgs({"entries": [{"grade": 5}]})["entries[0].studentId"] == "Campo obligatorio."
     assert msgs({"entries": [], "x": 1}) == {
         "entries": "Debe tener al menos 1 elemento(s).",

@@ -31,15 +31,17 @@ def test_per_integration_override():
             "INTEGRATIONS_MODE": "live",
             "ACADEMIC_MODE": "mock",
             "STUDENT_DIRECTORY_MODE": "mock",
+            "CORE_JWKS_URL": "https://core.test/.well-known/jwks.json",
         }
     )
     assert (s.academic_mode, s.core_events_mode, s.student_directory_mode) == ("mock", "live", "mock")
 
 
-def test_docente_keys_order_and_dedupe():
-    p = Principal(user_id="u-1", email="maria.gomez@uade.edu.ar")
-    assert p.docente_keys() == ["u-1", "maria.gomez@uade.edu.ar", "maria.gomez"]
-    assert p.docente_keys(("email_local", "sub")) == ["maria.gomez", "u-1"]
+def test_docente_keys_is_the_core_user_id():
+    """CORE `sub` = Backoffice userId = GA docenteId; email is never used as a key."""
+    p = Principal(user_id="5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", email="maria.gomez@uade.edu.ar")
+    assert p.docente_keys() == ["5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"]
+    assert Principal(user_id="").docente_keys() == []
 
 
 def test_principal_from_me():
@@ -47,9 +49,9 @@ def test_principal_from_me():
         {
             "id": "9f",
             "email": "a@b.c",
-            "roles": [{"name": "ROLE_DOCENTE"}, "ROLE_X"],
+            "roles": [{"name": "TEACHER"}, "ROLE_X"],
             "permissions": ["p"],
             "status": "ACTIVE",
         }
     )
-    assert p.user_id == "9f" and p.roles == {"ROLE_DOCENTE", "ROLE_X"} and p.status == "ACTIVE"
+    assert p.user_id == "9f" and p.roles == {"TEACHER", "ROLE_X"} and p.status == "ACTIVE"

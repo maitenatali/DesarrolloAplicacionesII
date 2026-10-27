@@ -20,10 +20,17 @@ class DevVerifier(TokenVerifier):
         if not user:
             raise Unauthorized("Falta X-Dev-User.", code="TOKEN_INVALID")
         roles = frozenset(
-            r.strip() for r in request.headers.get("X-Dev-Roles", "ROLE_DOCENTE").split(",") if r.strip()
+            r.strip() for r in request.headers.get("X-Dev-Roles", "TEACHER").split(",") if r.strip()
         )
+        perms = frozenset(
+            p.strip() for p in request.headers.get("X-Dev-Permissions", "").split(",") if p.strip()
+        )
+        service = request.headers.get("X-Dev-Service") or None
         return Principal(
             user_id=user,
+            permissions=perms,
+            is_service=service is not None,
+            service=service,
             email=request.headers.get("X-Dev-Email") or None,
             roles=roles,
             name=request.headers.get("X-Dev-Name") or TEACHER_NAME.get(user),

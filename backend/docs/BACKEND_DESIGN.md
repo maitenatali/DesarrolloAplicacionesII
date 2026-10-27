@@ -38,6 +38,35 @@
 
 ---
 
+## 0.1 Alignment update — 2026-10-26 (supersedes older text where they disagree)
+
+Sources re-read together: the TPO statement (`data/TPO - DEA II 2Q 2026.pdf`), the data-flow sheets of modules
+4, 6, 7, 8, 9, 10 and Biblioteca (`data/*.xlsx`), and CORE's live OpenAPI
+(`https://core-api-production-e458.up.railway.app/docs`, `/docs-json`). **Scope of this delivery: backend +
+frontend + DB working WITHOUT any connection to other modules.** Every integration runs in `mock` mode, but
+mocks and live adapters use the shapes those modules published, so going live is configuration only.
+
+| Topic | Before | Now (source) |
+|---|---|---|
+| Auth | opaque bearer, introspection via `/auth/me` | **RS256 JWT verified locally with JWKS** (`AUTH_VERIFIER=jwt`). CORE: "User and service tokens use the same scheme"; Analítica/Backoffice sheets validate locally. Claims: `sub`, `email`, `roles[]`, `permissions[]`, `careerIds[]`, `kind` (`user`/`service`), `service`, `status`. |
+| Login without CORE | — | **Local CORE simulator** (`app/mock_core`, `MOCK_CORE_ENABLED=true`): same paths and payloads as CORE for `/api/v1/auth/{login,refresh,logout,me}`, `/.well-known/jwks.json`, `/internal/v1/service-auth/token`, `/api/v1/wallets/me[/transactions|/top-ups]`, `/api/v1/notifications[...]`, `/internal/v1/notifications`. Key persisted in DB (shared by all workers). Tables `mock_core_*` (migration `0003`). |
+| Role names | `ROLE_DOCENTE`, `ROLE_ADMINISTRATIVO` | CORE/Backoffice catalog: `TEACHER`, `STUDENT`, `ACADEMIC_ADMIN`, `ADMIN_STAFF`, `ADMIN_IT`. Permissions `{module}:{resource}:{action}`. |
+| Identity ↔ docenteId | heuristic `sub`/email/email-local | **`sub` only**. Backoffice generates the user UUID; it is the JWT `sub`, the gateway `X-User-Id` and GA's `docentes[].docenteId` ("ningún módulo referencia gente por email o legajo"). |
+| Ids in fixtures/seed | `docente-123`, `alumno-456` | UUID v4 (`5f0a8e21-…` María Gómez, `ba310c57-…` Juan Pérez — the ids used in the other teams' sheets). Course/subject/period ids stay numeric (GA). |
+| Student directory | unknown owner, `GET /students?ids=` | **Backoffice** `GET /api/v1/users/{userId}` → `{userId,email,firstName,lastName,documentId,fileNumber,roles,status,siteId,careerId}` (fetched in parallel; 404 = unknown). Also used for the teacher's own name (`GET /me`, acta `teacherName`) — professor's correction to other teams: "Falta consumir los datos del usuario logueado (Backoffice)". |
+| GA periods | had enrollment dates | GA `/planificacion/periodos` returns `{id,anio,numero,fechaInicio,fechaFin}` → `enrollmentFrom/Until` are now optional. GA routes live under `/api`. |
+| Event envelope | `correlationId` any string | CORE requires `correlationId` **UUID**, `actor.type ∈ {user,service,system}`, `source` = token module (`teacher`). Inbound non-UUID `X-Correlation-Id` is replaced. |
+| Events | 5 | + **`teacher.course-result-published.v1`**, one per student with `APROBADO`/`DESAPROBADO` in a FINAL acta: `{studentId, courseId, subjectId, periodId, siteId, teacherId, finalGrade, status, resultDate, actaNumber}` — the shape Analítica asked for ("tasa de aprobación por materia, por docente y por cuatrimestre"). |
+| Student notification | not done | TPO §1: "Cuando se carga el resultado de un examen el portal debe mostrar una notificación en tiempo real". On every new/changed numeric grade we queue `POST /internal/v1/notifications` (type `TEACHER_EXAM_RESULT_PUBLISHED`, `actionUrl` `/student/courses/{courseId}/exams/{examId}`, `sourceReference` idempotent per grade value). Same outbox, `outbox_event.kind = NOTIFICATION`. |
+| Calendar / purchases | Phase-4 placeholders | `GET /calendar?from&to` = own exams + GA exam turns + academic events (module 6 shape) + dining reservations (module 4 `dining.reservation.created.v1`). `GET /purchases` = store purchases (module 7's `store.purchase.completed.v1` shape). Mock data (`integrations/campus_mock.py`). Wallet balance/top-up and notifications are **CORE** endpoints (frontend → CORE, here → simulator). |
+| Errors | problem+json | + `instance` field (CORE returns it). |
+
+New endpoints: `GET /calendar`, `GET /purchases` (teacher) and the CORE-simulator routes above (tag *Mock CORE*).
+Test suite: 142 tests; three end-to-end tests (`tests/integration/test_e2e_*.py`) run with real JWTs and assert
+that **every** registered route is exercised.
+
+---
+
 ## 1. Goals, scope, non-goals
 
 **What this service is.** The `teacher` microservice of UADEnet, a course project (Desarrollo de Aplicaciones II, UADE) where each group builds one module of a microservice platform. This service owns four kinds of data: **attendance, exams, grades, and actas** (official grade records). **[SRC: CLAUDE.md, modelo-de-datos.md]**
@@ -66,7 +95,7 @@ These are discoveries from reading all the sources together. Several change what
 The Spring Boot project has entities, enums, repositories, `schema.sql`, `seed.sql`. **No services, controllers, security, or integrations exist.** The behavior to port is specified in prose in `CLAUDE.md`, `modelo-de-datos.md`, `guia-backend-entities.md`, and in the *frontend's current logic* (`teacherStore.ts`, `actaSync.ts`, `ActaNew.tsx`). This document turns all of that into explicit rules (§11).
 
 ### 2.2 The browser cannot call Gestión Académica directly (BFF is mandatory)
-The GA contract says its endpoints require `ROLE_ADMINISTRATIVO` or `ROLE_ACADEMIC_ADMIN`, and that "el Portal de Docencia consume estas rutas con ROLE_ADMINISTRATIVO". **[SRC: contract §Alcance]** A logged-in teacher has a teacher role, not an administrative one. Today's frontend (`api/academic.ts`) calls GA with the *user's* token. That will return 403 in production. Therefore:
+The GA contract says its endpoints require `ACADEMIC_ADMIN` or `ACADEMIC_ADMIN`, and that "el Portal de Docencia consume estas rutas con ACADEMIC_ADMIN". **[SRC: contract §Alcance]** A logged-in teacher has a teacher role, not an administrative one. Today's frontend (`api/academic.ts`) calls GA with the *user's* token. That will return 403 in production. Therefore:
 
 - `teacher-service` calls GA **with a service credential**, and the frontend calls `teacher-service` instead. **[DERIVED]**
 - This also lets the backend absorb the **N+1 problem**: GA has no `?docenteId=` filter, so the frontend currently fetches every course detail to find the teacher's own. The backend does it once, with bounded concurrency and caching, behind one method (`list_courses_for_teacher`) that can switch to a native filter when GA ships it. **[DERIVED + SRC: contract table]**
@@ -77,7 +106,7 @@ The GA contract says its endpoints require `ROLE_ADMINISTRATIVO` or `ROLE_ACADEM
 | Token validation | `POST /api/v1/auth/validate` | Doesn't exist. Use `GET /api/v1/auth/me` or verify JWT via JWKS | JWKS verification **[SRC: CLAUDE.md, plan §4]** |
 | Balance | `GET /accounts/{id}/balance` | `GET /api/v1/wallets/me` | Frontend → CORE directly; not this service |
 | Event transport | Message queues (`asistencia.registrada`…) | `POST /internal/v1/events` with a 15-min service token | HTTP outbox to CORE **[SRC: CLAUDE.md]** |
-| IDs | Strings like `C-101`, `SUB-101`, `D-404`, `E-9912` | GA: `bigint` for course/subject/period; `varchar(50)` for student/teacher (`alumno-456`, `docente-123`) | GA contract + `schema.sql` **[SRC]** |
+| IDs | Strings like `C-101`, `SUB-101`, `D-404`, `E-9912` | GA: `bigint` for course/subject/period; `varchar(50)` for student/teacher (`ba310c57-a684-4dbf-a4a4-905fcfbefa08`, `5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034`) | GA contract + `schema.sql` **[SRC]** |
 | GA routes | `/api/v1/academic/courses...` (English) | `/planificacion/cursos...`, `/academica/...` (Spanish) | GA contract **[SRC]** |
 | Event names | `acta.generada`, `calificacion.publicada`… | `teacher.acta-generated.v1`… (CORE convention `source.entity-action.v1`, **provisional**) | Provisional names, centralised in one constants file **[OPEN]** |
 
@@ -110,7 +139,7 @@ flowchart LR
   FE -->|/api/v1/teacher/** via gateway<br/>user JWT| GW[CORE gateway]
   GW -->|/api/v1/** + signed headers| TS[teacher-service<br/>Flask]
   TS --> DB[(PostgreSQL<br/>Supabase)]
-  TS -->|service token, ROLE_ADMINISTRATIVO| GA[Gestión Académica<br/>Java]
+  TS -->|service token, ACADEMIC_ADMIN| GA[Gestión Académica<br/>Java]
   TS -->|service token| CORE[CORE<br/>events + service-auth + JWKS]
   TS -.->|placeholder| SD[Student directory<br/>module TBD]
   SP[Portal Estudiante] -->|service token| GW
@@ -276,8 +305,8 @@ JWT_ALGORITHMS=RS256               # [OPEN] confirm with CORE (the old Excel sho
 JWT_ISSUER=                        # [OPEN] if CORE sets `iss`; empty = skip check
 JWT_AUDIENCE=                      # [OPEN] idem
 JWT_LEEWAY_SECONDS=30
-TEACHER_ROLES=ROLE_DOCENTE,ROLE_TEACHER       # [OPEN] real role names; any-of
-SERVICE_ROLES=ROLE_SERVICE,ROLE_ADMINISTRATIVO  # [OPEN] who may call /results (service-to-service)
+TEACHER_ROLES=TEACHER       # [OPEN] real role names; any-of
+SERVICE_ROLES=SERVICE  # [OPEN] who may call /results (service-to-service)
 DOCENTE_ID_CLAIMS=sub,email,email_local       # candidate keys to match GA docenteId (see §8.4)
 GATEWAY_HMAC_ENABLED=false         # [OPEN] enable when CORE documents the signed headers
 GATEWAY_HMAC_SECRET=
@@ -783,12 +812,12 @@ def authorize_course(principal, course_id) -> CourseDetail:
     return detail
 ```
 - **Identity mapping [OPEN, plan §4 "Confirmar cómo se relaciona el usuario de CORE (UUID) con docenteId"]:** until CORE answers, replicate the frontend's current heuristic: candidate keys = `{user.id, user.email, email-local-part}` (ordered per `DOCENTE_ID_CLAIMS`). Isolated in `Principal.docente_keys()` so one function changes later.
-- Which id is stored in `creado_por` / `cargada_por` / `docente_id`? **[PROPOSED]** the **matched GA `docenteId`** (e.g. `docente-123`, consistent with seed data), falling back to `principal.user_id` if there is no match (admin/service flows).
-- Roles `ROLE_ADMINISTRATIVO` / `ROLE_ACADEMIC_ADMIN` **[PROPOSED]** bypass ownership for read endpoints (support staff) but not for writes.
+- Which id is stored in `creado_por` / `cargada_por` / `docente_id`? **[PROPOSED]** the **matched GA `docenteId`** (e.g. `5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034`, consistent with seed data), falling back to `principal.user_id` if there is no match (admin/service flows).
+- Roles `ACADEMIC_ADMIN` / `ACADEMIC_ADMIN` **[PROPOSED]** bypass ownership for read endpoints (support staff) but not for writes.
 - Services that act on a child resource (exam, acta) first load it, then call `authorize_course(resource.curso_id)`.
 
 ### 8.5 Dev auth (local only)
-`AUTH_VERIFIER=dev` accepts `X-Dev-User: docente-123` (+ optional `X-Dev-Roles`). Boot **aborts** if `APP_ENV=production`. Lets the team run backend + frontend without CORE.
+`AUTH_VERIFIER=dev` accepts `X-Dev-User: 5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034` (+ optional `X-Dev-Roles`). Boot **aborts** if `APP_ENV=production`. Lets the team run backend + frontend without CORE.
 
 ### 8.6 Gateway signed headers **[OPEN]**
 Plan lists "validar las cabeceras firmadas (HMAC) que agrega el gateway". Format unknown. Build `security/gateway_hmac.py` as an optional `before_request` check, disabled by default (`GATEWAY_HMAC_ENABLED=false`), with a clearly isolated `verify(request) -> bool`. Don't invent the header names; leave a `TODO(CORE)` and a failing-closed implementation switch.
@@ -893,7 +922,7 @@ Each live adapter receives an `OutboundAuth` from the factory; swapping to a bet
 - Course/room/campus: `sedeId` and `aulaId` are ids only (no lookup endpoint exists). Return ids; the frontend's `SEDES`/`AULAS` tables stay until GA adds endpoints **[OPEN]**.
 
 ### 9.6 Mocks **[SRC: guia §11, CLAUDE.md]**
-- `AcademicMock`: serves **Appendix B** fixtures (course 42 `DDA2-A`, subject 15, period 8, `docente-123`, students `alumno-456/457/458`) plus a few extra courses/students so the UI has volume. `update_enrollment_result` records calls in memory (assertable in tests) and can be told to fail for a given student (`mock.fail_for = {"alumno-457"}`) to exercise the `sync_error` path.
+- `AcademicMock`: serves **Appendix B** fixtures (course 42 `DDA2-A`, subject 15, period 8, `5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034`, students `ba310c57-a684-4dbf-a4a4-905fcfbefa08/457/458`) plus a few extra courses/students so the UI has volume. `update_enrollment_result` records calls in memory (assertable in tests) and can be told to fail for a given student (`mock.fail_for = {"c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"}`) to exercise the `sync_error` path.
 - `CoreEventsMock`: logs the envelope at INFO and appends to an in-memory list.
 - `StudentDirectoryMock`: deterministic profile per id; unknown ids → absent (tests the "missing profile" branch).
 - Mocks implement the **same exceptions** as live (e.g. `CourseNotFound`) — no `if mode == mock` anywhere in services.
@@ -949,8 +978,8 @@ Paths are relative to `/api/v1` (public: `/api/v1/teacher/...`). Unless noted: a
 
 ### 10.2 `GET /me`
 ```json
-{ "userId": "9f1c…", "email": "docente@uade.edu.ar", "roles": ["ROLE_DOCENTE"],
-  "teacherIds": ["docente-123"] }
+{ "userId": "9f1c…", "email": "docente@uade.edu.ar", "roles": ["TEACHER"],
+  "teacherIds": ["5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"] }
 ```
 `teacherIds` = candidate keys that matched at least one course (cached), else the candidate keys. Handy for the frontend and debugging identity mapping **[OPEN]**.
 
@@ -979,7 +1008,7 @@ Direct normalisation of GA:
   "campusId": 2, "modality": "PRESENCIAL", "status": "EN_CURSO",
   "maxSeats": 45, "enrolled": 30, "startDate": "2026-08-10", "endDate": "2026-11-30",
   "schedule": [{ "roomId": 4, "weekday": "MONDAY", "startTime": "18:00", "endTime": "20:00" }],
-  "teachers": [{ "teacherId": "docente-123", "role": "TITULAR" }] }
+  "teachers": [{ "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "role": "TITULAR" }] }
 ```
 - Rules: uses `list_courses_for_teacher(principal.docente_keys(), periodId)`. Cancelled courses are included (UI filters). Sorted by period desc, then subject name.
 - Errors: 502/504 if GA fails. **Never returns demo data.**
@@ -989,7 +1018,7 @@ Direct normalisation of GA:
 
 **`GET /courses/{courseId}/students`** → roster (excludes `BAJA`), sorted by `fileNumber` (numeric-aware) then name (es locale).
 ```json
-[{ "studentId": "alumno-456",
+[{ "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
    "profile": { "firstName": "Juan", "lastName": "Pérez", "fullName": "Juan Pérez",
                 "document": "40123456", "fileNumber": "123456", "email": "juan@uade.edu.ar" },
    "enrollmentStatus": "CURSANDO",
@@ -1071,11 +1100,11 @@ Response `201 ExamDto` + `Location: /api/v1/courses/42/exams/11`. **Event:** `te
 ```json
 { "examId": 11,
   "entries": [
-    { "studentId": "alumno-456", "studentName": "Juan Pérez", "fileNumber": "123456",
-      "grade": 8.0, "absent": false, "gradedAt": "2026-09-01T13:15:00Z", "gradedBy": "docente-123" },
-    { "studentId": "alumno-458", "studentName": "Ana Rodríguez", "fileNumber": "123459",
-      "grade": null, "absent": true, "gradedAt": "2026-09-01T13:16:00Z", "gradedBy": "docente-123" },
-    { "studentId": "alumno-999", "studentName": "…", "fileNumber": "…",
+    { "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "studentName": "Juan Pérez", "fileNumber": "123456",
+      "grade": 8.0, "absent": false, "gradedAt": "2026-09-01T13:15:00Z", "gradedBy": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034" },
+    { "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "studentName": "Ana Rodríguez", "fileNumber": "123459",
+      "grade": null, "absent": true, "gradedAt": "2026-09-01T13:16:00Z", "gradedBy": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034" },
+    { "studentId": "00000000-0000-4000-8000-000000000999", "studentName": "…", "fileNumber": "…",
       "grade": null, "absent": false, "gradedAt": null, "gradedBy": null } ],
   "summary": { "enrolled": 3, "graded": 1, "absent": 1, "pending": 1, "average": 8.0, "passed": 1, "failed": 0 } }
 ```
@@ -1084,8 +1113,8 @@ Response `201 ExamDto` + `Location: /api/v1/courses/42/exams/11`. **Event:** `te
 **`PUT /courses/{courseId}/exams/{examId}/grades`** — batch **upsert** (only listed students are touched):
 ```json
 { "entries": [
-  { "studentId": "alumno-456", "grade": 8.5, "absent": false },
-  { "studentId": "alumno-457", "grade": null, "absent": true },
+  { "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 8.5, "absent": false },
+  { "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": null, "absent": true },
   { "studentId": "alumno-460", "grade": null, "absent": false } ] }
 ```
 Semantics per entry:
@@ -1110,7 +1139,7 @@ Rules (all-or-nothing in one transaction):
 **`GET /courses/{courseId}/grades`** — course matrix (replaces the frontend's fixed 5-column grid; plan §8 "Notas por examen en lugar de columnas fijas"):
 ```json
 { "exams": [ { "id": 11, "type": "PARCIAL_1", "name": "Primer Parcial", "date": "2026-08-25", "phase": "COMPLETED" } ],
-  "rows": [ { "studentId": "alumno-456", "studentName": "Juan Pérez", "fileNumber": "123456",
+  "rows": [ { "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "studentName": "Juan Pérez", "fileNumber": "123456",
               "grades": { "11": { "grade": 8.0, "absent": false } }, "average": 8.0 } ] }
 ```
 - Only non-cancelled exams. `average` = arithmetic mean of numeric grades (1 decimal, `round-half-up`), `null` if none. Informational only.
@@ -1128,17 +1157,17 @@ Ordered by `date desc`. Counts from `asistencia` grouped by class (no GA call).
 **`GET /courses/{courseId}/attendances/{date}`**
 ```json
 { "date": "2026-08-18", "notes": null,
-  "records": [ { "studentId": "alumno-456", "status": "PRESENTE", "note": null },
-               { "studentId": "alumno-458", "status": "JUSTIFICADO", "note": "Certificado médico" } ] }
+  "records": [ { "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "status": "PRESENTE", "note": null },
+               { "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "status": "JUSTIFICADO", "note": "Certificado médico" } ] }
 ```
 404 `ATTENDANCE_NOT_RECORDED` if no class exists for that date (the UI then starts from the roster with default `PRESENTE`).
 
 **`PUT /courses/{courseId}/attendances/{date}`** — create **or replace** the whole class (idempotent):
 ```json
 { "notes": "Primer parcial en la segunda mitad",
-  "records": [ { "studentId": "alumno-456", "status": "PRESENTE" },
-               { "studentId": "alumno-457", "status": "AUSENTE" },
-               { "studentId": "alumno-458", "status": "JUSTIFICADO", "note": "Certificado médico" } ] }
+  "records": [ { "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "status": "PRESENTE" },
+               { "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "status": "AUSENTE" },
+               { "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "status": "JUSTIFICADO", "note": "Certificado médico" } ] }
 ```
 Rules:
 1. `date` not in the future (APP_TIMEZONE) → 400 `DATE_IN_FUTURE` **[PROPOSED]**.
@@ -1155,7 +1184,7 @@ Rules:
 **`GET /courses/{courseId}/attendance-summary`**
 ```json
 { "threshold": 75.0,
-  "students": [ { "studentId": "alumno-457", "classesRecorded": 4, "present": 2, "justified": 0,
+  "students": [ { "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "classesRecorded": 4, "present": 2, "justified": 0,
                   "absences": 2, "attendancePercentage": 50.0, "condition": "LIBRE" } ] }
 ```
 Straight from `asistencia_por_alumno`; no GA call. Only students with ≥ 1 attendance row appear.
@@ -1167,14 +1196,14 @@ Straight from `asistencia_por_alumno`; no GA call. Only students with ≥ 1 atte
 { "id": 1, "number": "2026-001", "type": "FINAL", "status": "GENERADA",
   "courseId": 42, "subjectId": 15, "periodId": 8, "examId": 13,
   "subject": "Desarrollo de Aplicaciones II", "commission": "DDA2-A", "period": "2° Cuatrimestre 2026",
-  "teacherId": "docente-123", "teacherName": "María Gómez",
+  "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "teacherName": "María Gómez",
   "date": "2026-12-03", "notes": "Acta correspondiente al examen final…",
   "generatedAt": "2026-12-03T22:42:00Z", "annulledAt": null, "annulmentReason": null,
   "sync": { "ok": 2, "error": 0, "lastAttemptAt": "2026-12-03T22:43:00Z" },
   "counts": { "approved": 1, "failed": 1, "absent": 1, "regular": 0, "free": 0 },
-  "rows": [ { "order": 1, "studentId": "alumno-456", "studentName": "Juan Pérez", "studentFileNumber": "123456", "grade": 8.0, "result": "APROBADO" },
-            { "order": 2, "studentId": "alumno-457", "studentName": "Lucas Fernández", "studentFileNumber": "123458", "grade": 3.0, "result": "DESAPROBADO" },
-            { "order": 3, "studentId": "alumno-458", "studentName": "Ana Rodríguez", "studentFileNumber": "123459", "grade": null, "result": "AUSENTE" } ] }
+  "rows": [ { "order": 1, "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "studentName": "Juan Pérez", "studentFileNumber": "123456", "grade": 8.0, "result": "APROBADO" },
+            { "order": 2, "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "studentName": "Lucas Fernández", "studentFileNumber": "123458", "grade": 3.0, "result": "DESAPROBADO" },
+            { "order": 3, "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "studentName": "Ana Rodríguez", "studentFileNumber": "123459", "grade": null, "result": "AUSENTE" } ] }
 ```
 List items omit `rows`.
 
@@ -1391,7 +1420,7 @@ Browsers can't publish to CORE (`/internal/v1/events` needs a service token) and
   "subject": "exam/11",
   "correlationId": "…request correlation id…",
   "causationId": null,
-  "actor": { "type": "user", "id": "docente-123" },
+  "actor": { "type": "user", "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034" },
   "data": { } }
 ```
 Posted to `POST {CORE_BASE_URL}/internal/v1/events` with `Authorization: Bearer <service token>`. **CORE rejects event types missing from its catalog** → the CORE team must register them first **[SRC: plan §4]**. All type strings live in `app/constants.py::EVENT_TYPES` (single edit point; names are **provisional** **[OPEN]**).
@@ -1550,8 +1579,8 @@ SQLite is **not** acceptable: partial/expression indexes, views, `security_invok
 
 ### 15.2 Fixtures
 - `app` fixture: `APP_ENV=test`, `AUTH_VERIFIER=dev`, `INTEGRATIONS_MODE=mock`, migrations applied once per session, **each test in a rolled-back transaction** (or truncate between tests).
-- Seed = `db/seed.sql` equivalent via factories (course 42, `alumno-456/457/458`, `docente-123`, the 3 exams, the sample FINAL acta). Reuse the same ids as the SQL seed so docs and tests line up.
-- `as_teacher("docente-123")`, `as_service()`, `as_other_teacher("docente-999")` header helpers.
+- Seed = `db/seed.sql` equivalent via factories (course 42, `ba310c57-a684-4dbf-a4a4-905fcfbefa08/457/458`, `5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034`, the 3 exams, the sample FINAL acta). Reuse the same ids as the SQL seed so docs and tests line up.
+- `as_teacher("5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034")`, `as_service()`, `as_other_teacher("99999999-9999-4999-8999-999999999999")` header helpers.
 - Controllable mocks: `academic.fail_for = {...}`, `academic.down = True`, `directory.down = True`, `core_events.fail_next(n)`.
 - `freezegun` pinned to `2026-10-19 12:00 America/Argentina/Buenos_Aires` unless a test says otherwise.
 
@@ -1590,7 +1619,7 @@ SQLite is **not** acceptable: partial/expression indexes, views, `security_invok
 - Student enrolled but with no grade row → `AUSENTE`. FINAL with zero numeric grades → 409 `NO_GRADES`. Exam type not in `FINAL_EXAM_TYPES` → 409. Cancelled exam → 409.
 - CURSADA: results come **only** from the attendance view (exam grades ignored: a student with failed parciales but 80 % attendance is `REGULAR`); no rows for a student → `LIBRE`; no classes at all → 409 `NO_ATTENDANCE_RECORDED`.
 - Duplicate valid acta → 409 with `existingActaId`; after annulment → new acta allowed and gets the next number (annulled number not reused).
-- **Sync:** all PUTs succeed → `sync.ok = #targets, error = 0`. `fail_for={"alumno-457"}` → 201 still, `error=1`; `POST …/sync` after clearing the failure → `ok=2,error=0`. AUSENTE rows never PUT. GA entirely down → 201 with `error = #targets`. Directory down → 502 and **no acta row exists**.
+- **Sync:** all PUTs succeed → `sync.ok = #targets, error = 0`. `fail_for={"c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"}` → 201 still, `error=1`; `POST …/sync` after clearing the failure → `ok=2,error=0`. AUSENTE rows never PUT. GA entirely down → 201 with `error = #targets`. Directory down → 502 and **no acta row exists**.
 - Snapshots: change the mock course name after generation → `GET /actas/{id}` still shows the original.
 - Annulment: reason < 10 chars → 400; already annulled → 409; `resultado_por_alumno` reverts to the older acta.
 - Concurrency: 5 parallel `POST /actas` → one 201, four 409.
@@ -1753,7 +1782,7 @@ Each phase ends **green** (tests pass, Swagger updated, README section written).
 
 **CORE team**
 1. **Resolved for now:** plain opaque bearer, validated via `GET /auth/me` (§8.2). Only needed for the future JWT upgrade: algorithm, `iss`, `aud`, claim names. Still useful to know: does `/auth/me` work for **service** tokens, and what roles do service accounts have?
-2. Role names for teachers and for service callers. *Default:* `ROLE_DOCENTE`/`ROLE_TEACHER`; `ROLE_SERVICE`/`ROLE_ADMINISTRATIVO`.
+2. Role names for teachers and for service callers. *Default:* `TEACHER`/`TEACHER`; `SERVICE`/`ACADEMIC_ADMIN`.
 3. `POST /internal/v1/service-auth/token` exact request/response; `POST /internal/v1/events` exact envelope and error codes (get `/docs-json`). *Default:* envelope from `eventBus.ts`.
 4. Register our 5 event types in the catalog; confirm names. *Default:* provisional names in `constants.py`.
 5. Mapping **CORE user UUID ↔ GA `docenteId` / `alumnoId`**. *Default:* match any of `sub`, `email`, email local-part.
@@ -1761,7 +1790,7 @@ Each phase ends **green** (tests pass, Swagger updated, README section written).
 7. Who notifies students on a new grade/acta/exam (CORE notifications)? *Default:* nobody (events only).
 
 **Gestión Académica**
-1. Gateway prefix (`/api` vs `/api/v1`); role used when we call them (`ROLE_ADMINISTRATIVO`?) and how our service token carries it.
+1. Gateway prefix (`/api` vs `/api/v1`); role used when we call them (`ACADEMIC_ADMIN`?) and how our service token carries it.
 2. `GET /planificacion/cursos?docenteId=` filter and subject name in the list DTO (removes the fan-out). *Default:* fan-out + cache.
 3. Per-student enrollments endpoint (`GET /planificacion/alumnos/{id}/inscripciones`) — needed by Student Portal, not by us.
 4. Sync semantics: what `estado` for an **absent** student; whether acta number must be sent; whether an **annulled** acta must revert their record; which `estado/notaFinal` their regularity engine expects for CURSADA. *Defaults:* absent not sent; no number; no revert; `REGULAR/LIBRE` with null grade.
@@ -1800,7 +1829,7 @@ Each phase ends **green** (tests pass, Swagger updated, README section written).
 | D10 | Grade `null`+not absent = delete row | proposed | `grade_service.py` |
 | D11 | Lock grade/attendance edits while a valid acta exists | proposed (`LOCK_AFTER_ACTA`) | `config`, services |
 | D12 | CURSADA result = attendance condition only; no rows ⇒ LIBRE; no grade | **decided** | `acta_service.py` |
-| D20 | Auth = opaque bearer, verified via CORE `/auth/me` behind a `TokenVerifier` strategy (introspect/jwt/dev); outbound via `OutboundAuth` strategy (static bearer / service token) | **decided** | `security/verifiers/`, `integrations/outbound_auth.py` |
+| D20 | Auth = **RS256 JWT verified locally via JWKS** (`AUTH_VERIFIER=jwt`, CORE contract); introspect/dev kept as alternative strategies; outbound via `OutboundAuth` strategy (static bearer / service token) | **decided (2026-10-26)** | `security/verifiers/`, `integrations/outbound_auth.py` |
 | D21 | APROBADO = attendance ≥ 75 % AND grade ≥ 4; passed-but-LIBRE ⇒ `LIBRE` (toggle `FINAL_REQUIRES_REGULAR`) | decided rule; LIBRE fallback proposed | `acta_service.py`, §11.3 |
 | D13 | AUSENTE not sent to GA; annulment doesn't revert GA | proposed (open with GA) | `acta_sync_service.py`, `ANNUL_REVERTS_ACADEMIC` |
 | D14 | One batch event per action; names provisional | proposed | `event_service.py`, `constants.py` |
@@ -1809,6 +1838,11 @@ Each phase ends **green** (tests pass, Swagger updated, README section written).
 | D17 | Exam `type` free text, normalised UPPER_SNAKE; catalog endpoint for UI | CLAUDE.md + proposed normalisation | `schemas/exams.py` |
 | D18 | Exposed exam `phase` computed; stored `status` unchanged | derived | `exam_service.py` |
 | D19 | Grades serialised as JSON numbers | proposed | `schemas/common.py` |
+| D22 | Delivery without other modules: local CORE simulator behind `MOCK_CORE_ENABLED` (same contract as CORE) | **decided (2026-10-26)** | `app/mock_core/` |
+| D23 | Teacher identity = CORE `sub` = Backoffice UUID = GA `docenteId` (no email heuristic) | **decided** | `Principal.docente_keys` |
+| D24 | Student directory = Backoffice users API | **decided** | `integrations/student_directory_*` |
+| D25 | Grade publication notifies each student through CORE notifications (outbox kind NOTIFICATION) | **decided** (TPO §1) | `grade_service.py`, `event_service.py` |
+| D26 | Per-student `teacher.course-result-published.v1` for Analítica | **decided** | `acta_service.py` |
 
 ---
 
@@ -1876,21 +1910,27 @@ COURSE_42 = CourseDetail(
     ),
     subject=Subject(15, "DDA2", "Desarrollo de Aplicaciones II"),
     period=PERIOD_8,
-    teachers=[TeacherAssignment(3, "docente-123", "TITULAR")],
+    teachers=[TeacherAssignment(3, "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "TITULAR")],
     enrollments=[
-        Enrollment(71, "alumno-456", date(2026, 7, 15), "CURSANDO", None, None),
-        Enrollment(72, "alumno-457", date(2026, 7, 15), "CURSANDO", None, None),
-        Enrollment(73, "alumno-458", date(2026, 7, 16), "CURSANDO", None, None),
+        Enrollment(71, "ba310c57-a684-4dbf-a4a4-905fcfbefa08", date(2026, 7, 15), "CURSANDO", None, None),
+        Enrollment(72, "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", date(2026, 7, 15), "CURSANDO", None, None),
+        Enrollment(73, "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", date(2026, 7, 16), "CURSANDO", None, None),
     ],
     schedule=[Schedule(9, 4, "MONDAY", time(18, 0), time(20, 0))],
 )
 
 PROFILES = {
-    "alumno-456": StudentProfile(
-        "alumno-456", "Juan", "Pérez", "Juan Pérez", "40123456", "123456", "juan.perez@uade.edu.ar"
+    "ba310c57-a684-4dbf-a4a4-905fcfbefa08": StudentProfile(
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+        "Juan",
+        "Pérez",
+        "Juan Pérez",
+        "40123456",
+        "123456",
+        "juan.perez@uade.edu.ar",
     ),
-    "alumno-457": StudentProfile(
-        "alumno-457",
+    "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": StudentProfile(
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
         "Lucas",
         "Fernández",
         "Lucas Fernández",
@@ -1898,15 +1938,21 @@ PROFILES = {
         "123458",
         "lucas.fernandez@uade.edu.ar",
     ),
-    "alumno-458": StudentProfile(
-        "alumno-458", "Ana", "Rodríguez", "Ana Rodríguez", "40123459", "123459", "ana.rodriguez@uade.edu.ar"
+    "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": StudentProfile(
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
+        "Ana",
+        "Rodríguez",
+        "Ana Rodríguez",
+        "40123459",
+        "123459",
+        "ana.rodriguez@uade.edu.ar",
     ),
 }
 EXAM_TURN_7 = ExamTurn(
     7, "Turno final diciembre", date(2026, 12, 1), date(2026, 12, 15), date(2026, 11, 10), date(2026, 11, 25)
 )
 PREREQS_15 = [Prerequisite(5, 15, 12, "APROBADA"), Prerequisite(6, 15, 13, "REGULAR")]
-TEACHER_NAME = {"docente-123": "María Gómez"}
+TEACHER_NAME = {"5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034": "María Gómez"}
 ```
 Add 2–3 more courses (other teacher, a cancelled course, a course in a previous period) and ~20 students to give the UI volume; keep ids in the `alumno-NNN` / `docente-NNN` style. The frontend's `demoStudentProfile(i)` maps `alumno-{100+i}`; reuse that scheme for the extra students to ease the transition.
 

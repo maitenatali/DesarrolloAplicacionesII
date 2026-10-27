@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from flask import current_app
 
-from app.errors import Forbidden
+from app.errors import Forbidden, UpstreamError
 from app.integrations.base import CourseDetail
 from app.integrations.factory import get_integrations
 from app.security.principal import Principal
@@ -24,7 +24,7 @@ def _is_admin(principal: Principal) -> bool:
 
 
 def teacher_keys(principal: Principal) -> list[str]:
-    return principal.docente_keys(current_app.extensions["settings"].docente_id_claims)
+    return principal.docente_keys()
 
 
 def authorize_course(
@@ -41,7 +41,13 @@ def authorize_course(
 
 
 def teacher_name(principal: Principal, teacher_id: str) -> str:
-    """Snapshot name: `name` claim -> derived from email (frontend nameFromEmail) -> id. TODO(directory): authoritative."""
+    """Snapshot name for actas: Backoffice user directory (firstName lastName) -> token `name` -> email -> id."""
+    try:
+        profile = get_integrations().directory.get_profiles([teacher_id]).get(teacher_id)
+    except UpstreamError:
+        profile = None
+    if profile is not None:
+        return profile.full_name
     if principal.name:
         return principal.name
     if principal.email and "@" in principal.email:

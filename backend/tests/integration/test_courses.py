@@ -5,7 +5,9 @@ def test_me(client):
     r = client.get("/api/v1/me", headers=as_teacher())
     assert r.status_code == 200
     body = r.get_json()
-    assert body["userId"] == "docente-123" and body["teacherIds"] == ["docente-123"]
+    assert body["userId"] == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034" and body["teacherIds"] == [
+        "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
+    ]
 
 
 def test_teacher_sees_only_own_courses_sorted(client):
@@ -23,7 +25,7 @@ def test_course_list_period_filter_and_shape(client):
     assert c["subject"] == {"id": 15, "code": "DDA2", "name": "Desarrollo de Aplicaciones II"}
     assert c["period"]["label"] == "2° Cuatrimestre 2026"
     assert c["schedule"] == [{"roomId": 4, "weekday": "MONDAY", "startTime": "18:00", "endTime": "20:00"}]
-    assert c["teachers"] == [{"teacherId": "docente-123", "role": "TITULAR"}]
+    assert c["teachers"] == [{"teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "role": "TITULAR"}]
 
 
 def test_foreign_course_is_403_and_unknown_is_404(client):
@@ -51,7 +53,11 @@ def test_admin_can_read_but_not_write_foreign_course(client):
 
 def test_roster_with_attendance_and_final_result(client, seeded_with_acta):
     body = client.get("/api/v1/courses/42/students", headers=as_teacher()).get_json()
-    assert [s["studentId"] for s in body] == ["alumno-456", "alumno-457", "alumno-458"]
+    assert [s["studentId"] for s in body] == [
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
+    ]
     s456, s457 = body[0], body[1]
     assert s456["profile"]["fullName"] == "Juan Pérez" and s456["profile"]["fileNumber"] == "123456"
     assert s456["attendance"] == {
@@ -79,7 +85,11 @@ def test_roster_excludes_baja_and_degrades_when_directory_down(client, integ):
     integ.academic.courses[42] = dataclasses.replace(
         d,
         enrollments=d.enrollments
-        + [dataclasses.replace(d.enrollments[0], id=99, student_id="alumno-999", status="BAJA")],
+        + [
+            dataclasses.replace(
+                d.enrollments[0], id=99, student_id="00000000-0000-4000-8000-000000000999", status="BAJA"
+            )
+        ],
     )
     assert len(client.get("/api/v1/courses/42/students", headers=as_teacher()).get_json()) == 3
     integ.directory.down = True
@@ -89,9 +99,9 @@ def test_roster_excludes_baja_and_degrades_when_directory_down(client, integ):
 
 
 def test_unknown_profile_is_null(client, integ):
-    del integ.directory.profiles["alumno-458"]
+    del integ.directory.profiles["d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"]
     body = client.get("/api/v1/courses/42/students", headers=as_teacher()).get_json()
-    assert body[-1]["studentId"] == "alumno-458" and body[-1]["profile"] is None
+    assert body[-1]["studentId"] == "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58" and body[-1]["profile"] is None
 
 
 def test_ga_failure_is_502_or_504_never_demo_data(client, integ):

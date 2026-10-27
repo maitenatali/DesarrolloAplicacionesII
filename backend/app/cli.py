@@ -45,10 +45,12 @@ def register_cli(app: Flask) -> None:
     @app.cli.command("seed")
     @click.option("--no-acta", is_flag=True, help="Skip the sample FINAL acta (it locks the FINAL exam).")
     def seed(no_acta: bool) -> None:
-        """Load the sample data (course 42, alumno-456/457/458, ...)."""
-        from app.seed import load_seed
+        """Load the sample data (course 42, ba310c57-a684-4dbf-a4a4-905fcfbefa08/457/458, ...)."""
+        from app.seed import load_mock_core_seed, load_seed
 
         click.echo("seeded" if load_seed(include_acta=not no_acta) else "already seeded")
+        if app.extensions["settings"].mock_core_enabled:
+            click.echo(f"mock CORE users created: {load_mock_core_seed()}")
 
     @app.cli.command("openapi")
     @click.option("--out", default="docs/openapi.json", show_default=True)

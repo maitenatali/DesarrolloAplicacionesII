@@ -96,7 +96,7 @@ def acta_dto(a: Acta) -> ActaDto:
             student_name=d.alumno_nombre,
             student_file_number=d.alumno_legajo,
             grade=d.nota,
-            result=d.resultado,
+            result=Result(d.resultado),
         )
         for d in a.detalles
     ]
@@ -301,6 +301,30 @@ def generate_acta(principal: Principal, body: ActaCreateRequest) -> ActaCreatedD
             },
             actor_id=teacher_id,
         )
+        # Analítica (tasa de aprobación por materia/docente/cuatrimestre) consumes one result per student
+        # and course; the acta is the official source, so the teacher module publishes it.
+        if acta.tipo == ActaType.FINAL.value:
+            for sid, _n, _l, g, res in rows:
+                if res.value not in (Result.APROBADO.value, Result.DESAPROBADO.value):
+                    continue
+                event_service.enqueue(
+                    db.session,
+                    EVENT_TYPES.course_result_published,
+                    f"course/{acta.curso_id}/student/{sid}",
+                    {
+                        "studentId": sid,
+                        "courseId": acta.curso_id,
+                        "subjectId": acta.asignatura_id,
+                        "periodId": acta.periodo_id,
+                        "siteId": None,  # TODO(GA): backofficeSiteId of the course's sede (GET /planificacion/sedes)
+                        "teacherId": teacher_id,
+                        "finalGrade": float(g) if g is not None else None,
+                        "status": res.value,
+                        "resultDate": day.isoformat(),
+                        "actaNumber": acta.numero,
+                    },
+                    actor_id=teacher_id,
+                )
         db.session.commit()
     except IntegrityError as e:
         db.session.rollback()

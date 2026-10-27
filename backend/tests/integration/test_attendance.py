@@ -18,16 +18,23 @@ def test_put_creates_then_replaces(client, db_session):
     r = client.put(f"{URL}/{day}", headers=as_teacher(), json=attendance_body(notes="Primera"))
     assert r.status_code == 201, r.get_data(as_text=True)
     assert len(r.get_json()["records"]) == 3
-    marks = {"alumno-456": "AUSENTE", "alumno-457": "JUSTIFICADO", "alumno-458": "PRESENTE"}
+    marks = {
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08": "AUSENTE",
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": "JUSTIFICADO",
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": "PRESENTE",
+    }
     body = attendance_body(marks, notes="Corregida")
     body["records"][1]["note"] = "Certificado"
-    r = client.put(f"{URL}/{day}", headers=as_teacher("docente-123"), json=body)
+    r = client.put(f"{URL}/{day}", headers=as_teacher("5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"), json=body)
     assert r.status_code == 200
     got = {x["studentId"]: x for x in r.get_json()["records"]}
-    assert got["alumno-456"]["status"] == "AUSENTE" and got["alumno-457"]["note"] == "Certificado"
+    assert (
+        got["ba310c57-a684-4dbf-a4a4-905fcfbefa08"]["status"] == "AUSENTE"
+        and got["c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"]["note"] == "Certificado"
+    )
     assert r.get_json()["notes"] == "Corregida"
     clase = db_session.scalar(select(Clase))
-    assert clase.creado_por == "docente-123"
+    assert clase.creado_por == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
     assert len(db_session.scalars(select(Asistencia)).all()) == 3  # no leftovers
     assert len(outbox(db_session, "teacher.attendance-recorded.v1")) == 2
 
@@ -37,7 +44,11 @@ def test_event_payload(client, db_session):
         f"{URL}/2026-10-12",
         headers=as_teacher(),
         json=attendance_body(
-            {"alumno-456": "PRESENTE", "alumno-457": "AUSENTE", "alumno-458": "JUSTIFICADO"}
+            {
+                "ba310c57-a684-4dbf-a4a4-905fcfbefa08": "PRESENTE",
+                "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": "AUSENTE",
+                "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": "JUSTIFICADO",
+            }
         ),
     )
     ev = outbox(db_session)[0].payload
@@ -46,7 +57,11 @@ def test_event_payload(client, db_session):
         and ev["subject"] == "course/42/attendance/2026-10-12"
     )
     assert ev["data"]["counts"] == {"present": 1, "absent": 1, "justified": 1}
-    assert ev["source"] == "teacher" and ev["actor"]["id"] == "docente-123" and ev["correlationId"]
+    assert (
+        ev["source"] == "teacher"
+        and ev["actor"]["id"] == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
+        and ev["correlationId"]
+    )
 
 
 def test_validation_errors(client, db_session):
@@ -54,17 +69,20 @@ def test_validation_errors(client, db_session):
     r = client.put(f"{URL}/2026-10-20", headers=h, json=attendance_body())  # tomorrow vs frozen 2026-10-19
     assert r.status_code == 400 and r.get_json()["code"] == "DATE_IN_FUTURE"
     dup = attendance_body()
-    dup["records"].append({"studentId": "alumno-456", "status": "AUSENTE"})
+    dup["records"].append({"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "status": "AUSENTE"})
     r = client.put(f"{URL}/2026-10-12", headers=h, json=dup)
     assert r.status_code == 400 and r.get_json()["code"] == "DUPLICATE_STUDENT"
     unknown = attendance_body()
-    unknown["records"][0]["studentId"] = "alumno-000"
+    unknown["records"][0]["studentId"] = "00000000-0000-4000-8000-000000000000"
     r = client.put(f"{URL}/2026-10-12", headers=h, json=unknown)
     assert r.status_code == 400 and r.get_json()["code"] == "STUDENT_NOT_ENROLLED"
-    partial = {"records": [{"studentId": "alumno-456", "status": "PRESENTE"}]}
+    partial = {"records": [{"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "status": "PRESENTE"}]}
     r = client.put(f"{URL}/2026-10-12", headers=h, json=partial)
     assert r.status_code == 400 and r.get_json()["code"] == "INCOMPLETE_ROSTER"
-    assert {e["message"] for e in r.get_json()["errors"]} == {"Falta alumno-457.", "Falta alumno-458."}
+    assert {e["message"] for e in r.get_json()["errors"]} == {
+        "Falta c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57.",
+        "Falta d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58.",
+    }
     bad = attendance_body()
     bad["records"][0]["status"] = "X"
     assert client.put(f"{URL}/2026-10-12", headers=h, json=bad).get_json()["code"] == "VALIDATION_ERROR"
@@ -82,8 +100,8 @@ def test_get_list_and_not_recorded(client, seeded):
     r = client.get(f"{URL}/2026-08-18", headers=h)
     assert r.status_code == 200
     recs = {x["studentId"]: x for x in r.get_json()["records"]}
-    assert recs["alumno-458"] == {
-        "studentId": "alumno-458",
+    assert recs["d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"] == {
+        "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
         "status": "JUSTIFICADO",
         "note": "Certificado médico",
     }
@@ -106,9 +124,18 @@ def test_summary_matches_seed(client, seeded):
     s = client.get("/api/v1/courses/42/attendance-summary", headers=as_teacher()).get_json()
     assert s["threshold"] == 75.0
     by = {x["studentId"]: x for x in s["students"]}
-    assert (by["alumno-456"]["condition"], by["alumno-456"]["attendancePercentage"]) == ("REGULAR", 100.0)
-    assert (by["alumno-457"]["condition"], by["alumno-457"]["attendancePercentage"]) == ("LIBRE", 50.0)
-    assert by["alumno-458"]["justified"] == 1 and by["alumno-458"]["condition"] == "REGULAR"
+    assert (
+        by["ba310c57-a684-4dbf-a4a4-905fcfbefa08"]["condition"],
+        by["ba310c57-a684-4dbf-a4a4-905fcfbefa08"]["attendancePercentage"],
+    ) == ("REGULAR", 100.0)
+    assert (
+        by["c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"]["condition"],
+        by["c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"]["attendancePercentage"],
+    ) == ("LIBRE", 50.0)
+    assert (
+        by["d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"]["justified"] == 1
+        and by["d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"]["condition"] == "REGULAR"
+    )
 
 
 def test_summary_omits_students_without_rows(client):
@@ -135,4 +162,8 @@ def test_locked_by_cursada_acta_until_annulled(client, seeded):
 
 
 def test_roster_constant():
-    assert ROSTER_42 == ["alumno-456", "alumno-457", "alumno-458"]
+    assert ROSTER_42 == [
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
+    ]

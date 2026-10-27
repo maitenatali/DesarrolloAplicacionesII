@@ -28,7 +28,7 @@ def test_create_returns_201_location_and_event(client, db_session):
     )
     assert ev[0].payload["data"]["startTime"] == "18:00"
     exam = db_session.scalar(select(Examen))
-    assert exam.creado_por == "docente-123"
+    assert exam.creado_por == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
 
 
 def test_duplicate_type_then_cancel_frees_slot(client):

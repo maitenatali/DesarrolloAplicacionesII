@@ -32,20 +32,20 @@ class Settings:
     db_pool_size: int = 5
     db_pool_recycle: int = 1800
 
-    auth_verifier: str = "introspect"
+    auth_verifier: str = "jwt"
     token_cache_ttl: int = 60
     token_cache_max_entries: int = 2000
     core_me_path: str = "/api/v1/auth/me"
     service_tokens: tuple[str, ...] = ()
     core_jwks_url: str = ""
     jwt_algorithms: tuple[str, ...] = ("RS256",)
-    jwt_issuer: str = ""
-    jwt_audience: str = ""
+    jwt_issuer: str = "uadenet-core"
+    jwt_audience: str = "uadenet"
     jwt_leeway_seconds: int = 30
-    teacher_roles: tuple[str, ...] = ("ROLE_DOCENTE", "ROLE_TEACHER")
-    service_roles: tuple[str, ...] = ("ROLE_SERVICE", "ROLE_ADMINISTRATIVO")
-    admin_roles: tuple[str, ...] = ("ROLE_ADMINISTRATIVO", "ROLE_ACADEMIC_ADMIN")
-    docente_id_claims: tuple[str, ...] = ("sub", "email", "email_local")
+    teacher_roles: tuple[str, ...] = ("TEACHER",)
+    service_roles: tuple[str, ...] = ("SERVICE",)
+    service_modules: tuple[str, ...] = ("student", "analytics")  # service tokens allowed on /results
+    admin_roles: tuple[str, ...] = ("ACADEMIC_ADMIN", "ADMIN_STAFF")
     gateway_hmac_enabled: bool = False
     gateway_hmac_secret: str = ""
     invalid_token_limit_per_minute: int = 30
@@ -57,9 +57,16 @@ class Settings:
     student_directory_auth: str = "static_bearer"
     student_directory_static_token: str = ""
 
+    mock_core_enabled: bool = False
+    mock_core_service_clients: tuple[str, ...] = ()  # "clientId:secret" pairs accepted by the simulator
+    access_token_ttl: int = 900
+    refresh_token_ttl: int = 7 * 24 * 3600
+    student_portal_base_url: str = "/student"  # prefix of actionUrl in notifications sent to students
+
     academic_mode: str = "mock"
     core_events_mode: str = "mock"
     student_directory_mode: str = "mock"
+    notifications_mode: str = "mock"
 
     core_base_url: str = "https://core-api-production-e458.up.railway.app"
     core_service_client_id: str = ""
@@ -173,7 +180,7 @@ class Settings:
             return choice(name, global_mode, ("mock", "live")) if s(name) else global_mode
 
         app_env = choice("APP_ENV", "development", ("development", "test", "production"))
-        auth_verifier = choice("AUTH_VERIFIER", "introspect", ("introspect", "jwt", "dev"))
+        auth_verifier = choice("AUTH_VERIFIER", "jwt", ("introspect", "jwt", "dev"))
         if auth_verifier == "dev" and app_env == "production":
             problems.append("AUTH_VERIFIER=dev is refused when APP_ENV=production")
         tz = s("APP_TIMEZONE") or cls.app_timezone
@@ -198,13 +205,18 @@ class Settings:
             service_tokens=c("SERVICE_TOKENS", ()),
             core_jwks_url=s("CORE_JWKS_URL"),
             jwt_algorithms=c("JWT_ALGORITHMS", ("RS256",)),
-            jwt_issuer=s("JWT_ISSUER"),
-            jwt_audience=s("JWT_AUDIENCE"),
+            jwt_issuer=s("JWT_ISSUER", cls.jwt_issuer),
+            jwt_audience=s("JWT_AUDIENCE", cls.jwt_audience),
             jwt_leeway_seconds=i("JWT_LEEWAY_SECONDS", 30),
             teacher_roles=c("TEACHER_ROLES", cls.teacher_roles),
             service_roles=c("SERVICE_ROLES", cls.service_roles),
+            service_modules=c("SERVICE_MODULES", cls.service_modules),
+            mock_core_enabled=b("MOCK_CORE_ENABLED", False),
+            mock_core_service_clients=c("MOCK_CORE_SERVICE_CLIENTS", ()),
+            access_token_ttl=i("ACCESS_TOKEN_TTL_SECONDS", 900),
+            refresh_token_ttl=i("REFRESH_TOKEN_TTL_SECONDS", 7 * 24 * 3600),
+            student_portal_base_url=(s("STUDENT_PORTAL_BASE_URL") or cls.student_portal_base_url).rstrip("/"),
             admin_roles=c("ADMIN_ROLES", cls.admin_roles),
-            docente_id_claims=c("DOCENTE_ID_CLAIMS", cls.docente_id_claims),
             gateway_hmac_enabled=b("GATEWAY_HMAC_ENABLED", False),
             gateway_hmac_secret=s("GATEWAY_HMAC_SECRET"),
             invalid_token_limit_per_minute=i("INVALID_TOKEN_LIMIT_PER_MINUTE", 30),
@@ -223,6 +235,7 @@ class Settings:
             academic_mode=mode("ACADEMIC_MODE"),
             core_events_mode=mode("CORE_EVENTS_MODE"),
             student_directory_mode=mode("STUDENT_DIRECTORY_MODE"),
+            notifications_mode=mode("NOTIFICATIONS_MODE"),
             core_base_url=(s("CORE_BASE_URL") or cls.core_base_url).rstrip("/"),
             core_service_client_id=s("CORE_SERVICE_CLIENT_ID"),
             core_service_client_secret=s("CORE_SERVICE_CLIENT_SECRET"),
@@ -257,8 +270,10 @@ class Settings:
         ):
             if mode_ == "live" and not m:
                 problems.append(f"{name} is required when its mode is live")
-        if settings.auth_verifier == "jwt" and not settings.core_jwks_url:
-            problems.append("CORE_JWKS_URL is required when AUTH_VERIFIER=jwt")
+        if settings.auth_verifier == "jwt" and not (settings.core_jwks_url or settings.mock_core_enabled):
+            problems.append(
+                "CORE_JWKS_URL is required when AUTH_VERIFIER=jwt (or set MOCK_CORE_ENABLED=true)"
+            )
         if problems:
             raise ConfigError(problems)
         return settings

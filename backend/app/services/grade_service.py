@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import Any
 
 from flask import current_app
 from sqlalchemy import delete, func, select
@@ -144,7 +145,9 @@ def upsert_grades(
         )
     }
 
-    to_set, to_clear, changed_grades = [], [], []
+    to_set: list[dict[str, Any]] = []
+    to_clear: list[str] = []
+    changed_grades: list[tuple[str, Decimal]] = []
     for ent in body.entries:
         if ent.grade is None and not ent.absent:
             to_clear.append(ent.student_id)
@@ -202,6 +205,19 @@ def upsert_grades(
             },
             actor_id=access.teacher_id,
         )
+        # TPO §1: the student gets a real-time notification linking to the subject + exam result.
+        subject = access.detail.subject.name
+        base = cfg.student_portal_base_url
+        for sid, g in changed_grades:
+            event_service.enqueue_notification(
+                db.session,
+                user_id=sid,
+                type_="TEACHER_EXAM_RESULT_PUBLISHED",
+                title=f"Nueva calificación en {subject}",
+                message=f"Se publicó tu nota de {exam.nombre}: {g.normalize():f}.",
+                action_url=f"{base}/courses/{course_id}/exams/{exam_id}",
+                source_reference=f"exam/{exam_id}/student/{sid}/grade/{g:.2f}",
+            )
     db.session.commit()
 
     entries = [
@@ -230,11 +246,11 @@ def course_matrix(principal: Principal, course_id: int) -> GradeMatrix:
     for s in roster.entries:
         cells, nums = {}, []
         for e in exams:
-            r = by_exam.get((e.id, s.student_id))
-            if r is not None:
-                cells[str(e.id)] = MatrixCell(grade=r.nota, absent=r.ausente)
-                if r.nota is not None:
-                    nums.append(r.nota)
+            cell = by_exam.get((e.id, s.student_id))
+            if cell is not None:
+                cells[str(e.id)] = MatrixCell(grade=cell.nota, absent=cell.ausente)
+                if cell.nota is not None:
+                    nums.append(cell.nota)
         rows.append(
             MatrixRow(
                 student_id=s.student_id,

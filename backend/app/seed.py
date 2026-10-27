@@ -11,13 +11,13 @@ from app.extensions import db
 from app.models import Acta, ActaDetalle, Asistencia, Calificacion, Clase, Examen
 
 COURSE = 42
-TEACHER = "docente-123"
+TEACHER = "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
 DAYS = [date(2026, 8, 11), date(2026, 8, 18), date(2026, 8, 25), date(2026, 9, 1)]
 # 456: 4 present (REGULAR 100%); 457: 2 absences (LIBRE 50%); 458: 1 justified + 3 present (REGULAR 100%)
 MARKS = {
-    "alumno-456": ["PRESENTE"] * 4,
-    "alumno-457": ["PRESENTE", "AUSENTE", "PRESENTE", "AUSENTE"],
-    "alumno-458": ["PRESENTE", "JUSTIFICADO", "PRESENTE", "PRESENTE"],
+    "ba310c57-a684-4dbf-a4a4-905fcfbefa08": ["PRESENTE"] * 4,
+    "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": ["PRESENTE", "AUSENTE", "PRESENTE", "AUSENTE"],
+    "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": ["PRESENTE", "JUSTIFICADO", "PRESENTE", "PRESENTE"],
 }
 
 
@@ -53,9 +53,9 @@ def load_seed(*, include_acta: bool = True) -> bool:
     db.session.flush()
 
     for sid, nota, ausente in (
-        ("alumno-456", Decimal("8.00"), False),
-        ("alumno-457", Decimal("5.00"), False),
-        ("alumno-458", None, True),
+        ("ba310c57-a684-4dbf-a4a4-905fcfbefa08", Decimal("8.00"), False),
+        ("c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", Decimal("5.00"), False),
+        ("d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", None, True),
     ):
         db.session.add(
             Calificacion(
@@ -90,9 +90,15 @@ def load_seed(*, include_acta: bool = True) -> bool:
         )
         for orden, (sid, nombre, leg, nota, res) in enumerate(
             (
-                ("alumno-456", "Juan Pérez", "123456", Decimal("8.00"), "APROBADO"),
-                ("alumno-457", "Lucas Fernández", "123458", Decimal("3.00"), "DESAPROBADO"),
-                ("alumno-458", "Ana Rodríguez", "123459", None, "AUSENTE"),
+                ("ba310c57-a684-4dbf-a4a4-905fcfbefa08", "Juan Pérez", "123456", Decimal("8.00"), "APROBADO"),
+                (
+                    "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
+                    "Lucas Fernández",
+                    "123458",
+                    Decimal("3.00"),
+                    "DESAPROBADO",
+                ),
+                ("d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "Ana Rodríguez", "123459", None, "AUSENTE"),
             ),
             start=1,
         ):
@@ -109,3 +115,75 @@ def load_seed(*, include_acta: bool = True) -> bool:
         db.session.add(acta)
     db.session.commit()
     return True
+
+
+# ── Local CORE simulator (MOCK_CORE_ENABLED=true): login users + wallets ──────────────────────
+MOCK_PASSWORD = "Uade2026!"
+TEACHER_PERMISSIONS = [
+    "wallet:read:self",
+    "wallet:credit:self",
+    "teacher:courses:read",
+    "teacher:courses:write",
+    "notifications:read:self",
+]
+STUDENT_PERMISSIONS = ["wallet:read:self", "wallet:credit:self", "notifications:read:self"]
+ADMIN_ID = "a0000000-0000-4000-8000-000000000001"
+
+
+def load_mock_core_seed() -> int:
+    """Create the simulator's identities (same UUIDs as the GA/Backoffice fixtures). Idempotent."""
+    from werkzeug.security import generate_password_hash
+
+    from app.integrations import fixtures
+    from app.mock_core.service import post_tx
+    from app.models import MockCoreUser
+
+    pwd = generate_password_hash(MOCK_PASSWORD)
+    people: list[tuple[str, str, str, str, list[str], list[str]]] = []
+    for p in fixtures.TEACHER_PROFILES.values():
+        people.append(
+            (p.student_id, p.email or "", p.first_name, p.last_name, ["TEACHER"], TEACHER_PERMISSIONS)
+        )
+    for sid, p in fixtures.PROFILES.items():
+        if sid not in fixtures.TEACHER_PROFILES:
+            people.append((sid, p.email or "", p.first_name, p.last_name, ["STUDENT"], STUDENT_PERMISSIONS))
+    people.append(
+        (
+            ADMIN_ID,
+            "secretaria.academica@uade.edu.ar",
+            "Laura",
+            "Suárez",
+            ["ACADEMIC_ADMIN"],
+            ["wallet:read:self"],
+        )
+    )
+    created = 0
+    for uid, email, first, last, roles, perms in people:
+        if db.session.get(MockCoreUser, uid) is not None:
+            continue
+        db.session.add(
+            MockCoreUser(
+                id=uid,
+                email=email,
+                password_hash=pwd,
+                first_name=first,
+                last_name=last,
+                roles=roles,
+                permissions=perms,
+                career_ids=["a77c1e40-0000-4000-8000-000000000001"] if "STUDENT" in roles else [],
+                status="ACTIVE",
+            )
+        )
+        db.session.flush()
+        if "TEACHER" in roles:
+            post_tx(
+                uid,
+                type_="CREDIT",
+                concept="TOP_UP",
+                amount=Decimal("15000.00"),
+                source_module="core",
+                external_reference=f"seed/{uid}",
+            )
+        created += 1
+    db.session.commit()
+    return created

@@ -60,13 +60,17 @@ COURSE_42 = CourseDetail(
     ),
     subject=SUBJECT_15,
     period=PERIOD_8,
-    teachers=[TeacherAssignment(3, "docente-123", "TITULAR")],
-    enrollments=[_enr(71, "alumno-456"), _enr(72, "alumno-457"), _enr(73, "alumno-458")],
+    teachers=[TeacherAssignment(3, "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "TITULAR")],
+    enrollments=[
+        _enr(71, "ba310c57-a684-4dbf-a4a4-905fcfbefa08"),
+        _enr(72, "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"),
+        _enr(73, "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"),
+    ],
     schedule=[Schedule(9, 4, "MONDAY", time(18, 0), time(20, 0))],
 )
 
-# Extra volume: students alumno-101..120 (frontend scheme alumno-{100+i}).
-_EXTRA_IDS = [f"alumno-{100 + i}" for i in range(1, 21)]
+# Extra volume: students 00000000-0000-4000-a000-000000000101..120 (frontend scheme alumno-{100+i}).
+_EXTRA_IDS = [f"00000000-0000-4000-a000-{100 + i:012d}" for i in range(1, 21)]
 
 COURSE_43 = CourseDetail(  # another teacher
     course=CourseSummary(
@@ -84,18 +88,18 @@ COURSE_43 = CourseDetail(  # another teacher
     ),
     subject=SUBJECT_15,
     period=PERIOD_8,
-    teachers=[TeacherAssignment(4, "docente-124", "TITULAR")],
+    teachers=[TeacherAssignment(4, "7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34", "TITULAR")],
     enrollments=[_enr(200 + i, sid) for i, sid in enumerate(_EXTRA_IDS)],
     schedule=[Schedule(10, 5, "TUESDAY", time(19, 0), time(21, 0))],
 )
 
-COURSE_44 = CourseDetail(  # cancelled course of docente-123
+COURSE_44 = CourseDetail(  # cancelled course of 5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034
     course=CourseSummary(
         44, "BD1-A", 16, 8, 1, "VIRTUAL", "CANCELADO", 30, date(2026, 8, 10), date(2026, 11, 30), 0
     ),
     subject=SUBJECT_16,
     period=PERIOD_8,
-    teachers=[TeacherAssignment(5, "docente-123", "TITULAR")],
+    teachers=[TeacherAssignment(5, "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "TITULAR")],
     enrollments=[],
     schedule=[],
 )
@@ -106,19 +110,28 @@ COURSE_30 = CourseDetail(  # previous period
     ),
     subject=SUBJECT_16,
     period=PERIOD_7,
-    teachers=[TeacherAssignment(6, "docente-123", "ADJUNTO")],
-    enrollments=[_enr(300, "alumno-456", "APROBADO"), _enr(301, "alumno-457", "REGULAR")],
+    teachers=[TeacherAssignment(6, "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "ADJUNTO")],
+    enrollments=[
+        _enr(300, "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "APROBADO"),
+        _enr(301, "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "REGULAR"),
+    ],
     schedule=[Schedule(11, 2, "FRIDAY", time(8, 0), time(10, 0))],
 )
 
 ALL_COURSES = [COURSE_42, COURSE_43, COURSE_44, COURSE_30]
 
 PROFILES: dict[str, StudentProfile] = {
-    "alumno-456": StudentProfile(
-        "alumno-456", "Juan", "Pérez", "Juan Pérez", "40123456", "123456", "juan.perez@uade.edu.ar"
+    "ba310c57-a684-4dbf-a4a4-905fcfbefa08": StudentProfile(
+        "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+        "Juan",
+        "Pérez",
+        "Juan Pérez",
+        "40123456",
+        "123456",
+        "juan.perez@uade.edu.ar",
     ),
-    "alumno-457": StudentProfile(
-        "alumno-457",
+    "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": StudentProfile(
+        "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
         "Lucas",
         "Fernández",
         "Lucas Fernández",
@@ -126,8 +139,14 @@ PROFILES: dict[str, StudentProfile] = {
         "123458",
         "lucas.fernandez@uade.edu.ar",
     ),
-    "alumno-458": StudentProfile(
-        "alumno-458", "Ana", "Rodríguez", "Ana Rodríguez", "40123459", "123459", "ana.rodriguez@uade.edu.ar"
+    "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": StudentProfile(
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
+        "Ana",
+        "Rodríguez",
+        "Ana Rodríguez",
+        "40123459",
+        "123459",
+        "ana.rodriguez@uade.edu.ar",
     ),
 }
 for _i, _sid in enumerate(_EXTRA_IDS, start=1):
@@ -141,8 +160,34 @@ for _i, _sid in enumerate(_EXTRA_IDS, start=1):
         f"alumno{_i}@uade.edu.ar",
     )
 
+# Backoffice directory also holds teachers (same endpoint GET /api/v1/users/{userId}).
+TEACHER_PROFILES: dict[str, StudentProfile] = {
+    "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034": StudentProfile(
+        "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
+        "María",
+        "Gómez",
+        "María Gómez",
+        "28123456",
+        "D-1001",
+        "maria.gomez@uade.edu.ar",
+    ),
+    "7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34": StudentProfile(
+        "7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34",
+        "Carlos",
+        "Díaz",
+        "Carlos Díaz",
+        "27123457",
+        "D-1002",
+        "carlos.diaz@uade.edu.ar",
+    ),
+}
+PROFILES.update(TEACHER_PROFILES)
+
 EXAM_TURN_7 = ExamTurn(
     7, "Turno final diciembre", date(2026, 12, 1), date(2026, 12, 15), date(2026, 11, 10), date(2026, 11, 25)
 )
 PREREQS_15 = [Prerequisite(5, 15, 12, "APROBADA"), Prerequisite(6, 15, 13, "REGULAR")]
-TEACHER_NAME = {"docente-123": "María Gómez", "docente-124": "Carlos Díaz"}
+TEACHER_NAME = {
+    "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034": "María Gómez",
+    "7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34": "Carlos Díaz",
+}

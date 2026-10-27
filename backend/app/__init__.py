@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Mapping
+from logging import getLogger  # NB: `import logging` would be shadowed by the app.logging submodule
 from pathlib import Path
 
 from flask import Flask, redirect, request
@@ -35,8 +35,11 @@ def _register_cors(app: Flask, origins: tuple[str, ...]) -> None:
         if origin in origins:
             resp.headers["Access-Control-Allow-Origin"] = origin
             resp.headers["Vary"] = "Origin"
-            resp.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-Correlation-Id"
-            resp.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, OPTIONS"
+            resp.headers["Access-Control-Allow-Headers"] = (
+                "Authorization, Content-Type, X-Correlation-Id, Idempotency-Key"
+            )
+            resp.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+            resp.headers["Access-Control-Allow-Credentials"] = "true"  # refresh cookie
             resp.headers["Access-Control-Expose-Headers"] = "X-Correlation-Id, Location, X-Degraded"
         return resp
 
@@ -63,11 +66,18 @@ def create_app(
     register_gateway_hmac(app)
     _register_cors(app, cfg.cors_origins)
 
-    from app.routes import actas, attendance, courses, exams, grades, health, results
+    from app.routes import actas, attendance, calendar, courses, exams, grades, health, results
     from app.services.event_service import register_inline_dispatch
 
-    for module in (health, courses, exams, grades, attendance, actas, results):
+    for module in (health, courses, exams, grades, attendance, actas, results, calendar):
         app.register_blueprint(module.bp, url_prefix="/api/v1")
+    if cfg.mock_core_enabled:
+        from app.mock_core.routes import bp as mock_core_bp
+
+        app.register_blueprint(mock_core_bp)
+        getLogger("app").warning(
+            "mock_core_enabled: local CORE simulator serves /api/v1/auth, wallets, notifications"
+        )
     register_error_handlers(app)
     register_inline_dispatch(app)
     spec.register(app)  # SpecTree -> /apidocs/swagger, /apidocs/openapi.json
@@ -77,5 +87,5 @@ def create_app(
 
     register_cli(app)
     if cfg.gateway_hmac_enabled:
-        logging.getLogger("app").warning("gateway_hmac_enabled_but_verify_not_implemented")
+        getLogger("app").warning("gateway_hmac_enabled_but_verify_not_implemented")
     return app

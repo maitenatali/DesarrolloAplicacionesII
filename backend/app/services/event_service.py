@@ -9,7 +9,7 @@ from datetime import timedelta
 from typing import Any
 
 from flask import Flask, current_app, g, has_request_context
-from sqlalchemy import func, select
+from sqlalchemy import CursorResult, func, select
 
 from app.errors import PublishError
 from app.extensions import db
@@ -30,9 +30,9 @@ def build_envelope(
         "source": "teacher",
         "occurredAt": now_utc().isoformat().replace("+00:00", "Z"),
         "subject": subject,
-        "correlationId": correlation_id,
+        "correlationId": correlation_id or str(uuid.uuid4()),  # CORE requires a UUID
         "causationId": None,
-        "actor": {"type": "user", "id": actor_id},
+        "actor": {"type": "user" if actor_id else "system", "id": actor_id or "teacher-service"},
         "data": data,
     }
 
@@ -55,11 +55,47 @@ def enqueue(
         g.outbox_dirty = True
 
 
+def enqueue_notification(
+    session,
+    *,
+    user_id: str,
+    type_: str,
+    title: str,
+    message: str,
+    action_url: str | None,
+    source_reference: str,
+) -> None:
+    """Queue a CORE notification (POST /internal/v1/notifications) in the business transaction.
+
+    CORE makes (userId, type, sourceModule, sourceReference) idempotent, so retries never duplicate it.
+    """
+    payload = {
+        "userId": user_id,
+        "type": type_,
+        "title": title[:200],
+        "message": message[:2000],
+        "actionUrl": action_url,
+        "sourceModule": "teacher",
+        "sourceReference": source_reference[:200],
+    }
+    session.add(
+        OutboxEvent(
+            id=uuid.uuid4(),
+            kind="NOTIFICATION",
+            event_type=type_,
+            subject=f"user/{user_id}",
+            payload=payload,
+        )
+    )
+    if has_request_context():
+        g.outbox_dirty = True
+
+
 def dispatch_due(batch: int | None = None, budget_s: float | None = None) -> dict[str, int]:
     """Deliver due PENDING events. FOR UPDATE SKIP LOCKED lets several dispatchers coexist."""
     cfg = current_app.extensions["settings"]
     batch = batch or cfg.outbox_batch_size
-    publisher = get_integrations().core_events
+    integ = get_integrations()
     started = time.monotonic()
     sent = failed = retried = 0
     try:
@@ -78,7 +114,10 @@ def dispatch_due(batch: int | None = None, budget_s: float | None = None) -> dic
             if budget_s is not None and time.monotonic() - started > budget_s:
                 break
             try:
-                publisher.publish(ev.payload)
+                if ev.kind == "NOTIFICATION":
+                    integ.notifications.create(ev.payload)
+                else:
+                    integ.core_events.publish(ev.payload)
                 ev.status, ev.sent_at = "SENT", now_utc()
                 sent += 1
             except PublishError as e:
@@ -112,9 +151,10 @@ def requeue_failed() -> int:
 def prune_sent(days: int = 30) -> int:
     from sqlalchemy import delete
 
-    res = db.session.execute(
+    res: CursorResult = db.session.execute(  # type: ignore[assignment]  # DML returns a CursorResult
         delete(OutboxEvent).where(
-            OutboxEvent.status == "SENT", OutboxEvent.sent_at < now_utc() - timedelta(days=days)
+            OutboxEvent.status == "SENT",
+            OutboxEvent.sent_at < func.now() - timedelta(days=days),  # DB clock, same as sent_at writers
         )
     )
     db.session.commit()

@@ -12,6 +12,7 @@ from app.security.decorators import require_auth, require_service_token
 from . import keys, service
 from .schemas import (
     CoreUser,
+    ForgotPasswordRequest,
     Jwks,
     LimitQuery,
     LoginRequest,
@@ -73,6 +74,13 @@ def logout():
     r = Response(status=204)
     r.delete_cookie(REFRESH_COOKIE, path="/api/v1/auth")
     return r
+
+
+@bp.post("/api/v1/auth/password/forgot")
+@spec.validate(json=ForgotPasswordRequest, resp=resp(HTTP_202=None), tags=TAGS)
+def forgot_password():
+    # CORE answers 202 whether or not the email exists (no account enumeration). The simulator sends no email.
+    return Response(status=202)
 
 
 @bp.get("/api/v1/auth/me")

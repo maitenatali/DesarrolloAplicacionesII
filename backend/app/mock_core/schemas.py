@@ -18,6 +18,10 @@ class LoginRequest(CoreModel):
     password: Annotated[str, Field(min_length=1, max_length=200)]
 
 
+class ForgotPasswordRequest(CoreModel):
+    email: Annotated[str, Field(min_length=3, max_length=150)]
+
+
 class CoreUser(BaseModel):
     id: str
     email: str

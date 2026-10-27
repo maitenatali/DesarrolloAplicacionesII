@@ -17,3 +17,7 @@ services:
     environment: { DATABASE_URL: "postgresql+psycopg://postgres:postgres@db:5432/teacher" }
     depends_on: { db: { condition: service_healthy } }
     command: flask outbox-worker
+  web:             # frontend React (build + nginx) -> http://localhost:3000
+    build: ../frontend
+    depends_on: [api]
+    ports: ["3000:80"]

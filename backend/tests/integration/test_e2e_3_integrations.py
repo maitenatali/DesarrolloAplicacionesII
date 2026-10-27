@@ -219,4 +219,5 @@ def _flow(app):
         ).status_code
         == 201
     )
+    assert c.post("/api/v1/auth/password/forgot", json={"email": "nadie@uade.edu.ar"}).status_code == 202
     assert c.post("/api/v1/auth/logout", headers=teacher).status_code == 204

@@ -1,6 +1,6 @@
 # Portal Docente · UADEnet (TPO Desarrollo de Aplicaciones II, 2Q 2026)
 
-Módulo 2 "Portal del Docente". Repo = `backend/` (Flask, este servicio `teacher-service`) + `frontend/` (React JS, próximo)
+Módulo 2 "Portal del Docente". Repo = `backend/` (Flask, este servicio `teacher-service`) + `frontend/` (React JS)
 + `mockup_pantallas/` (mocks HTML 1ª entrega) + `data/` (enunciado TPO y planillas de flujo de datos de los otros grupos).
 
 ## Alcance de la entrega actual
@@ -48,6 +48,11 @@ Tests: PostgreSQL 16 real vía testcontainers (necesita Docker). E2E: `pytest te
 ## Definition of done (por endpoint)
 Schema · service · route · OpenAPI · tests de aceptación (diseño §15.3) · códigos de error (§13.3) · cubierto por los E2E.
 
-## Frontend (próximo, React JS)
-Consumirá `/api/v1/teacher/*` (proxy de Vite → `http://localhost:8080/api/v1`) y CORE (`/api/v1/auth`, `/wallets`,
-`/notifications`; en esta entrega los sirve el simulador en el mismo backend). Ver diseño §17. Tipos desde `backend/docs/openapi.json`.
+## Frontend (React JS) — `frontend/`
+Vite + React 19 + Redux Toolkit (RTK Query) + React Router. Comandos: `npm run dev` (5173, `BACKEND_URL` elige el backend),
+`npm test` (Vitest), `npm run build`. Docker: servicio `web` del compose (nginx, puerto 3000). Cómo correr todo: `ejecucion.md`.
+- Pantallas = mockups 1:1. CSS de cada mockup aislado en `src/styles/pages/<id>.css` bajo `.pg-<id>`; íconos en
+  `src/components/icons.generated.jsx`. Ambos se GENERAN con `npm run extract-mockups`: no editarlos a mano.
+- Toda llamada HTTP va por `src/api/api.js` (RTK Query). Teacher: `/api/v1/teacher/*`; CORE: `/api/v1/auth|wallets|notifications`.
+- Access token solo en memoria (Redux); refresh por cookie httpOnly. Errores: `toApiError()` (problem+json → `detail`).
+- Nunca datos demo ni fallback local para datos del teacher-service (diseño §17.4). Lo que no tiene API: `TODO(<equipo>)`.

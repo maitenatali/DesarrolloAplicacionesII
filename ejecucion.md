@@ -6,7 +6,7 @@ Cómo levantar en tu máquina todos los servicios del proyecto, con Docker o con
 > notificaciones) lo simula el propio backend (`MOCK_CORE_ENABLED=true`) y todas las integraciones
 > (Gestión Académica, Backoffice, Eventos, Comedor, Tienda) están en modo `mock`. No hace falta ninguna credencial externa.
 >
-> El frontend (React JS, carpeta `frontend/`) todavía no existe; ver [§6](#6-frontend-próximo).
+> El frontend (React JS) está en `frontend/`; ver [§6](#6-frontend).
 
 ---
 
@@ -17,6 +17,7 @@ Cómo levantar en tu máquina todos los servicios del proyecto, con Docker o con
 | `db` | PostgreSQL 16 | 5432 | Sí |
 | `api` | Backend Flask `teacher-service` + simulador de CORE (gunicorn) | 8080 | Sí |
 | `outbox-worker` | Proceso que despacha eventos y notificaciones encolados en `outbox_event` | — | No en local (ver nota) |
+| `web` | Frontend React (Vite en desarrollo, nginx en Docker) | 5173 (dev) / 3000 (Docker) | Sí, para usar la app |
 
 Nota sobre el worker: con `EVENTS_INLINE_DISPATCH=true` (default de `.env.example`) la API intenta despachar
 los eventos apenas hace commit, así que en local podés no correrlo. Si lo corrés, que sea **una sola instancia**.
@@ -25,6 +26,7 @@ los eventos apenas hace commit, así que en local podés no correrlo. Si lo corr
 
 - **Opción Docker:** Docker Engine + Docker Compose v2 (`docker compose version`).
 - **Opción sin Docker:** Python **3.12 o superior**, PostgreSQL **15 o superior** (o Docker solo para la base), `make` (opcional).
+- **Frontend sin Docker:** Node.js **20 o superior** y npm.
 - Puertos libres: `5432` (Postgres) y `8080` (API).
 
 Todos los comandos de este documento se corren desde la carpeta `backend/`, salvo que se indique otra cosa.
@@ -38,7 +40,8 @@ cp .env.example .env     # solo la primera vez; los defaults ya sirven para loca
 
 ## 3. Opción A — Todo con Docker (recomendada)
 
-Levanta base de datos, API y worker. La API aplica las migraciones y carga los datos demo (`flask seed`) al arrancar.
+Levanta base de datos, API, worker y frontend. La API aplica las migraciones y carga los datos demo (`flask seed`) al arrancar.
+Al terminar, abrí **http://localhost:3000** e ingresá con un usuario demo.
 
 ```bash
 cd backend
@@ -52,7 +55,8 @@ Variantes útiles:
 docker compose up --build -d              # en segundo plano
 docker compose logs -f api                # ver logs de la API
 docker compose logs -f outbox-worker      # ver logs del worker
-docker compose up --build db api          # sin el worker
+docker compose up --build db api          # sin el worker ni el frontend
+docker compose logs -f web                # ver logs del frontend (nginx)
 docker compose ps                         # estado de los contenedores
 ```
 
@@ -150,7 +154,24 @@ flask outbox-requeue --failed  # vuelve a encolar los eventos FAILED
 flask outbox-prune --days 30   # borra eventos ya enviados con más de N días
 ```
 
-### 4.6 Resumen (3 terminales)
+### 4.6 Frontend
+
+```bash
+cd frontend
+npm install                 # solo la primera vez
+npm run dev                 # http://localhost:5173
+```
+
+El proxy de Vite manda `/api/v1/teacher/*` al backend (`/api/v1/*`) y `/api/v1/*` + `/.well-known/*` a CORE
+(hoy el simulador del mismo backend). Por defecto apunta a `http://localhost:8080`; si la API corre en otro puerto:
+
+```bash
+BACKEND_URL=http://localhost:8090 npm run dev
+```
+
+(o copiá `frontend/.env.example` a `frontend/.env` y cambiá `BACKEND_URL`).
+
+### 4.7 Resumen (4 terminales)
 
 ```bash
 # Terminal 1 — base
@@ -160,7 +181,10 @@ docker compose up db
 cd backend && source .venv/bin/activate
 flask db upgrade && flask seed && flask run -p 8080 --debug
 
-# Terminal 3 — worker (opcional)
+# Terminal 3 — frontend
+cd frontend && npm install && npm run dev
+
+# Terminal 4 — worker (opcional)
 cd backend && source .venv/bin/activate
 flask outbox-worker
 ```
@@ -209,27 +233,32 @@ En Swagger: hacé login en `POST /api/v1/auth/login`, copiá el `accessToken` y 
 
 ---
 
-## 6. Frontend (próximo)
+## 6. Frontend
 
-Todavía no está en el repo. Cuando exista (`frontend/`, Vite + React JS) se levantará así:
+React 19 + Vite + Redux Toolkit (RTK Query) + React Router. Replica 1:1 las pantallas de `mockup_pantallas/`.
 
-```bash
-cd frontend
-npm install
-npm run dev        # http://localhost:5173
-```
+| Modo | Comando | URL |
+|---|---|---|
+| Docker (con todo lo demás) | `cd backend && make up` | http://localhost:3000 |
+| Desarrollo | `cd frontend && npm install && npm run dev` | http://localhost:5173 |
+| Build de producción | `cd frontend && npm run build && npm run preview` | http://localhost:4173 |
 
-El proxy de Vite apuntará al backend local: `/api/v1/teacher/*` → `http://localhost:8080/api/v1/*` y
-`/api/v1/auth`, `/api/v1/wallets`, `/api/v1/notifications`, `/.well-known` → `http://localhost:8080`.
-Necesita la API corriendo (opción A o B).
+Entrá con `maria.gomez@uade.edu.ar` / `Uade2026!`. Recorrido sugerido: Inicio → Mis cursos → curso
+"Desarrollo de Aplicaciones II" → Asistencia / Calificaciones / Exámenes → Actas → Nueva acta → Cuenta
+institucional → Cargar saldo.
 
-Mientras tanto, las pantallas de referencia están en `mockup_pantallas/*.html` y se abren directo en el navegador.
+Cargar saldo es simulado: la tarjeta guardada se aprueba; con "Otra tarjeta", un número terminado en `0002` se
+rechaza y uno terminado en `0004` queda pendiente.
+
+Más detalle de la estructura en `frontend/README.md`.
 
 ---
 
 ## 7. Tests y calidad de código
 
-Desde `backend/` con el venv activo. Los tests usan un PostgreSQL real; lo levantan solos vía testcontainers
+Frontend (desde `frontend/`): `npm test` (Vitest) y `npm run build`.
+
+Backend: desde `backend/` con el venv activo. Los tests usan un PostgreSQL real; lo levantan solos vía testcontainers
 (**necesita Docker corriendo**). Sin Docker: `pip install pixeltable-pgserver` o definir `TEST_DATABASE_URL`.
 
 ```bash
@@ -246,7 +275,9 @@ make openapi                            # regenera docs/openapi.json
 | Síntoma | Causa / solución |
 |---|---|
 | `port is already allocated` / `address already in use` en 5432 | Ya tenés otro Postgres. Pará ese servicio o cambiá el puerto (`-p 5433:5432` y `DATABASE_URL=...@localhost:5433/teacher`). |
-| Mismo error en 8080 | Otro proceso usa el puerto: `lsof -i :8080`. Cambiá con `flask run -p 8081`. |
+| Mismo error en 8080 | Otro proceso usa el puerto: `lsof -i :8080`. Cambiá con `flask run -p 8081` y levantá el frontend con `BACKEND_URL=http://localhost:8081 npm run dev`. |
+| El frontend queda en "Cargando…" o da error de conexión | La API no está levantada o `BACKEND_URL` apunta a otro puerto. Probá `curl localhost:8080/api/v1/health`. |
+| Puerto 3000 ocupado (Docker) | Cambiá `ports: ["3000:80"]` del servicio `web` en `backend/docker-compose.yml`. |
 | `connection refused` al hacer `flask db upgrade` | La base no está levantada o `DATABASE_URL` apunta mal. Probá `docker compose ps`. |
 | La app falla al arrancar listando variables | `.env` no se cargó o tiene un valor inválido. Instalá `python-dotenv` o `set -a; source .env; set +a`. |
 | `401` en todas las llamadas | Falta el header `Authorization: Bearer <token>` o el token venció (15 min). Volvé a hacer login o usá `POST /api/v1/auth/refresh`. |

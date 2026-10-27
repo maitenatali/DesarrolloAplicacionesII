@@ -184,6 +184,65 @@ def load_mock_core_seed() -> int:
                 source_module="core",
                 external_reference=f"seed/{uid}",
             )
+            _seed_teacher_notifications(uid)
         created += 1
     db.session.commit()
     return created
+
+
+# Notifications other modules would have sent to a teacher (shapes of CORE POST /internal/v1/notifications).
+TEACHER_DEMO_NOTIFICATIONS = [
+    (
+        "ACADEMIC_EXAM_TURN_PUBLISHED",
+        "academic",
+        "Turno de examen final publicado",
+        "Gestión Académica publicó el turno final de diciembre (1 al 15/12). Inscripción del 10/11 al 25/11.",
+        2,
+    ),
+    (
+        "EVENT_PUBLISHED",
+        "events",
+        "Nuevo evento: Jornada de Ingeniería",
+        "Se abrió la inscripción a la Jornada de Ingeniería del 12/11 en el Aula Magna de Monserrat.",
+        26,
+    ),
+    (
+        "DINING_RESERVATION_CONFIRMED",
+        "dining",
+        "Reserva de comedor confirmada",
+        "Tu turno de comedor en Sede Monserrat quedó confirmado.",
+        50,
+    ),
+    (
+        "WALLET_TOP_UP_POSTED",
+        "core",
+        "Carga de saldo acreditada",
+        "Se acreditaron $15.000 en tu cuenta institucional.",
+        98,
+    ),
+]
+
+
+def _seed_teacher_notifications(user_id: str) -> None:
+    from datetime import timedelta
+    from uuid import uuid4
+
+    from app.models import MockCoreNotification
+    from app.time import now_utc
+
+    now = now_utc()
+    for i, (type_, module, title, message, hours_ago) in enumerate(TEACHER_DEMO_NOTIFICATIONS):
+        db.session.add(
+            MockCoreNotification(
+                id=str(uuid4()),
+                user_id=user_id,
+                type=type_,
+                title=title,
+                message=message,
+                source_module=module,
+                source_reference=f"seed/{user_id}/{i}",
+                read=i >= 2,
+                read_at=now if i >= 2 else None,
+                created_at=now - timedelta(hours=hours_ago),
+            )
+        )

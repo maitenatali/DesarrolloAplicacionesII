@@ -51,7 +51,7 @@ make lint
 | 2 Exams, attendance, grades, outbox + dispatcher | done |
 | 3 Actas (numbering, FINAL/CURSADA, sync, retry, annulment, locks, results) | done |
 | 4 BFF `/calendar`, `/purchases`; local CORE simulator; student notifications | done (mock data) |
-| 4b Frontend (React JS) | next |
+| 4b Frontend (React JS, `../frontend`) | done |
 | 5 Go live (real CORE/GA/directory credentials, gateway HMAC, JWT claims) | blocked on the [OPEN] items in design §19 |
 
 `[OPEN]` items use the documented defaults and carry a `TODO(<team>)` comment in code (grep for `TODO(`).

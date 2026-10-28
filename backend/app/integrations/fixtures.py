@@ -186,6 +186,8 @@ PROFILES.update(TEACHER_PROFILES)
 EXAM_TURN_7 = ExamTurn(
     7, "Turno final diciembre", date(2026, 12, 1), date(2026, 12, 15), date(2026, 11, 10), date(2026, 11, 25)
 )
+EXAM_TURNS = [EXAM_TURN_7]
+PERIODS = [PERIOD_7, PERIOD_8]
 PREREQS_15 = [Prerequisite(5, 15, 12, "APROBADA"), Prerequisite(6, 15, 13, "REGULAR")]
 TEACHER_NAME = {
     "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034": "María Gómez",

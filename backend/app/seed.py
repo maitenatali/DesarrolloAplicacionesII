@@ -130,11 +130,13 @@ STUDENT_PERMISSIONS = ["wallet:read:self", "wallet:credit:self", "notifications:
 ADMIN_ID = "a0000000-0000-4000-8000-000000000001"
 
 
-def load_mock_core_seed() -> int:
+def load_mock_core_seed(dataset: str = "base") -> int:
     """Create the simulator's identities (same UUIDs as the GA/Backoffice fixtures). Idempotent."""
     from werkzeug.security import generate_password_hash
 
-    from app.integrations import fixtures
+    from app.integrations.factory import mock_data
+
+    fixtures = mock_data(dataset)
     from app.mock_core.service import post_tx
     from app.models import MockCoreUser
 

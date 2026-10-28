@@ -59,6 +59,7 @@ class Settings:
 
     mock_core_enabled: bool = False
     mock_core_service_clients: tuple[str, ...] = ()  # "clientId:secret" pairs accepted by the simulator
+    mock_dataset: str = "base"  # base = test fixtures (Appendix B) | demo = realistic data for demos
     access_token_ttl: int = 900
     refresh_token_ttl: int = 7 * 24 * 3600
     student_portal_base_url: str = "/student"  # prefix of actionUrl in notifications sent to students
@@ -213,6 +214,7 @@ class Settings:
             service_modules=c("SERVICE_MODULES", cls.service_modules),
             mock_core_enabled=b("MOCK_CORE_ENABLED", False),
             mock_core_service_clients=c("MOCK_CORE_SERVICE_CLIENTS", ()),
+            mock_dataset=choice("MOCK_DATASET", "base", ("base", "demo")),
             access_token_ttl=i("ACCESS_TOKEN_TTL_SECONDS", 900),
             refresh_token_ttl=i("REFRESH_TOKEN_TTL_SECONDS", 7 * 24 * 3600),
             student_portal_base_url=(s("STUDENT_PORTAL_BASE_URL") or cls.student_portal_base_url).rstrip("/"),

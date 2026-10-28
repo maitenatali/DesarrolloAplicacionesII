@@ -125,6 +125,26 @@ flask seed            # usuarios demo, cursos, exámenes, saldo, clave RS256 del
 
 `flask seed --no-acta` carga lo mismo pero sin generar el acta de ejemplo.
 
+**Qué datos carga** depende de `MOCK_DATASET` (también define qué devuelven los mocks de GA y Backoffice):
+
+| `MOCK_DATASET` | Uso | Contenido |
+|---|---|---|
+| `base` (default) | tests | Curso 42 con 3 alumnos, 4 clases, acta FINAL `2026-001` (Apéndice B del diseño). |
+| `demo` (docker compose) | demostraciones | 2° cuatrimestre 2026 hasta fines de octubre: curso 42 (María, 25 alumnos, 10 clases, parciales y recuperatorio corregidos, final programado), curso 43 (Carlos, 20 alumnos, 11 clases, parcial y TP corregidos, un examen cancelado) y curso 30 del 1° cuatrimestre cerrado (16 alumnos, actas `2026-001` CURSADA, `2026-002` FINAL anulada y `2026-003` FINAL). Todos los alumnos pueden loguearse con `nombre.apellido@uade.edu.ar` / `Uade2026!`. |
+
+El dataset demo es determinístico (mismos datos en cualquier PC).
+
+Cambiar de dataset (la base y los mocks tienen que usar el mismo, así que se borra la base):
+
+```bash
+cd backend
+docker compose down -v                          # borra la base actual
+MOCK_DATASET=base docker compose up -d --build  # o sin la variable: usa demo
+```
+
+Sin Docker: `MOCK_DATASET=base` o `MOCK_DATASET=demo` en `.env`, recrear la base y correr `flask db upgrade && flask seed`.
+Si la base ya tenía datos, `flask seed` no hace nada.
+
 ### 4.4 API
 
 Modo desarrollo (recarga automática al editar código):

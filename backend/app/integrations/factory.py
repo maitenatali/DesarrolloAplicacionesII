@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from types import ModuleType
 
 from flask import current_app
 
@@ -65,7 +66,7 @@ def build_integrations(cfg: Settings) -> Integrations:
             fanout_concurrency=cfg.academic_fanout_concurrency,
         )
     else:
-        academic = AcademicMock()
+        academic = AcademicMock(mock_data(cfg.mock_dataset))
 
     if cfg.core_events_mode == "live":
         events: CoreEventsClient = CoreEventsLive(
@@ -91,7 +92,7 @@ def build_integrations(cfg: Settings) -> Integrations:
             )
         )
     else:
-        directory = StudentDirectoryMock()
+        directory = StudentDirectoryMock(mock_data(cfg.mock_dataset))
 
     if cfg.notifications_mode == "live":
         notifications: NotificationsClient = NotificationsLive(
@@ -121,6 +122,13 @@ def build_integrations(cfg: Settings) -> Integrations:
         notifications,
         CampusMock(),
     )
+
+
+def mock_data(dataset: str) -> ModuleType:
+    """Fixtures module behind the GA/Backoffice mocks and `flask seed` (MOCK_DATASET)."""
+    from . import fixtures, fixtures_demo
+
+    return fixtures_demo if dataset == "demo" else fixtures
 
 
 def get_integrations() -> Integrations:

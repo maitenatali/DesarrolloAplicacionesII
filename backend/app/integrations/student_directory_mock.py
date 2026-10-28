@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from types import ModuleType
 
 from app.errors import StudentDirectoryUnavailable
 
@@ -9,8 +10,8 @@ from .base import StudentDirectoryClient, StudentProfile
 
 
 class StudentDirectoryMock(StudentDirectoryClient):
-    def __init__(self) -> None:
-        self.profiles: dict[str, StudentProfile] = dict(fixtures.PROFILES)
+    def __init__(self, data: ModuleType = fixtures) -> None:  # data: fixtures | fixtures_demo
+        self.profiles: dict[str, StudentProfile] = dict(data.PROFILES)
         self.down = False
 
     def get_profiles(self, student_ids: Sequence[str]) -> dict[str, StudentProfile]:

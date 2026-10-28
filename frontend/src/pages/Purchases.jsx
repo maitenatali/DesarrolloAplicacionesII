@@ -31,7 +31,6 @@ export default function Purchases() {
     .sort(SORTS[sort]);
   const pager = paginate(filtered, page, PAGE_SIZE);
   const text = `Mostrando ${pager.start} a ${pager.end} de ${pager.total} compras`;
-  const total = purchases.reduce((s, p) => s + Number(p.total), 0);
   const open = (p) => navigate(`/compras/${p.purchaseId}`);
 
   let message = null;
@@ -58,10 +57,6 @@ export default function Purchases() {
           <div className="stat-card">
             <span className="stat-value">{purchases.length}</span>
             <span className="stat-label">Compras realizadas</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-value">{money(total)}</span>
-            <span className="stat-label">Total gastado</span>
           </div>
         </div>
         <div className="toolbar">

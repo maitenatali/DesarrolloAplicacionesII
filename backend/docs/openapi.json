@@ -3919,6 +3919,102 @@
         }
       }
     },
+    "/api/v1/auth/password/forgot": {
+      "post": {
+        "summary": "forgot_password <POST>",
+        "operationId": "post__api_v1_auth_password_forgot",
+        "description": "",
+        "tags": [
+          "Mock CORE"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest.2aa1810"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/api/v1/auth/me": {
       "get": {
         "summary": "me <GET>",
@@ -6683,6 +6779,22 @@
           "user"
         ],
         "title": "LoginResponse",
+        "type": "object"
+      },
+      "ForgotPasswordRequest.2aa1810": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "maxLength": 150,
+            "minLength": 3,
+            "title": "Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "ForgotPasswordRequest",
         "type": "object"
       },
       "CoreUser.2aa1810": {

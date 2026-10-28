@@ -43,9 +43,11 @@ export default function ActaNew() {
   const students = useGetStudentsQuery(courseId, { skip: !courseId });
   const examGrades = useGetExamGradesQuery({ courseId, examId: effExamId }, { skip: effType !== 'FINAL' || !effExamId });
 
-  // Vista previa calculada en el cliente con las mismas reglas que aplica el backend al generar.
+  // Vista previa calculada en el cliente con las mismas reglas que aplica el backend al generar
+  // (rules.final_result): APROBADO exige nota >= 4 Y condición REGULAR (asistencia >= 75 %).
   const preview = useMemo(() => {
     if (effType === 'FINAL') {
+      const condition = new Map((students.data || []).map((s) => [s.studentId, s.attendance?.condition]));
       return (examGrades.data?.entries || []).map((e) => {
         let tipo = 'sin_registrar';
         let texto = 'Sin registrar';
@@ -53,8 +55,16 @@ export default function ActaNew() {
           tipo = 'ausente';
           texto = 'Ausente';
         } else if (e.grade != null) {
-          tipo = Number(e.grade) >= PASSING ? 'aprobado' : 'desaprobado';
-          texto = `${tipo === 'aprobado' ? 'Aprobado' : 'Desaprobado'} · ${grade(e.grade)}`;
+          if (Number(e.grade) < PASSING) {
+            tipo = 'desaprobado';
+            texto = `Desaprobado · ${grade(e.grade)}`;
+          } else if (condition.get(e.studentId) !== 'REGULAR') {
+            tipo = 'desaprobado';
+            texto = `Libre (asistencia insuficiente) · ${grade(e.grade)}`;
+          } else {
+            tipo = 'aprobado';
+            texto = `Aprobado · ${grade(e.grade)}`;
+          }
         }
         return { id: e.studentId, nombre: e.studentName, legajo: e.fileNumber, tipo, texto };
       });

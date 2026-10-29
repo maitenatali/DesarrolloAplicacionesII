@@ -129,6 +129,31 @@ def require_service(fn):
     return wrapper
 
 
+def require_service_or_self(fn):
+    """Per-student routes (/students/<student_id>/...): an allowed service token (same rules as
+    require_service), or the student's own user token (sub == student_id). Anyone else gets 403."""
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        cfg = _settings()
+        token = _bearer()
+        if token and any(hmac.compare_digest(token.encode(), t.encode()) for t in cfg.service_tokens):
+            _set(
+                Principal(
+                    user_id="service", is_service=True, service="static", roles=frozenset(cfg.service_roles)
+                )
+            )
+            return fn(*args, **kwargs)
+        principal = _authenticate()
+        is_self = not principal.is_service and principal.user_id == kwargs.get("student_id")
+        if not (is_self or _is_allowed_service(principal, cfg)):
+            raise Forbidden("Solo podés consultar tus propios datos.", code="FORBIDDEN")
+        _set(principal)
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
 def require_service_token(fn):
     """Any CORE service token (kind=service). Used by the CORE simulator's /internal/v1/* routes."""
 

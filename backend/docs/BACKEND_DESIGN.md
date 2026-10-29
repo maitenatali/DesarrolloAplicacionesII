@@ -62,7 +62,17 @@ mocks and live adapters use the shapes those modules published, so going live is
 | Errors | problem+json | + `instance` field (CORE returns it). |
 
 New endpoints: `GET /calendar`, `GET /purchases` (teacher) and the CORE-simulator routes above (tag *Mock CORE*).
-Test suite: 142 tests; three end-to-end tests (`tests/integration/test_e2e_*.py`) run with real JWTs and assert
+
+**Update 2026-10-28 — per-student routes (Student Portal request).** The course routes (`/courses/{id}/grades`,
+`/attendance-summary`) only answer to the course's teachers, and returned the whole commission. New (tag *Students*):
+`GET /students/{studentId}/courses/{courseId}/attendance` (summary + `threshold` + every recorded class with that
+student's `status`/`note`, `status=null` if unmarked) and `GET /students/{studentId}/courses/{courseId}/grades`
+(non-cancelled exams with `category`, `phase`, `grade`, `absent`, `passed`, `gradedAt`, `gradedBy`, plus
+`passingGrade` and `average`). Auth `require_service_or_self`: an allowed service token (as `/results`) or the
+student's own user token (`sub == studentId`); otherwise 403. 404 `STUDENT_NOT_ENROLLED` / `COURSE_NOT_FOUND`;
+students with BAJA still see their history. Data stays owned and persisted by this service.
+
+Test suite: 150 tests; three end-to-end tests (`tests/integration/test_e2e_*.py`) run with real JWTs and assert
 that **every** registered route is exercised.
 
 ---

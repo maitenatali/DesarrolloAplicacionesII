@@ -203,6 +203,10 @@ def _flow(app):
     mine = ok(c.get(f"/api/v1/students/{JUAN}/results", headers=sh))
     assert mine[0]["result"] == "APROBADO" and mine[0]["grade"] == 8.0
     assert len(ok(c.get("/api/v1/courses/42/results", headers=sh))) == 3
+    own_att = ok(c.get(f"/api/v1/students/{JUAN}/courses/42/attendance", headers=sh))
+    assert own_att["studentId"] == JUAN and len(own_att["classes"]) == own_att["classesRecorded"] > 0
+    own_grades = ok(c.get(f"/api/v1/students/{JUAN}/courses/42/grades", headers=sh))
+    assert own_grades["studentId"] == JUAN and own_grades["exams"]
 
     # ── calendar (exams + exam turns + events + dining) and store purchases ─────────
     cal = ok(c.get("/api/v1/calendar?from=2026-10-01&to=2026-12-31", headers=h))

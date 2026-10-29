@@ -66,10 +66,10 @@ def create_app(
     register_gateway_hmac(app)
     _register_cors(app, cfg.cors_origins)
 
-    from app.routes import actas, attendance, calendar, courses, exams, grades, health, results
+    from app.routes import actas, attendance, calendar, courses, exams, grades, health, results, students
     from app.services.event_service import register_inline_dispatch
 
-    for module in (health, courses, exams, grades, attendance, actas, results, calendar):
+    for module in (health, courses, exams, grades, attendance, actas, results, students, calendar):
         app.register_blueprint(module.bp, url_prefix="/api/v1")
     if cfg.mock_core_enabled:
         from app.mock_core.routes import bp as mock_core_bp

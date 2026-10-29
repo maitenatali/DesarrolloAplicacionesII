@@ -28,6 +28,9 @@
       "name": "Results"
     },
     {
+      "name": "Students"
+    },
+    {
       "name": "Calendar"
     },
     {
@@ -3335,6 +3338,232 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResultList.77f77bb"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/students/{student_id}/courses/{course_id}/attendance": {
+      "get": {
+        "summary": "Resumen de asistencia del alumno en el curso + el detalle de cada clase registrada.",
+        "operationId": "get__api_v1_students_{student_id}_courses_{course_id}_attendance",
+        "description": "",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": ""
+          },
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentAttendanceDto.632c774"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail.c2a0d71"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/students/{student_id}/courses/{course_id}/grades": {
+      "get": {
+        "summary": "Exámenes del curso (sin los cancelados) con la nota de ese alumno.",
+        "operationId": "get__api_v1_students_{student_id}_courses_{course_id}_grades",
+        "description": "",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": ""
+          },
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentGradesDto.632c774"
                 }
               }
             }
@@ -6736,6 +6965,111 @@
         "title": "ResultList",
         "type": "array"
       },
+      "StudentAttendanceDto.632c774": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "classesRecorded": {
+            "title": "Classesrecorded",
+            "type": "integer"
+          },
+          "present": {
+            "title": "Present",
+            "type": "integer"
+          },
+          "justified": {
+            "title": "Justified",
+            "type": "integer"
+          },
+          "absences": {
+            "title": "Absences",
+            "type": "integer"
+          },
+          "attendancePercentage": {
+            "title": "Attendancepercentage",
+            "type": "number"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/StudentAttendanceDto.632c774.Condition"
+          },
+          "classes": {
+            "items": {
+              "$ref": "#/components/schemas/StudentAttendanceDto.632c774.StudentClassAttendance"
+            },
+            "title": "Classes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "studentId",
+          "courseId",
+          "threshold",
+          "classesRecorded",
+          "present",
+          "justified",
+          "absences",
+          "attendancePercentage",
+          "condition",
+          "classes"
+        ],
+        "title": "StudentAttendanceDto",
+        "type": "object"
+      },
+      "StudentGradesDto.632c774": {
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "title": "Studentid",
+            "type": "string"
+          },
+          "courseId": {
+            "title": "Courseid",
+            "type": "integer"
+          },
+          "passingGrade": {
+            "title": "Passinggrade",
+            "type": "number"
+          },
+          "average": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Average"
+          },
+          "exams": {
+            "items": {
+              "$ref": "#/components/schemas/StudentGradesDto.632c774.StudentExamGrade"
+            },
+            "title": "Exams",
+            "type": "array"
+          }
+        },
+        "required": [
+          "studentId",
+          "courseId",
+          "passingGrade",
+          "exams"
+        ],
+        "title": "StudentGradesDto",
+        "type": "object"
+      },
       "LoginRequest.2aa1810": {
         "additionalProperties": false,
         "properties": {
@@ -9794,6 +10128,181 @@
           "resultDate"
         ],
         "title": "ResultDto",
+        "type": "object"
+      },
+      "StudentAttendanceDto.632c774.AttendanceStatus": {
+        "enum": [
+          "PRESENTE",
+          "AUSENTE",
+          "JUSTIFICADO"
+        ],
+        "title": "AttendanceStatus",
+        "type": "string"
+      },
+      "StudentAttendanceDto.632c774.Condition": {
+        "enum": [
+          "REGULAR",
+          "LIBRE"
+        ],
+        "title": "Condition",
+        "type": "string"
+      },
+      "StudentAttendanceDto.632c774.StudentClassAttendance": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudentAttendanceDto.632c774.AttendanceStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "title": "StudentClassAttendance",
+        "type": "object"
+      },
+      "StudentGradesDto.632c774.ExamPhase": {
+        "enum": [
+          "UPCOMING",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "title": "ExamPhase",
+        "type": "string"
+      },
+      "StudentGradesDto.632c774.ExamStatus": {
+        "enum": [
+          "PROGRAMADO",
+          "CANCELADO"
+        ],
+        "title": "ExamStatus",
+        "type": "string"
+      },
+      "StudentGradesDto.632c774.StudentExamGrade": {
+        "additionalProperties": false,
+        "properties": {
+          "examId": {
+            "title": "Examid",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Category"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StudentGradesDto.632c774.ExamStatus"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/StudentGradesDto.632c774.ExamPhase"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Grade"
+          },
+          "absent": {
+            "title": "Absent",
+            "type": "boolean"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Passed"
+          },
+          "gradedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gradedat"
+          },
+          "gradedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gradedby"
+          }
+        },
+        "required": [
+          "examId",
+          "type",
+          "name",
+          "date",
+          "status",
+          "phase",
+          "absent"
+        ],
+        "title": "StudentExamGrade",
         "type": "object"
       },
       "LoginResponse.2aa1810.CoreUser": {

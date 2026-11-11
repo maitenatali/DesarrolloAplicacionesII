@@ -43,6 +43,7 @@ class ProblemDetail(BaseModel):
     status: int
     code: str
     detail: str
+    instance: str | None = None
     correlationId: str | None = None
     errors: list[ProblemError] | None = None
 

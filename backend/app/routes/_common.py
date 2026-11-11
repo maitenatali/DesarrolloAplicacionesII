@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from datetime import date
+from typing import Any
 
+from flask import request
 from spectree import Response
 
 from app.errors import ValidationFailed
@@ -30,3 +32,9 @@ def parse_day(value: str) -> date:
         raise ValidationFailed(
             [{"field": "date", "code": "INVALID_DATE", "message": "La fecha debe tener formato YYYY-MM-DD."}]
         ) from None
+
+
+def validated() -> Any:
+    """Models parsed by SpecTree (`.json`, `.query`). SpecTree attaches them to `request.context` at runtime,
+    an attribute Flask's typing doesn't know about; this is the one place that touches it."""
+    return request.context  # type: ignore[attr-defined]

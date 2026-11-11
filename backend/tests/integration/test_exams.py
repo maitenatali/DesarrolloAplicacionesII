@@ -28,7 +28,7 @@ def test_create_returns_201_location_and_event(client, db_session):
     )
     assert ev[0].payload["data"]["startTime"] == "18:00"
     exam = db_session.scalar(select(Examen))
-    assert exam.creado_por == "docente-123"
+    assert exam.creado_por == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
 
 
 def test_duplicate_type_then_cancel_frees_slot(client):
@@ -46,7 +46,10 @@ def test_type_normalisation_and_defaults(client):
     )
     r = create(client, type="x y!")
     assert r.status_code == 400 and r.get_json()["code"] == "VALIDATION_ERROR"
-    assert create(client, type="recup-1").get_json()["type"] == "RECUP_1"
+    # un único recuperatorio por cursada: RECUP_1 / recup-2 / Recuperatorio -> RECUPERATORIO
+    assert create(client, type="recup-1").get_json()["type"] == "RECUPERATORIO"
+    r = create(client, type="Recuperatorio 2")
+    assert r.status_code == 409 and r.get_json()["code"] == "EXAM_TYPE_ALREADY_EXISTS"
 
 
 def test_validation(client):

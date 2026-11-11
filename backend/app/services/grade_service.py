@@ -3,17 +3,19 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import Any
 
 from flask import current_app
 from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-from app.constants import EVENT_TYPES, ExamPhase, ExamStatus
+from app.constants import EVENT_TYPES, Condition, ExamPhase, ExamStatus
 from app.errors import BadRequest, Conflict, ValidationFailed
 from app.extensions import db
 from app.integrations.base import roster_of
 from app.models import Calificacion, Examen
 from app.schemas.grades import (
+    AcademicSituationDto,
     GradeEntryOut,
     GradeMatrix,
     GradesResponse,
@@ -28,7 +30,7 @@ from app.schemas.grades import (
 from app.security.course_access import authorize_course
 from app.security.principal import Principal
 from app.services import event_service, locks, rules
-from app.services.course_service import load_roster
+from app.services.course_service import attendance_by_student, course_marks, load_roster
 from app.services.exam_service import load_exam
 from app.time import now_local
 
@@ -78,6 +80,42 @@ def get_exam_grades(principal: Principal, course_id: int, exam_id: int) -> Grade
         failed=sum(1 for g in graded if g < passing),
     )
     return GradesResponse(exam_id=exam_id, entries=entries, summary=summary)
+
+
+def _check_enabled_by_rules(course_id: int, exam: Examen, body: GradesUpsertRequest, cfg: Any) -> None:
+    """Recuperatorio solo para quien tiene exactamente un parcial desaprobado/ausente; final solo con cursada
+    aprobada (`rules.academic_situation`). Se valida contra las notas de los OTROS exámenes. Borrar una nota
+    siempre se permite. Las correcciones de P1/P2 no se bloquean: si dejan una nota sin efecto, la UI avisa."""
+    slot = rules.exam_slot(exam.tipo, cfg.final_exam_types)
+    if slot not in (rules.SLOT_RECUP, rules.SLOT_FINAL):
+        return
+    setting = [(i, e.student_id) for i, e in enumerate(body.entries) if e.grade is not None or e.absent]
+    if not setting:
+        return
+    marks = course_marks(course_id, exclude_exam_id=exam.id, student_ids=[sid for _, sid in setting])
+    offenders = []
+    for i, sid in setting:
+        s = rules.situation_from_marks(
+            marks.get(sid, []), final_types=cfg.final_exam_types, passing_grade=cfg.passing_grade
+        )
+        if not (s.recup_enabled if slot == rules.SLOT_RECUP else s.final_enabled):
+            offenders.append((i, sid))
+    if not offenders:
+        return
+    if slot == rules.SLOT_RECUP:
+        code = "RECUP_NOT_ALLOWED"
+        detail = "El recuperatorio solo corresponde a alumnos con un único parcial desaprobado o ausente."
+    else:
+        code = "FINAL_NOT_ALLOWED"
+        detail = "El final solo puede cargarse a alumnos con la cursada aprobada."
+    raise Conflict(
+        detail,
+        code=code,
+        errors=[
+            {"field": f"entries[{i}].grade", "code": code, "message": f"{sid} no está habilitado."}
+            for i, sid in offenders
+        ],
+    )
 
 
 def upsert_grades(
@@ -134,6 +172,7 @@ def upsert_grades(
                 for i, sid in offenders
             ],
         )
+    _check_enabled_by_rules(course_id, exam, body, cfg)
 
     existing = {
         r.alumno_id: r
@@ -144,7 +183,9 @@ def upsert_grades(
         )
     }
 
-    to_set, to_clear, changed_grades = [], [], []
+    to_set: list[dict[str, Any]] = []
+    to_clear: list[str] = []
+    changed_grades: list[tuple[str, Decimal]] = []
     for ent in body.entries:
         if ent.grade is None and not ent.absent:
             to_clear.append(ent.student_id)
@@ -202,6 +243,19 @@ def upsert_grades(
             },
             actor_id=access.teacher_id,
         )
+        # TPO §1: the student gets a real-time notification linking to the subject + exam result.
+        subject = access.detail.subject.name
+        base = cfg.student_portal_base_url
+        for sid, g in changed_grades:
+            event_service.enqueue_notification(
+                db.session,
+                user_id=sid,
+                type_="TEACHER_EXAM_RESULT_PUBLISHED",
+                title=f"Nueva calificación en {subject}",
+                message=f"Se publicó tu nota de {exam.nombre}: {g.normalize():f}.",
+                action_url=f"{base}/courses/{course_id}/exams/{exam_id}",
+                source_reference=f"exam/{exam_id}/student/{sid}/grade/{g:.2f}",
+            )
     db.session.commit()
 
     entries = [
@@ -226,22 +280,33 @@ def course_matrix(principal: Principal, course_id: int) -> GradeMatrix:
         ):
             by_exam[(r.examen_id, r.alumno_id)] = r
     now = now_local()
+    cfg = current_app.extensions["settings"]
+    attendance = attendance_by_student(course_id)
     rows = []
     for s in roster.entries:
-        cells, nums = {}, []
+        cells: dict[str, MatrixCell] = {}
+        marks: list[tuple[str, rules.Mark]] = []
         for e in exams:
-            r = by_exam.get((e.id, s.student_id))
-            if r is not None:
-                cells[str(e.id)] = MatrixCell(grade=r.nota, absent=r.ausente)
-                if r.nota is not None:
-                    nums.append(r.nota)
+            cell = by_exam.get((e.id, s.student_id))
+            if cell is not None:
+                cells[str(e.id)] = MatrixCell(grade=cell.nota, absent=cell.ausente)
+                marks.append((e.tipo, rules.Mark(cell.nota, cell.ausente)))
+        att = attendance.get(s.student_id)
+        situation = rules.situation_from_marks(
+            marks,
+            final_types=cfg.final_exam_types,
+            condition=att.condicion if att else None,
+            passing_grade=cfg.passing_grade,
+        )
         rows.append(
             MatrixRow(
                 student_id=s.student_id,
                 student_name=s.name,
                 file_number=s.file_number,
                 grades=cells,
-                average=rules.mean(nums, 1),
+                average=situation.cursada_grade,
+                condition=Condition(att.condicion) if att else None,
+                situation=AcademicSituationDto.of(situation),
             )
         )
     return GradeMatrix(

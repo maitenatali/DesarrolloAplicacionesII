@@ -11,8 +11,15 @@ def test_ready(client):
     r = client.get("/api/v1/health/ready")
     assert r.status_code == 200
     body = r.get_json()
-    assert body["migrationHead"] == "0002"
-    assert body["integrations"] == {"academic": "mock", "coreEvents": "mock", "studentDirectory": "mock"}
+    assert body["migrationHead"] == "0003"
+    assert body["integrations"] == {
+        "academic": "mock",
+        "coreEvents": "mock",
+        "studentDirectory": "mock",
+        "notifications": "mock",
+        "campus": "mock",
+        "core": "external",
+    }
 
 
 def test_courses_for_teacher(client):

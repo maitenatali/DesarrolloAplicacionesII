@@ -32,13 +32,13 @@
       "requestBody": null,
       "status": 200,
       "response": {
-        "userId": "docente-123",
+        "userId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "email": null,
         "roles": [
-          "ROLE_DOCENTE"
+          "TEACHER"
         ],
         "teacherIds": [
-          "docente-123"
+          "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
         ]
       }
     },
@@ -163,7 +163,7 @@
           "schedule": [],
           "teachers": [
             {
-              "teacherId": "docente-123",
+              "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
               "role": "TITULAR"
             }
           ]
@@ -203,7 +203,7 @@
           ],
           "teachers": [
             {
-              "teacherId": "docente-123",
+              "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
               "role": "TITULAR"
             }
           ]
@@ -243,7 +243,7 @@
           ],
           "teachers": [
             {
-              "teacherId": "docente-123",
+              "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
               "role": "ADJUNTO"
             }
           ]
@@ -290,7 +290,7 @@
         ],
         "teachers": [
           {
-            "teacherId": "docente-123",
+            "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
             "role": "TITULAR"
           }
         ]
@@ -303,7 +303,7 @@
       "status": 200,
       "response": [
         {
-          "studentId": "alumno-456",
+          "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
           "profile": {
             "firstName": "Juan",
             "lastName": "Pérez",
@@ -324,7 +324,7 @@
           "finalResult": null
         },
         {
-          "studentId": "alumno-457",
+          "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
           "profile": {
             "firstName": "Lucas",
             "lastName": "Fernández",
@@ -345,7 +345,7 @@
           "finalResult": null
         },
         {
-          "studentId": "alumno-458",
+          "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
           "profile": {
             "firstName": "Ana",
             "lastName": "Rodríguez",
@@ -453,17 +453,17 @@
         "notes": null,
         "records": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "status": "PRESENTE",
             "note": null
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "status": "AUSENTE",
             "note": null
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "status": "JUSTIFICADO",
             "note": "Certificado médico"
           }
@@ -479,7 +479,7 @@
         "threshold": 75.0,
         "students": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "classesRecorded": 4,
             "present": 4,
             "justified": 0,
@@ -488,7 +488,7 @@
             "condition": "REGULAR"
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "classesRecorded": 4,
             "present": 2,
             "justified": 0,
@@ -497,7 +497,7 @@
             "condition": "LIBRE"
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "classesRecorded": 4,
             "present": 3,
             "justified": 1,
@@ -515,15 +515,15 @@
         "notes": "Clase de repaso",
         "records": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "status": "PRESENTE"
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "status": "AUSENTE"
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "status": "JUSTIFICADO",
             "note": "Certificado médico"
           }
@@ -535,17 +535,17 @@
         "notes": "Clase de repaso",
         "records": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "status": "PRESENTE",
             "note": null
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "status": "AUSENTE",
             "note": null
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "status": "JUSTIFICADO",
             "note": "Certificado médico"
           }
@@ -558,7 +558,7 @@
       "requestBody": {
         "records": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "status": "PRESENTE"
           }
         ]
@@ -572,12 +572,12 @@
           {
             "code": "INCOMPLETE_ROSTER",
             "field": "records",
-            "message": "Falta alumno-457."
+            "message": "Falta c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57."
           },
           {
             "code": "INCOMPLETE_ROSTER",
             "field": "records",
-            "message": "Falta alumno-458."
+            "message": "Falta d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58."
           }
         ],
         "status": 400,
@@ -783,31 +783,31 @@
         "examId": 1,
         "entries": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "studentName": "Juan Pérez",
             "fileNumber": "123456",
             "grade": 8.0,
             "absent": false,
             "gradedAt": "2026-10-20T14:27:24.536890Z",
-            "gradedBy": "docente-123"
+            "gradedBy": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "studentName": "Lucas Fernández",
             "fileNumber": "123458",
             "grade": 5.0,
             "absent": false,
             "gradedAt": "2026-10-20T14:27:24.536890Z",
-            "gradedBy": "docente-123"
+            "gradedBy": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "studentName": "Ana Rodríguez",
             "fileNumber": "123459",
             "grade": null,
             "absent": true,
             "gradedAt": "2026-10-20T14:27:24.536890Z",
-            "gradedBy": "docente-123"
+            "gradedBy": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
           }
         ],
         "summary": {
@@ -827,15 +827,15 @@
       "requestBody": {
         "entries": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "grade": 8
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "grade": 3
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "absent": true
           }
         ]
@@ -846,17 +846,17 @@
         "cleared": 0,
         "entries": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "grade": 8.0,
             "absent": false
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "grade": 3.0,
             "absent": false
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "grade": null,
             "absent": true
           }
@@ -869,7 +869,7 @@
       "requestBody": {
         "entries": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "grade": 11
           }
         ]
@@ -929,7 +929,7 @@
         ],
         "rows": [
           {
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "studentName": "Juan Pérez",
             "fileNumber": "123456",
             "grades": {
@@ -945,7 +945,7 @@
             "average": 8.0
           },
           {
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "studentName": "Lucas Fernández",
             "fileNumber": "123458",
             "grades": {
@@ -961,7 +961,7 @@
             "average": 4.0
           },
           {
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "studentName": "Ana Rodríguez",
             "fileNumber": "123459",
             "grades": {
@@ -1001,7 +1001,7 @@
         "subject": "Desarrollo de Aplicaciones II",
         "commission": "DDA2-A",
         "period": "2° Cuatrimestre 2026",
-        "teacherId": "docente-123",
+        "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "teacherName": "María Gómez",
         "date": "2026-10-19",
         "notes": "Acta final",
@@ -1023,7 +1023,7 @@
         "rows": [
           {
             "order": 1,
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "studentName": "Juan Pérez",
             "studentFileNumber": "123456",
             "grade": 8.0,
@@ -1031,7 +1031,7 @@
           },
           {
             "order": 2,
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "studentName": "Lucas Fernández",
             "studentFileNumber": "123458",
             "grade": 3.0,
@@ -1039,7 +1039,7 @@
           },
           {
             "order": 3,
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "studentName": "Ana Rodríguez",
             "studentFileNumber": "123459",
             "grade": null,
@@ -1087,7 +1087,7 @@
             "subject": "Desarrollo de Aplicaciones II",
             "commission": "DDA2-A",
             "period": "2° Cuatrimestre 2026",
-            "teacherId": "docente-123",
+            "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
             "teacherName": "María Gómez",
             "date": "2026-10-19",
             "notes": "Acta final",
@@ -1130,7 +1130,7 @@
         "subject": "Desarrollo de Aplicaciones II",
         "commission": "DDA2-A",
         "period": "2° Cuatrimestre 2026",
-        "teacherId": "docente-123",
+        "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "teacherName": "María Gómez",
         "date": "2026-10-19",
         "notes": "Acta final",
@@ -1152,7 +1152,7 @@
         "rows": [
           {
             "order": 1,
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "studentName": "Juan Pérez",
             "studentFileNumber": "123456",
             "grade": 8.0,
@@ -1160,7 +1160,7 @@
           },
           {
             "order": 2,
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "studentName": "Lucas Fernández",
             "studentFileNumber": "123458",
             "grade": 3.0,
@@ -1168,7 +1168,7 @@
           },
           {
             "order": 3,
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "studentName": "Ana Rodríguez",
             "studentFileNumber": "123459",
             "grade": null,
@@ -1191,13 +1191,13 @@
       }
     },
     {
-      "request": "GET /api/v1/students/alumno-456/results",
+      "request": "GET /api/v1/students/ba310c57-a684-4dbf-a4a4-905fcfbefa08/results",
       "note": "token de servicio (Portal Estudiante)",
       "requestBody": null,
       "status": 200,
       "response": [
         {
-          "studentId": "alumno-456",
+          "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
           "courseId": 42,
           "subjectId": 15,
           "periodId": 8,
@@ -1219,7 +1219,7 @@
       "status": 200,
       "response": [
         {
-          "studentId": "alumno-456",
+          "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
           "courseId": 42,
           "subjectId": 15,
           "periodId": 8,
@@ -1233,7 +1233,7 @@
           "resultDate": "2026-10-19"
         },
         {
-          "studentId": "alumno-457",
+          "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
           "courseId": 42,
           "subjectId": 15,
           "periodId": 8,
@@ -1247,7 +1247,7 @@
           "resultDate": "2026-10-19"
         },
         {
-          "studentId": "alumno-458",
+          "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
           "courseId": 42,
           "subjectId": 15,
           "periodId": 8,
@@ -1263,7 +1263,7 @@
       ]
     },
     {
-      "request": "GET /api/v1/students/alumno-456/results",
+      "request": "GET /api/v1/students/ba310c57-a684-4dbf-a4a4-905fcfbefa08/results",
       "note": "token docente -> 403",
       "requestBody": null,
       "status": 403,
@@ -1295,7 +1295,7 @@
         "subject": "Desarrollo de Aplicaciones II",
         "commission": "DDA2-A",
         "period": "2° Cuatrimestre 2026",
-        "teacherId": "docente-123",
+        "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "teacherName": "María Gómez",
         "date": "2026-10-19",
         "notes": "Acta final",
@@ -1317,7 +1317,7 @@
         "rows": [
           {
             "order": 1,
-            "studentId": "alumno-456",
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
             "studentName": "Juan Pérez",
             "studentFileNumber": "123456",
             "grade": 8.0,
@@ -1325,7 +1325,7 @@
           },
           {
             "order": 2,
-            "studentId": "alumno-457",
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
             "studentName": "Lucas Fernández",
             "studentFileNumber": "123458",
             "grade": 3.0,
@@ -1333,7 +1333,7 @@
           },
           {
             "order": 3,
-            "studentId": "alumno-458",
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
             "studentName": "Ana Rodríguez",
             "studentFileNumber": "123459",
             "grade": null,
@@ -1349,7 +1349,7 @@
       "status": 200,
       "response": [
         {
-          "studentId": "alumno-456",
+          "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
           "profile": {
             "firstName": "Juan",
             "lastName": "Pérez",
@@ -1370,7 +1370,7 @@
           "finalResult": null
         },
         {
-          "studentId": "alumno-457",
+          "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57",
           "profile": {
             "firstName": "Lucas",
             "lastName": "Fernández",
@@ -1391,7 +1391,7 @@
           "finalResult": null
         },
         {
-          "studentId": "alumno-458",
+          "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58",
           "profile": {
             "firstName": "Ana",
             "lastName": "Rodríguez",
@@ -1426,21 +1426,21 @@
         "records": [
           {
             "status": "PRESENTE",
-            "studentId": "alumno-456"
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08"
           },
           {
             "status": "AUSENTE",
-            "studentId": "alumno-457"
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"
           },
           {
             "status": "JUSTIFICADO",
-            "studentId": "alumno-458"
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"
           }
         ],
         "courseId": 42
       },
       "actor": {
-        "id": "docente-123",
+        "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "type": "user"
       },
       "source": "teacher",
@@ -1464,7 +1464,7 @@
         "durationMinutes": 90
       },
       "actor": {
-        "id": "docente-123",
+        "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "type": "user"
       },
       "source": "teacher",
@@ -1483,19 +1483,19 @@
           {
             "grade": 8.0,
             "status": "APROBADO",
-            "studentId": "alumno-456"
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08"
           },
           {
             "grade": 3.0,
             "status": "DESAPROBADO",
-            "studentId": "alumno-457"
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"
           }
         ],
         "courseId": 42,
         "examType": "FINAL"
       },
       "actor": {
-        "id": "docente-123",
+        "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "type": "user"
       },
       "source": "teacher",
@@ -1526,24 +1526,24 @@
           {
             "grade": 8.0,
             "result": "APROBADO",
-            "studentId": "alumno-456"
+            "studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08"
           },
           {
             "grade": 3.0,
             "result": "DESAPROBADO",
-            "studentId": "alumno-457"
+            "studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57"
           },
           {
             "grade": null,
             "result": "AUSENTE",
-            "studentId": "alumno-458"
+            "studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58"
           }
         ],
         "courseId": 42,
-        "teacherId": "docente-123"
+        "teacherId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
       },
       "actor": {
-        "id": "docente-123",
+        "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "type": "user"
       },
       "source": "teacher",
@@ -1564,7 +1564,7 @@
         "annulledAt": "2026-10-19T15:00:01.560368Z"
       },
       "actor": {
-        "id": "docente-123",
+        "id": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",
         "type": "user"
       },
       "source": "teacher",

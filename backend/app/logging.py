@@ -61,7 +61,10 @@ def register_correlation_id(app: Flask) -> None:
     @app.before_request
     def _start():
         inbound = request.headers.get("X-Correlation-Id", "").strip()
-        g.correlation_id = inbound[:100] if inbound else str(uuid.uuid4())
+        try:  # CORE requires a UUID correlationId in event envelopes; keep valid inbound ids only
+            g.correlation_id = str(uuid.UUID(inbound)) if inbound else str(uuid.uuid4())
+        except ValueError:
+            g.correlation_id = str(uuid.uuid4())
         g.started = time.perf_counter()
 
     @app.after_request

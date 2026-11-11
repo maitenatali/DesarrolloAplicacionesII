@@ -19,7 +19,8 @@ from app.time import now_utc
 log = logging.getLogger("app.acta_sync")
 
 _FINAL_SENT = {Result.APROBADO, Result.DESAPROBADO, Result.LIBRE}  # AUSENTE is never sent [OPEN: GA]
-_CURSADA_SENT = {Result.REGULAR, Result.LIBRE}
+# TODO(GA): confirmar que GA acepta DESAPROBADO como estado de inscripción al cerrar la cursada.
+_CURSADA_SENT = {Result.REGULAR, Result.LIBRE, Result.DESAPROBADO}
 
 
 @dataclass(frozen=True)

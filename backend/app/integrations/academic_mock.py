@@ -4,6 +4,7 @@ import copy
 import logging
 from datetime import date
 from decimal import Decimal
+from types import ModuleType
 
 from app.errors import CourseNotFound, UpstreamError
 
@@ -16,11 +17,11 @@ log = logging.getLogger("app.integrations.academic.mock")
 class AcademicMock(AcademicClient):
     """In-memory GA. Tests can mutate `courses`, set `down`, or `fail_for`."""
 
-    def __init__(self) -> None:
-        self.courses: dict[int, CourseDetail] = {c.course.id: copy.copy(c) for c in fixtures.ALL_COURSES}
-        self.periods: list[Period] = [fixtures.PERIOD_7, fixtures.PERIOD_8]
-        self.turns: list[ExamTurn] = [fixtures.EXAM_TURN_7]
-        self.prerequisites: list[Prerequisite] = list(fixtures.PREREQS_15)
+    def __init__(self, data: ModuleType = fixtures) -> None:  # data: fixtures | fixtures_demo
+        self.courses: dict[int, CourseDetail] = {c.course.id: copy.copy(c) for c in data.ALL_COURSES}
+        self.periods: list[Period] = list(data.PERIODS)
+        self.turns: list[ExamTurn] = list(data.EXAM_TURNS)
+        self.prerequisites: list[Prerequisite] = list(data.PREREQS_15)
         self.down = False
         self.fail_for: set[str] = set()
         self.updates: list[dict] = []

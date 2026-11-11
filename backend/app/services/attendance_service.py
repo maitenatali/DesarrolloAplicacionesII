@@ -8,7 +8,7 @@ from flask import current_app
 from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 
-from app.constants import EVENT_TYPES, AttendanceStatus
+from app.constants import EVENT_TYPES, AttendanceStatus, Condition
 from app.errors import BadRequest, Conflict, NotFound
 from app.extensions import db
 from app.integrations.base import roster_of
@@ -154,9 +154,9 @@ def put_attendance(
     clase.observaciones = body.notes
     incoming = {r.student_id: r for r in body.records}
     existing = {a.alumno_id: a for a in clase.asistencias}
-    for sid, a in list(existing.items()):
+    for sid, old in list(existing.items()):
         if sid not in incoming:
-            clase.asistencias.remove(a)  # delete-orphan
+            clase.asistencias.remove(old)  # delete-orphan
     for sid, r in incoming.items():
         a = existing.get(sid)
         if a is None:
@@ -204,7 +204,7 @@ def attendance_summary(principal: Principal, course_id: int) -> AttendanceSummar
                 justified=r.justificados,
                 absences=r.inasistencias,
                 attendance_percentage=r.porcentaje_asistencia,
-                condition=r.condicion,
+                condition=Condition(r.condicion),
             )
             for r in rows
         ],

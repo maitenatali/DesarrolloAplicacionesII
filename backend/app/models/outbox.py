@@ -15,10 +15,12 @@ class OutboxEvent(Base):
     __tablename__ = "outbox_event"
     __table_args__ = (
         CheckConstraint("status in ('PENDING','SENT','FAILED')", name="outbox_event_status_ck"),
+        CheckConstraint("kind in ('EVENT','NOTIFICATION')", name="outbox_event_kind_ck"),
         Index("outbox_event_due_idx", "next_attempt_at", postgresql_where=text("status = 'PENDING'")),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    kind: Mapped[str] = mapped_column(String(15), nullable=False, server_default="EVENT")
     event_type: Mapped[str] = mapped_column(String(100), nullable=False)
     subject: Mapped[str] = mapped_column(String(200), nullable=False)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)

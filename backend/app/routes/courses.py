@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from flask import Blueprint, g, request
+from flask import Blueprint, g
 
 from app.constants import DEGRADED_HEADER
 from app.extensions import spec
-from app.routes._common import resp
+from app.routes._common import resp, validated
 from app.schemas.common import json_response
 from app.schemas.courses import (
     CourseDto,
@@ -59,7 +59,7 @@ def exam_types():
 @require_teacher
 @spec.validate(query=PeriodQuery, resp=resp(HTTP_200=CourseList), tags=["Courses"])
 def list_courses():
-    return json_response(course_service.list_courses(g.principal, request.context.query.period_id))
+    return json_response(course_service.list_courses(g.principal, validated().query.period_id))
 
 
 @bp.get("/courses/<int:course_id>")

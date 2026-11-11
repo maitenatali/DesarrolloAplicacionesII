@@ -1,0 +1,6 @@
+/* Base global mínima. El estilo de cada pantalla vive en styles/pages/<id>.css, aislado bajo .pg-<id>. */
+html, body { margin: 0; height: 100%; }
+#root { min-height: 100%; }
+.pg { min-height: 100vh; }
+.boot-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f6f7fa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #8992a3; font-size: 13px; }

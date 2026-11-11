@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from flask import Flask, g, jsonify
+from flask import Flask, g, has_request_context, jsonify, request
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
@@ -189,6 +189,7 @@ def problem(status: int, title: str, code: str, detail: str, **extra: Any):
         "status": status,
         "code": code,
         "detail": detail,
+        "instance": request.path if has_request_context() else None,  # same field CORE returns
         "correlationId": getattr(g, "correlation_id", None),
         **extra,
     }

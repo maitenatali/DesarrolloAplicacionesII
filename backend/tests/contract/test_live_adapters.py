@@ -40,12 +40,17 @@ CURSO_42 = {
         "asignatura": {"id": 15, "codigo": "DDA2", "nombre": "Desarrollo de Aplicaciones II"},
         "periodo": PERIODO,
     },
-    "docentes": [{"id": 3, "docenteId": "docente-123", "rol": "TITULAR"}],
+    "docentes": [{"id": 3, "docenteId": "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034", "rol": "TITULAR"}],
     "inscripciones": [
-        {"id": 71, "alumnoId": "alumno-456", "fechaInscripcion": "2026-07-15", "estado": "CURSANDO"},
+        {
+            "id": 71,
+            "alumnoId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+            "fechaInscripcion": "2026-07-15",
+            "estado": "CURSANDO",
+        },
         {
             "id": 74,
-            "alumnoId": "alumno-999",
+            "alumnoId": "00000000-0000-4000-8000-000000000999",
             "fechaInscripcion": "2026-07-15",
             "estado": "BAJA",
             "notaFinal": 7,
@@ -71,7 +76,10 @@ def test_get_course_normalises_spanish_payload_and_caches():
             "Desarrollo de Aplicaciones II",
             "2° Cuatrimestre 2026",
         )
-        assert d.teachers[0].teacher_id == "docente-123" and d.schedule[0].weekday == "MONDAY"
+        assert (
+            d.teachers[0].teacher_id == "5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"
+            and d.schedule[0].weekday == "MONDAY"
+        )
         assert [e.status for e in d.enrollments] == ["CURSANDO", "BAJA"] and d.course.active_enrolled == 1
         a.get_course(42)
         assert m.call_count == 1  # TTL cache
@@ -131,7 +139,7 @@ def test_list_courses_for_teacher_fanout_filters_by_docente():
     other = {
         **CURSO_42,
         "curso": {**CURSO_42["curso"], "id": 43},
-        "docentes": [{"id": 4, "docenteId": "docente-124"}],
+        "docentes": [{"id": 4, "docenteId": "7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34"}],
     }
     with requests_mock.Mocker() as m:
         m.get(
@@ -143,7 +151,7 @@ def test_list_courses_for_teacher_fanout_filters_by_docente():
         )
         m.get(f"{GA}/planificacion/cursos/42", json=CURSO_42)
         m.get(f"{GA}/planificacion/cursos/43", json=other)
-        mine = ga().list_courses_for_teacher({"docente-123"}, period_id=8)
+        mine = ga().list_courses_for_teacher({"5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"}, period_id=8)
         assert [d.course.id for d in mine] == [42]
         assert m.request_history[0].qs == {"periodoid": ["8"]}
 
@@ -152,9 +160,11 @@ def test_list_courses_for_teacher_native_filter():
     with requests_mock.Mocker() as m:
         m.get(f"{GA}/planificacion/cursos", json=[{"id": 42}])
         m.get(f"{GA}/planificacion/cursos/42", json=CURSO_42)
-        got = ga(supports_teacher_filter=True).list_courses_for_teacher({"docente-123"})
+        got = ga(supports_teacher_filter=True).list_courses_for_teacher(
+            {"5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"}
+        )
         assert [d.course.id for d in got] == [42]
-        assert m.request_history[0].qs == {"docenteid": ["docente-123"]}
+        assert m.request_history[0].qs == {"docenteid": ["5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034"]}
 
 
 def test_update_enrollment_result_put_body_and_url_encoding():
@@ -169,7 +179,11 @@ def test_update_enrollment_result_put_body_and_url_encoding():
         )
         assert req.json() == {"estado": "APROBADO", "notaFinal": 8.5, "fechaResultado": "2026-12-03"}
         ga().update_enrollment_result(
-            42, "alumno-456", status="REGULAR", final_grade=None, result_date=date(2026, 12, 3)
+            42,
+            "ba310c57-a684-4dbf-a4a4-905fcfbefa08",
+            status="REGULAR",
+            final_grade=None,
+            result_date=date(2026, 12, 3),
         )
         assert m.request_history[1].json()["notaFinal"] is None
 
@@ -283,26 +297,33 @@ def test_post_is_never_auto_retried():
 
 # ---------------------------------------------------------------- student directory
 def test_directory_live():
+    """Backoffice GET /api/v1/users/{userId} (module 8 data-flow sheet)."""
     base = "https://dir.test"
+    juan = "ba310c57-a684-4dbf-a4a4-905fcfbefa08"
+    unknown = "00000000-0000-4000-8000-000000000999"
     with requests_mock.Mocker() as m:
         m.get(
-            f"{base}/students",
-            json=[
-                {
-                    "studentId": "alumno-456",
-                    "nombre": "Juan",
-                    "apellido": "Pérez",
-                    "legajo": "123456",
-                    "dni": "40123456",
-                    "email": "j@x",
-                }
-            ],
+            f"{base}/api/v1/users/{juan}",
+            json={
+                "userId": juan,
+                "email": "jperez@uade.edu.ar",
+                "firstName": "Juan",
+                "lastName": "Pérez",
+                "documentId": "40123456",
+                "fileNumber": "1102345",
+                "roles": ["STUDENT"],
+                "status": "ACTIVE",
+                "siteId": "3e9b0a12-55cc-4d77-9a01-6b2f8c4e1d90",
+                "careerId": None,
+            },
         )
+        m.get(f"{base}/api/v1/users/{unknown}", status_code=404)
         d = StudentDirectoryLive(HttpClient("student-directory", base, StaticBearer("t"), max_retries=0))
-        got = d.get_profiles(["alumno-456", "alumno-1"])
-        assert set(got) == {"alumno-456"} and got["alumno-456"].full_name == "Juan Pérez"
-        assert m.request_history[0].qs == {"ids": ["alumno-456,alumno-1"]}
+        got = d.get_profiles([juan, unknown])
+        assert set(got) == {juan}
+        assert got[juan].full_name == "Juan Pérez" and got[juan].file_number == "1102345"
+        assert got[juan].document == "40123456"
         assert d.get_profiles([]) == {}
-        m.get(f"{base}/students", status_code=500)
+        m.get(f"{base}/api/v1/users/{juan}", status_code=500)
         with pytest.raises(StudentDirectoryUnavailable):
-            d.get_profiles(["alumno-456"])
+            d.get_profiles([juan])

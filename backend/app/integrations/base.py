@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import date, time
+from datetime import date, datetime, time
 from decimal import Decimal
 
 
@@ -23,8 +23,8 @@ class Period:
     number: int
     start: date
     end: date
-    enroll_from: date
-    enroll_until: date
+    enroll_from: date | None = None  # GA /planificacion/periodos does not publish enrollment dates
+    enroll_until: date | None = None
 
     @property
     def label(self) -> str:
@@ -162,3 +162,73 @@ def roster_of(detail: CourseDetail) -> list[Enrollment]:
         seen.add(e.student_id)
         out.append(e)
     return out
+
+
+class NotificationsClient(ABC):
+    """CORE POST /internal/v1/notifications (service token). Body: userId, type, title, message,
+    actionUrl?, sourceModule, sourceReference, expiresAt?."""
+
+    @abstractmethod
+    def create(self, payload: dict) -> None:
+        """Raises PublishError (with a retryable flag). A duplicate (409) counts as success."""
+
+
+# ── Calendar / purchases sources (TPO §2: calendario con turnos de comedor, eventos y exámenes;
+#    historial de compras de la Tienda). Shapes follow each module's data-flow sheet. ───────────
+@dataclass(frozen=True)
+class AcademicEvent:  # Eventos Académicos: GET /api/v1/eventos
+    id: str
+    title: str
+    description: str | None
+    location_name: str
+    site_name: str
+    start: datetime
+    end: datetime
+    is_paid: bool
+    price: str | None  # money as string decimal
+    registered: bool
+
+
+@dataclass(frozen=True)
+class DiningReservation:  # Comedor: dining.reservation.created.v1
+    reservation_id: str
+    site_id: str
+    site_name: str
+    slot_at: datetime
+    amount: str
+    currency: str
+    status: str  # CONFIRMED | CANCELLED | ATTENDED
+
+
+@dataclass(frozen=True)
+class PurchaseItem:
+    product_id: str
+    product_name: str
+    category: str
+    quantity: int
+    unit_price: str
+    subtotal: str
+
+
+@dataclass(frozen=True)
+class Purchase:  # Tienda: store.purchase.completed.v1
+    purchase_id: str
+    created_at: datetime
+    total: str
+    currency: str
+    status: str
+    site_id: str | None
+    items: list[PurchaseItem] = field(default_factory=list)
+
+
+class CampusClient(ABC):
+    """Read-only data of other campus modules shown in the teacher portal (mock in this delivery)."""
+
+    @abstractmethod
+    def list_academic_events(self, user_id: str, start: date, end: date) -> list[AcademicEvent]: ...
+
+    @abstractmethod
+    def list_dining_reservations(self, user_id: str, start: date, end: date) -> list[DiningReservation]: ...
+
+    @abstractmethod
+    def list_purchases(self, user_id: str) -> list[Purchase]: ...

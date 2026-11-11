@@ -93,6 +93,7 @@ class ActaPage(ApiModel):
 class ActaQuery(ApiModel):
     course_id: int | None = None
     period_id: int | None = None
+    student_id: str | None = None  # actas where this student appears (for other modules)
     type: ActaType | None = None
     status: ActaStatus | None = None
     limit: Annotated[int, Field(ge=1, le=200)] = 50

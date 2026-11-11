@@ -14,6 +14,7 @@ from app.constants import (
     EXAM_TYPE_CATALOG,
     ExamPhase,
     ExamStatus,
+    Modality,
 )
 from app.errors import Conflict, NotFound
 from app.extensions import db
@@ -53,8 +54,8 @@ def exam_dto(e: Examen, graded_count: int) -> ExamDto:
         start_time=e.hora_inicio,
         duration_minutes=e.duracion_minutos,
         end_time=end.time(),
-        modality=e.modalidad,
-        status=e.estado,
+        modality=Modality(e.modalidad),
+        status=ExamStatus(e.estado),
         phase=rules.exam_phase(e.estado, e.fecha, e.hora_inicio, e.duracion_minutos, now_local()),
         graded_count=graded_count,
         created_at=e.creado_en,

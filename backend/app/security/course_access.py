@@ -31,6 +31,11 @@ def authorize_course(
     principal: Principal, course_id: int, *, write: bool = False, fresh: bool = False
 ) -> CourseAccess:
     detail = get_integrations().academic.get_course(course_id, fresh=fresh)
+    if principal.is_service:
+        # Service modules (already allow-listed by the route decorator) may READ any course, never write.
+        if write:
+            raise Forbidden("Los servicios solo pueden consultar.", code="FORBIDDEN")
+        return CourseAccess(detail, principal.user_id)
     keys = set(teacher_keys(principal))
     matched = [t.teacher_id for t in detail.teachers if t.teacher_id in keys]
     if matched:

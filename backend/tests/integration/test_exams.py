@@ -46,7 +46,10 @@ def test_type_normalisation_and_defaults(client):
     )
     r = create(client, type="x y!")
     assert r.status_code == 400 and r.get_json()["code"] == "VALIDATION_ERROR"
-    assert create(client, type="recup-1").get_json()["type"] == "RECUP_1"
+    # un único recuperatorio por cursada: RECUP_1 / recup-2 / Recuperatorio -> RECUPERATORIO
+    assert create(client, type="recup-1").get_json()["type"] == "RECUPERATORIO"
+    r = create(client, type="Recuperatorio 2")
+    assert r.status_code == 409 and r.get_json()["code"] == "EXAM_TYPE_ALREADY_EXISTS"
 
 
 def test_validation(client):

@@ -20,6 +20,23 @@ def exam_id(client, tipo, course=42, headers=H):
     )
 
 
+def approve_cursada(client, grades, course=42, headers=H):
+    """Carga P1 = P2 = max(nota del final, 4) a cada alumno: cursada aprobada con la MISMA nota que el
+    final, así la nota final de la materia ((cursada + final) / 2) coincide con la del examen."""
+
+    def parcial(g):
+        return max(float(g.get("grade") or 8), 4)
+
+    for tipo in ("PARCIAL_1", "PARCIAL_2"):
+        entries = [{"studentId": g["studentId"], "grade": parcial(g)} for g in grades]
+        r = client.put(
+            f"/api/v1/courses/{course}/exams/{exam_id(client, tipo, course, headers)}/grades",
+            headers=headers,
+            json={"entries": entries},
+        )
+        assert r.status_code == 200, r.get_data(as_text=True)
+
+
 def grade_final(client, grades=None):
     eid = exam_id(client, "FINAL")
     grades = grades or [
@@ -27,6 +44,7 @@ def grade_final(client, grades=None):
         {"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": 3},
         {"studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "absent": True},
     ]
+    approve_cursada(client, grades)  # el final solo se carga con la cursada aprobada
     r = client.put(f"{EX}/{eid}/grades", headers=H, json={"entries": grades})
     assert r.status_code == 200, r.get_data(as_text=True)
     return eid
@@ -120,14 +138,17 @@ def test_final_requires_regular_off(database_url, seeded):
 
 def test_no_attendance_rows_means_libre_for_final(client, seeded):
     h = as_teacher("7c2f1a90-3d55-4e21-9b8c-0a1f4d6e2b34")
+    for tipo in ("PARCIAL_1", "PARCIAL_2"):
+        assert (
+            client.post("/api/v1/courses/43/exams", headers=h, json=exam_body(type=tipo)).status_code == 201
+        )
+    entry = {"studentId": "00000000-0000-4000-a000-000000000101", "grade": 8}
+    approve_cursada(client, [entry], course=43, headers=h)
     r = client.post("/api/v1/courses/43/exams", headers=h, json=exam_body(type="FINAL", date="2026-12-03"))
     assert r.status_code == 201
     eid = r.get_json()["id"]
-    client.put(
-        f"/api/v1/courses/43/exams/{eid}/grades",
-        headers=h,
-        json={"entries": [{"studentId": "00000000-0000-4000-a000-000000000101", "grade": 8}]},
-    )
+    r = client.put(f"/api/v1/courses/43/exams/{eid}/grades", headers=h, json={"entries": [entry]})
+    assert r.status_code == 200, r.get_data(as_text=True)
     a = client.post(
         "/api/v1/actas", headers=h, json={"courseId": 43, "type": "FINAL", "examId": eid}
     ).get_json()
@@ -161,21 +182,36 @@ def test_exam_of_another_course_is_404(client, seeded):
     assert r.status_code == 404 and r.get_json()["code"] == "EXAM_NOT_FOUND"
 
 
-def test_cursada_uses_attendance_only(client, seeded, integ):
-    # failed parciales must not matter: 457 has 50% attendance -> LIBRE, the rest REGULAR
+def test_cursada_needs_attendance_and_both_parciales(client, seeded, integ):
+    # Cursada aprobada = asistencia >= 75 % Y P1/P2 efectivos >= 4 (no un promedio).
+    # Lucas: 50 % de asistencia -> LIBRE aunque tenga 9. Ana: P1 = 3 y P2 = 9 (promedio 6) sin recuperar
+    # -> DESAPROBADO.
+    for tipo, (juan, lucas, ana) in (("PARCIAL_1", (8, 9, 3)), ("PARCIAL_2", (7, 9, 9))):
+        r = client.put(
+            f"{EX}/{exam_id(client, tipo)}/grades",
+            headers=H,
+            json={
+                "entries": [
+                    {"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": juan},
+                    {"studentId": "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "grade": lucas},
+                    {"studentId": "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "grade": ana},
+                ]
+            },
+        )
+        assert r.status_code == 200, r.get_data(as_text=True)
     r = client.post("/api/v1/actas", headers=H, json={"courseId": 42, "type": "CURSADA"})
     assert r.status_code == 201, r.get_data(as_text=True)
     a = r.get_json()
     assert rows(a) == {
         "ba310c57-a684-4dbf-a4a4-905fcfbefa08": (None, "REGULAR"),
         "c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57": (None, "LIBRE"),
-        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": (None, "REGULAR"),
+        "d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58": (None, "DESAPROBADO"),
     }
-    assert a["counts"] == {"approved": 0, "failed": 0, "absent": 0, "regular": 2, "free": 1}
+    assert a["counts"] == {"approved": 0, "failed": 1, "absent": 0, "regular": 1, "free": 1}
     assert {(u["student_id"], u["status"], u["final_grade"]) for u in integ.academic.updates} == {
         ("ba310c57-a684-4dbf-a4a4-905fcfbefa08", "REGULAR", None),
         ("c3a1e0d2-5b6f-4c7a-8d9e-0f1a2b3c4d57", "LIBRE", None),
-        ("d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "REGULAR", None),
+        ("d4b2f1e3-6c7a-4d8b-9eaf-102b3c4d5e58", "DESAPROBADO", None),
     }
     assert a["sync"]["ok"] == 3
 
@@ -213,6 +249,7 @@ def test_annulment_rules(client, seeded):
 
 
 def test_results_view_reverts_to_previous_valid_acta(client, seeded):
+    approve_cursada(client, [{"studentId": "ba310c57-a684-4dbf-a4a4-905fcfbefa08", "grade": 8}])
     cursada = client.post("/api/v1/actas", headers=H, json={"courseId": 42, "type": "CURSADA"}).get_json()
     eid = grade_final(client)
     final = gen_final(client, eid).get_json()

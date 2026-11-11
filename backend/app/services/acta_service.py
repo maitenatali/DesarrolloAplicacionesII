@@ -15,7 +15,6 @@ from app.constants import (
     EVENT_TYPES,
     ActaStatus,
     ActaType,
-    Condition,
     ExamStatus,
     Result,
 )
@@ -39,7 +38,7 @@ from app.security.course_access import authorize_course, teacher_keys, teacher_n
 from app.security.decorators import is_admin
 from app.security.principal import Principal
 from app.services import acta_sync_service, event_service, rules
-from app.services.course_service import attendance_by_student, load_roster
+from app.services.course_service import attendance_by_student, course_marks, load_roster
 from app.time import now_utc, today_local
 
 log = logging.getLogger("app.actas")
@@ -124,6 +123,8 @@ def _load_acta(principal: Principal, acta_id: int, *, write: bool = False) -> Ac
     a = db.session.scalar(select(Acta).where(Acta.id == acta_id).options(selectinload(Acta.detalles)))
     if a is None:
         raise NotFound("El acta no existe.", code="ACTA_NOT_FOUND")
+    if principal.is_service and not write:
+        return a  # allow-listed service module reading (route decorator checked the module)
     owner = a.docente_id in set(teacher_keys(principal))
     if not owner and (write or not is_admin(principal)):
         # 404 (not 403): don't leak the existence of other teachers' actas
@@ -137,8 +138,12 @@ def get_acta(principal: Principal, acta_id: int) -> ActaDto:
 
 def list_actas(principal: Principal, q: ActaQuery) -> ActaPage:
     stmt = select(Acta)
-    if not is_admin(principal):
+    if not (principal.is_service or is_admin(principal)):
         stmt = stmt.where(Acta.docente_id.in_(teacher_keys(principal)))
+    if q.student_id:
+        stmt = stmt.where(
+            Acta.id.in_(select(ActaDetalle.acta_id).where(ActaDetalle.alumno_id == q.student_id))
+        )
     for col, val in (
         (Acta.curso_id, q.course_id),
         (Acta.periodo_id, q.period_id),
@@ -224,29 +229,42 @@ def generate_acta(principal: Principal, body: ActaCreateRequest) -> ActaCreatedD
             for c in db.session.scalars(select(Calificacion).where(Calificacion.examen_id == exam.id))
         }
         numeric = 0
+        # Situación SIN asistencia: la regla de asistencia del final la aplica `final_acta_row`
+        # (configurable con FINAL_REQUIRES_REGULAR).
+        marks = course_marks(body.course_id, exclude_exam_id=exam.id)
         for e in roster.entries:
             cal = cals.get(e.student_id)
-            grade = cal.nota if cal else None
-            if grade is not None:
+            final = rules.Mark(cal.nota, cal.ausente) if cal else None
+            if cal is not None and cal.nota is not None:
                 numeric += 1
+            situation = rules.situation_from_marks(
+                [*marks.get(e.student_id, []), *([(exam.tipo, final)] if final else [])],
+                final_types=cfg.final_exam_types,
+                passing_grade=cfg.passing_grade,
+            )
             att = attendance.get(e.student_id)
-            res = rules.final_result(
-                grade=grade,
-                absent=cal is None or cal.ausente,
+            grade, res = rules.final_acta_row(
+                situation=situation,
+                final=final,
                 condition=att.condicion if att else None,
                 passing_grade=cfg.passing_grade,
                 requires_regular=cfg.final_requires_regular,
             )
-            rows.append((e.student_id, e.name, e.file_number, None if res == Result.AUSENTE else grade, res))
+            rows.append((e.student_id, e.name, e.file_number, grade, res))
         if numeric == 0:
             raise Conflict("No hay calificaciones cargadas para este examen.", code="NO_GRADES")
         exam_id: int | None = exam.id
     else:
         if not attendance:
             raise Conflict("No hay clases con asistencia registrada.", code="NO_ATTENDANCE_RECORDED")
+        # Cursada aprobada = asistencia >= 75 % Y P1/P2 efectivos (con recuperatorio) >= nota mínima.
+        marks = course_marks(body.course_id)
         for e in roster.entries:
-            att = attendance.get(e.student_id)  # no attendance rows => LIBRE; exam grades are NOT consulted
-            res = Result.REGULAR if att and att.condicion == Condition.REGULAR else Result.LIBRE
+            att = attendance.get(e.student_id)  # no attendance rows => LIBRE
+            situation = rules.situation_from_marks(
+                marks.get(e.student_id, []), final_types=cfg.final_exam_types, passing_grade=cfg.passing_grade
+            )
+            res = rules.cursada_result(condition=att.condicion if att else None, situation=situation)
             rows.append((e.student_id, e.name, e.file_number, None, res))
         exam_id = None
 

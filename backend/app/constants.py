@@ -53,6 +53,19 @@ class Result(StrEnum):
     AUSENTE = "AUSENTE"
 
 
+class AcademicStatus(StrEnum):
+    """Situación del alumno en la materia (régimen de Examen Final Obligatorio). Ver `rules.academic_situation`."""
+
+    CURSANDO = "CURSANDO"
+    DEBE_RECUPERAR_P1 = "DEBE_RECUPERAR_P1"
+    DEBE_RECUPERAR_P2 = "DEBE_RECUPERAR_P2"
+    RECURSA = "RECURSA"
+    LIBRE = "LIBRE"  # asistencia < umbral: le gana a cualquier estado de notas
+    PENDIENTE_FINAL = "PENDIENTE_FINAL"
+    FINAL_DESAPROBADO = "FINAL_DESAPROBADO"
+    APROBADA = "APROBADA"
+
+
 class OutboxStatus(StrEnum):
     PENDING = "PENDING"
     SENT = "SENT"
@@ -78,8 +91,8 @@ EVENT_TYPES = SimpleNamespace(
 EXAM_TYPE_CATALOG = [
     {"type": "PARCIAL_1", "name": "Parcial 1", "category": "PARCIAL"},
     {"type": "PARCIAL_2", "name": "Parcial 2", "category": "PARCIAL"},
-    {"type": "RECUP_1", "name": "Recuperatorio Parcial 1", "category": "RECUPERATORIO"},
-    {"type": "RECUP_2", "name": "Recuperatorio Parcial 2", "category": "RECUPERATORIO"},
+    # Un solo recuperatorio por cursada: a cada alumno le recupera el parcial que tenga desaprobado/ausente.
+    {"type": "RECUPERATORIO", "name": "Recuperatorio", "category": "RECUPERATORIO"},
     {"type": "TP_1", "name": "TP1", "category": "INTEGRADOR"},
     {"type": "TP_2", "name": "TP2", "category": "INTEGRADOR"},
     {"type": "FINAL", "name": "Final", "category": "FINAL"},

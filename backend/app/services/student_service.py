@@ -16,6 +16,7 @@ from app.errors import NotFound
 from app.extensions import db
 from app.integrations.factory import get_integrations
 from app.models import Asistencia, AsistenciaPorAlumno, Calificacion, Clase, Examen
+from app.schemas.grades import AcademicSituationDto
 from app.schemas.students import (
     StudentAttendanceDto,
     StudentClassAttendance,
@@ -106,10 +107,19 @@ def student_grades(student_id: str, course_id: int) -> StudentGradesDto:
                 graded_by=cal.cargada_por if cal else None,
             )
         )
+    cfg = current_app.extensions["settings"]
+    summary = db.session.get(AsistenciaPorAlumno, (course_id, student_id))
+    situation = rules.situation_from_marks(
+        [(r.type, rules.Mark(r.grade, r.absent)) for r in rows],
+        final_types=cfg.final_exam_types,
+        condition=summary.condicion if summary else None,
+        passing_grade=passing,
+    )
     return StudentGradesDto(
         student_id=student_id,
         course_id=course_id,
         passing_grade=passing,
-        average=rules.mean([r.grade for r in rows if r.grade is not None], 2),
+        average=situation.cursada_grade,
+        situation=AcademicSituationDto.of(situation),
         exams=rows,
     )

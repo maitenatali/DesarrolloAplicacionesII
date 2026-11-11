@@ -19,6 +19,7 @@ from .base import (
     ExamTurn,
     Schedule,
     StudentProfile,
+    Subject,
     TeacherAssignment,
 )
 from .fixtures import (
@@ -180,7 +181,78 @@ COURSE_30 = CourseDetail(
     schedule=[Schedule(11, 2, "FRIDAY", time(8, 0), time(10, 0))],
 )
 
-ALL_COURSES = [COURSE_42, COURSE_43, COURSE_44, COURSE_30]
+# --- María's 3 extra demo courses (2Q 2026) -------------------------------------------------------------
+# 45: ready to close (everything loaded, NO cursada acta yet: the demo generates it live).
+# 46: mid-semester.  47: just created (enrolled students only).
+SUBJECT_17 = Subject(17, "IS2", "Ingeniería de Software II")
+
+_NAMES_45 = [
+    ("Pedro", "Salazar"), ("Clara", "Bustos"), ("Hugo", "Méndez"), ("Irene", "Campos"),
+    ("Julián", "Arce"), ("Noelia", "Fuentes"), ("Ramiro", "Suárez"), ("Tamara", "Villalba"),
+    ("Esteban", "Coronel"), ("Luciana", "Robles"), ("Axel", "Mansilla"), ("Dana", "Escobar"),
+]  # fmt: skip
+_NAMES_46 = [
+    ("Kevin", "Barrios"), ("Ailén", "Maidana"), ("Bruno", "Lescano"), ("Celeste", "Duarte"),
+    ("Dylan", "Sandoval"), ("Evelyn", "Montes"), ("Gael", "Pizarro"), ("Hilda", "Bravo"),
+    ("Iván", "Zárate"), ("Jazmín", "Olivera"),
+]  # fmt: skip
+_NAMES_47 = [
+    ("Karina", "Soria"), ("Lisandro", "Funes"), ("Mora", "Arias"), ("Nahuel", "Cardozo"),
+    ("Olivia", "Bazán"), ("Priscila", "Coria"), ("Quimey", "Rivas"), ("Rodrigo", "Palacios"),
+]  # fmt: skip
+
+
+def _extra_ids(block: int, names: list[tuple[str, str]], doc_base: int, legajo_base: int) -> list[str]:
+    ids = []
+    for i, (first, last) in enumerate(names, start=1):
+        sid = f"00000000-0000-4000-b000-{block + i:012d}"
+        PROFILES[sid] = _profile(sid, first, last, str(doc_base + 173 * i), str(legajo_base + 11 * i))
+        ids.append(sid)
+    return ids
+
+
+IDS_45 = _extra_ids(400, _NAMES_45, 41230000, 310000)
+IDS_46 = _extra_ids(500, _NAMES_46, 42340000, 320000)
+IDS_47 = _extra_ids(600, _NAMES_47, 43450000, 330000)
+
+
+def _maria_course(
+    cid: int, code: str, subject: Subject, ids: list[str], first_ref: int, weekday: str, start: time, end: time,
+    first_day: date, seats: int,
+) -> CourseDetail:  # fmt: skip
+    return CourseDetail(
+        course=CourseSummary(
+            cid,
+            code,
+            subject.id,
+            8,
+            2,
+            "PRESENCIAL",
+            "EN_CURSO",
+            seats,
+            first_day,
+            date(2026, 11, 30),
+            len(ids),
+        ),
+        subject=subject,
+        period=PERIOD_8,
+        teachers=[TeacherAssignment(cid - 38, MARIA, "TITULAR")],
+        enrollments=_enrollments(first_ref, ids),
+        schedule=[Schedule(cid - 33, 4, weekday, start, end)],
+    )
+
+
+COURSE_45 = _maria_course(
+    45, "BD1-C", SUBJECT_16, IDS_45, 400, "WEDNESDAY", time(18), time(20), date(2026, 8, 10), 30
+)
+COURSE_46 = _maria_course(
+    46, "DDA2-C", SUBJECT_15, IDS_46, 500, "THURSDAY", time(19), time(21), date(2026, 8, 10), 45
+)
+COURSE_47 = _maria_course(
+    47, "IS2-A", SUBJECT_17, IDS_47, 600, "FRIDAY", time(18), time(20), date(2026, 11, 6), 35
+)
+
+ALL_COURSES = [COURSE_42, COURSE_43, COURSE_44, COURSE_30, COURSE_45, COURSE_46, COURSE_47]
 
 EXAM_TURN_6 = ExamTurn(
     6, "Turno final julio", date(2026, 7, 6), date(2026, 7, 17), date(2026, 6, 22), date(2026, 7, 3)

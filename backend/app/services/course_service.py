@@ -7,12 +7,12 @@ from dataclasses import dataclass
 from flask import current_app
 from sqlalchemy import select
 
-from app.constants import EXAM_TYPE_CATALOG, MISSING_FILE_NUMBER
+from app.constants import EXAM_TYPE_CATALOG, MISSING_FILE_NUMBER, ExamStatus
 from app.errors import UpstreamError
 from app.extensions import db
 from app.integrations.base import CourseDetail, Period, StudentProfile, roster_of
 from app.integrations.factory import get_integrations
-from app.models import AsistenciaPorAlumno, ResultadoPorAlumno
+from app.models import AsistenciaPorAlumno, Calificacion, Examen, ResultadoPorAlumno
 from app.schemas.courses import (
     AttendanceStatsDto,
     CourseDto,
@@ -35,7 +35,7 @@ from app.schemas.courses import (
 )
 from app.security.course_access import authorize_course, teacher_keys
 from app.security.principal import Principal
-from app.services.rules import _strip_accents, roster_sort_key
+from app.services.rules import Mark, _strip_accents, roster_sort_key
 
 
 @dataclass(frozen=True)
@@ -116,6 +116,31 @@ def load_roster(detail: CourseDetail, *, strict: bool = False) -> RosterResult:
         )
     )
     return RosterResult(entries, degraded)
+
+
+def course_marks(
+    course_id: int, *, exclude_exam_id: int | None = None, student_ids: list[str] | None = None
+) -> dict[str, list[tuple[str, Mark]]]:
+    """Calificaciones por alumno de los exámenes no cancelados: {alumno: [(tipo, Mark)]}, en orden de fecha.
+
+    Entrada de `rules.situation_from_marks`. `exclude_exam_id` deja afuera un examen (p. ej. el que se está
+    cargando, para validar contra las demás notas).
+    """
+    q = select(Examen).where(Examen.curso_id == course_id, Examen.estado != ExamStatus.CANCELADO)
+    if exclude_exam_id is not None:
+        q = q.where(Examen.id != exclude_exam_id)
+    exams = {
+        e.id: e.tipo for e in db.session.scalars(q.order_by(Examen.fecha, Examen.hora_inicio, Examen.id))
+    }
+    by_student: dict[str, list[tuple[str, Mark]]] = {}
+    if exams:
+        cq = select(Calificacion).where(Calificacion.examen_id.in_(list(exams)))
+        if student_ids is not None:
+            cq = cq.where(Calificacion.alumno_id.in_(student_ids))
+        order = list(exams)
+        for c in sorted(db.session.scalars(cq), key=lambda c: order.index(c.examen_id)):
+            by_student.setdefault(c.alumno_id, []).append((exams[c.examen_id], Mark(c.nota, c.ausente)))
+    return by_student
 
 
 def attendance_by_student(course_id: int) -> dict[str, AsistenciaPorAlumno]:

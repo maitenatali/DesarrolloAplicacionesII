@@ -2624,6 +2624,24 @@
             "description": ""
           },
           {
+            "name": "studentId",
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Studentid"
+            },
+            "required": false,
+            "description": ""
+          },
+          {
             "name": "type",
             "in": "query",
             "schema": {
@@ -5407,6 +5425,18 @@
             "default": null,
             "title": "Periodid"
           },
+          "studentId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Studentid"
+          },
           "type": {
             "anyOf": [
               {
@@ -7053,6 +7083,9 @@
             "default": null,
             "title": "Average"
           },
+          "situation": {
+            "$ref": "#/components/schemas/StudentGradesDto.632c774.AcademicSituationDto"
+          },
           "exams": {
             "items": {
               "$ref": "#/components/schemas/StudentGradesDto.632c774.StudentExamGrade"
@@ -7065,6 +7098,7 @@
           "studentId",
           "courseId",
           "passingGrade",
+          "situation",
           "exams"
         ],
         "title": "StudentGradesDto",
@@ -9940,6 +9974,117 @@
         "title": "SavedGradeEntry",
         "type": "object"
       },
+      "GradeMatrix.128e64d.AcademicSituationDto": {
+        "additionalProperties": false,
+        "description": "Situación del alumno (régimen de Examen Final Obligatorio). Notas truncadas a 2 decimales.",
+        "properties": {
+          "p1Effective": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P1Effective"
+          },
+          "p2Effective": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P2Effective"
+          },
+          "recovers": {
+            "anyOf": [
+              {
+                "enum": [
+                  "P1",
+                  "P2"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recovers"
+          },
+          "cursadaGrade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cursadagrade"
+          },
+          "finalGrade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Finalgrade"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GradeMatrix.128e64d.AcademicStatus"
+          },
+          "recupEnabled": {
+            "title": "Recupenabled",
+            "type": "boolean"
+          },
+          "finalEnabled": {
+            "title": "Finalenabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "recupEnabled",
+          "finalEnabled"
+        ],
+        "title": "AcademicSituationDto",
+        "type": "object"
+      },
+      "GradeMatrix.128e64d.AcademicStatus": {
+        "description": "Situación del alumno en la materia (régimen de Examen Final Obligatorio). Ver `rules.academic_situation`.",
+        "enum": [
+          "CURSANDO",
+          "DEBE_RECUPERAR_P1",
+          "DEBE_RECUPERAR_P2",
+          "RECURSA",
+          "LIBRE",
+          "PENDIENTE_FINAL",
+          "FINAL_DESAPROBADO",
+          "APROBADA"
+        ],
+        "title": "AcademicStatus",
+        "type": "string"
+      },
+      "GradeMatrix.128e64d.Condition": {
+        "enum": [
+          "REGULAR",
+          "LIBRE"
+        ],
+        "title": "Condition",
+        "type": "string"
+      },
       "GradeMatrix.128e64d.ExamPhase": {
         "enum": [
           "UPCOMING",
@@ -10042,13 +10187,28 @@
             ],
             "default": null,
             "title": "Average"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GradeMatrix.128e64d.Condition"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "situation": {
+            "$ref": "#/components/schemas/GradeMatrix.128e64d.AcademicSituationDto"
           }
         },
         "required": [
           "studentId",
           "studentName",
           "fileNumber",
-          "grades"
+          "grades",
+          "situation"
         ],
         "title": "MatrixRow",
         "type": "object"
@@ -10184,6 +10344,109 @@
         ],
         "title": "StudentClassAttendance",
         "type": "object"
+      },
+      "StudentGradesDto.632c774.AcademicSituationDto": {
+        "additionalProperties": false,
+        "description": "Situación del alumno (régimen de Examen Final Obligatorio). Notas truncadas a 2 decimales.",
+        "properties": {
+          "p1Effective": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P1Effective"
+          },
+          "p2Effective": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P2Effective"
+          },
+          "recovers": {
+            "anyOf": [
+              {
+                "enum": [
+                  "P1",
+                  "P2"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recovers"
+          },
+          "cursadaGrade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cursadagrade"
+          },
+          "finalGrade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Finalgrade"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StudentGradesDto.632c774.AcademicStatus"
+          },
+          "recupEnabled": {
+            "title": "Recupenabled",
+            "type": "boolean"
+          },
+          "finalEnabled": {
+            "title": "Finalenabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "recupEnabled",
+          "finalEnabled"
+        ],
+        "title": "AcademicSituationDto",
+        "type": "object"
+      },
+      "StudentGradesDto.632c774.AcademicStatus": {
+        "description": "Situación del alumno en la materia (régimen de Examen Final Obligatorio). Ver `rules.academic_situation`.",
+        "enum": [
+          "CURSANDO",
+          "DEBE_RECUPERAR_P1",
+          "DEBE_RECUPERAR_P2",
+          "RECURSA",
+          "LIBRE",
+          "PENDIENTE_FINAL",
+          "FINAL_DESAPROBADO",
+          "APROBADA"
+        ],
+        "title": "AcademicStatus",
+        "type": "string"
       },
       "StudentGradesDto.632c774.ExamPhase": {
         "enum": [

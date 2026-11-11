@@ -38,6 +38,21 @@
 
 ---
 
+## 0.0 Grading rules update — 2026-11-11 (supersedes §11 "average" wherever they disagree)
+
+UADE "Examen Final Obligatorio" regime replaces the old "average of every grade". Single source:
+`rules.academic_situation` (frontend mirror `src/lib/grading.js`, same acceptance table in both test suites).
+- 2 parciales (>= 4 each; ausente = desaprobado). ONE `RECUPERATORIO` exam per course (types `RECUP`, `RECUP_1`,
+  `RECUP_2`... normalize to it); per student it replaces the ONE failed/absent parcial. Both failed or recup < 4 → recursa.
+- Cursada = (P1 ef. + P2 ef.) / 2; final enabled only with cursada approved; nota final = (cursada + final) / 2 only if
+  final >= 4. Missing grade → `null`, never a partial average. Computed grades are TRUNCATED to 2 decimals. TPs don't count
+  (`TODO(docentes)`). Attendance LIBRE overrides the status.
+- API: `MatrixRow` and `StudentGradesDto` gain `situation` (`AcademicSituationDto`: status, p1/p2Effective, recovers,
+  cursadaGrade, finalGrade, recupEnabled, finalEnabled); `average` stays as an alias of `cursadaGrade`. `MatrixRow.condition`.
+- `PUT .../grades` on the recuperatorio / final rejects non-enabled students: 409 `RECUP_NOT_ALLOWED` / `FINAL_NOT_ALLOWED`
+  (clearing is always allowed). Acta CURSADA = REGULAR attendance AND cursada approved. Acta FINAL row grade for APROBADO is
+  the subject's final grade; absent/no grade → AUSENTE (acta closes, student stays "Pendiente de final"; GA gates correlatives).
+
 ## 0.1 Alignment update — 2026-10-26 (supersedes older text where they disagree)
 
 Sources re-read together: the TPO statement (`data/TPO - DEA II 2Q 2026.pdf`), the data-flow sheets of modules

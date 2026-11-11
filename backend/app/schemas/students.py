@@ -7,6 +7,7 @@ import datetime as dt
 from app.constants import AttendanceStatus, Condition, ExamPhase, ExamStatus
 
 from .common import ApiModel, GradeOut, Instant, Pct
+from .grades import AcademicSituationDto
 
 
 class StudentClassAttendance(ApiModel):
@@ -47,5 +48,6 @@ class StudentGradesDto(ApiModel):
     student_id: str
     course_id: int
     passing_grade: GradeOut
-    average: GradeOut | None = None
+    average: GradeOut | None = None  # = situation.cursadaGrade (se mantiene por compatibilidad)
+    situation: AcademicSituationDto
     exams: list[StudentExamGrade]

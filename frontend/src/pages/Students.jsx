@@ -7,6 +7,7 @@ import * as I from '../components/icons.generated';
 import Pagination, { paginate } from '../components/Pagination';
 import { useCourse } from '../lib/courses';
 import { dni, initials } from '../lib/format';
+import { compareBySurname, filterStudents } from '../lib/studentSearch';
 import '../styles/pages/06.css';
 
 const PAGE_SIZE = 10;
@@ -20,6 +21,7 @@ export default function Students() {
   const [search, setSearch] = useState('');
   const [cond, setCond] = useState(ALL);
   const [page, setPage] = useState(1);
+  const [sortDesc, setSortDesc] = useState(false); // orden por apellido, nombre (como en las actas)
 
   if (!course) {
     return (
@@ -34,26 +36,26 @@ export default function Students() {
     .map((s) => ({
       id: s.studentId,
       name: s.profile?.fullName || s.studentId,
+      firstName: s.profile?.firstName || '',
+      lastName: s.profile?.lastName || '',
+      document: s.profile?.document || '',
+      fileNumber: s.profile?.fileNumber || '',
       dni: dni(s.profile?.document),
       legajo: s.profile?.fileNumber || 'S/D',
       email: s.profile?.email || '—',
       cond: s.attendance?.condition === 'LIBRE' ? 'libre' : 'regular',
     }))
-    .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+    .sort((a, b) => (sortDesc ? -1 : 1) * compareBySurname(a, b));
 
-  const term = search.trim().toLowerCase();
-  const filtered = list.filter(
-    (s) =>
-      (!term || s.name.toLowerCase().includes(term) || s.dni.includes(term) || s.dni.replace(/\./g, '').includes(term)) &&
-      (cond === ALL || COND_LABEL[s.cond] === cond),
-  );
+  // Búsqueda (inicio de palabra / legajo / DNI) AND filtro de condición.
+  const filtered = filterStudents(list, search).filter((s) => cond === ALL || COND_LABEL[s.cond] === cond);
   const pager = paginate(filtered, page, PAGE_SIZE);
   const text = students.isLoading
     ? 'Cargando estudiantes…'
     : pager.total
       ? `Mostrando ${pager.start}–${pager.end} de ${pager.total} estudiantes`
       : 'Mostrando 0 estudiantes';
-  const dirty = term !== '' || cond !== ALL;
+  const dirty = search.trim() !== '' || cond !== ALL;
 
   let message = null;
   if (students.isLoading) message = 'Cargando estudiantes…';
@@ -88,7 +90,7 @@ export default function Students() {
           <I.i29 className="leading" />
           <input
             type="text"
-            placeholder="Buscar estudiante por nombre, apellido o DNI..."
+            placeholder="Buscar estudiante por nombre, apellido, DNI o legajo..."
             value={search}
             onChange={(e) => (setSearch(e.target.value), setPage(1))}
           />
@@ -122,7 +124,12 @@ export default function Students() {
           <table>
             <thead>
               <tr>
-                <th className="sortable">
+                <th
+                  className="sortable"
+                  aria-sort={sortDesc ? 'descending' : 'ascending'}
+                  title="Ordenar por apellido"
+                  onClick={() => (setSortDesc((d) => !d), setPage(1))}
+                >
                   Estudiante
                   <I.i32 className="sort-icon" />
                 </th>

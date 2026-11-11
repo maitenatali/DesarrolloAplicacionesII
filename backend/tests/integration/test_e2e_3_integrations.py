@@ -9,12 +9,13 @@ route of the CORE simulator exercised.
 from __future__ import annotations
 
 import uuid
+from decimal import Decimal
 
 from flask import request_started
 from sqlalchemy import select
 
 from app.extensions import db
-from app.models import Examen, OutboxEvent
+from app.models import Calificacion, Examen, OutboxEvent
 from app.services import event_service
 
 JUAN = "ba310c57-a684-4dbf-a4a4-905fcfbefa08"
@@ -61,11 +62,25 @@ def _flow(app):
     # ── grade publication → outbox (1 event + 1 notification per student with a new grade) ──
     with app.app_context():
         final_id = db.session.scalar(select(Examen.id).where(Examen.curso_id == 42, Examen.tipo == "FINAL"))
+        # El final solo se carga con la cursada aprobada: P2 directo en la DB (seed: P1 Juan 8, Lucas 5) para
+        # que el outbox de este paso tenga solo los eventos del final.
+        p2_id = db.session.scalar(select(Examen.id).where(Examen.curso_id == 42, Examen.tipo == "PARCIAL_2"))
+        for sid in (JUAN, LUCAS):
+            db.session.add(
+                Calificacion(
+                    examen_id=p2_id,
+                    alumno_id=sid,
+                    nota=Decimal("8.00"),
+                    ausente=False,
+                    cargada_por="5f0a8e21-4c7b-4d19-9a3e-61b2c8d7f034",  # María
+                )
+            )
+        db.session.commit()
     body = {
         "entries": [
             {"studentId": JUAN, "grade": 8, "absent": False},
             {"studentId": LUCAS, "grade": 3, "absent": False},
-            {"studentId": ANA, "grade": None, "absent": True},
+            # Ana (ausente en P1, sin P2) no tiene la cursada aprobada: no se le carga el final
         ]
     }
     r = c.put(

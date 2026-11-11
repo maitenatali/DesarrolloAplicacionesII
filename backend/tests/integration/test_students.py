@@ -1,4 +1,4 @@
-from tests.helpers import ROSTER_42, as_service, as_teacher
+from tests.helpers import ROSTER_42, as_service, as_teacher, exam_body
 
 JUAN, LUCAS, ANA = ROSTER_42
 OUTSIDER = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee"
@@ -42,7 +42,10 @@ def test_grades_list_course_exams_with_the_student_grade(client, seeded):
     r = client.get(grades(JUAN), headers=as_service())
     assert r.status_code == 200
     body = r.get_json()
-    assert body["studentId"] == JUAN and body["passingGrade"] == 4.0 and body["average"] == 8.0
+    assert body["studentId"] == JUAN and body["passingGrade"] == 4.0
+    # Solo P1 cargado: todavía cursando, sin nota de cursada (nunca el "promedio de lo que haya").
+    assert body["average"] is None and body["situation"]["status"] == "CURSANDO"
+    assert body["situation"]["recupEnabled"] is False and body["situation"]["finalEnabled"] is False
     by = {e["type"]: e for e in body["exams"]}
     assert list(by) == ["PARCIAL_1", "PARCIAL_2", "FINAL"]
     p1 = by["PARCIAL_1"]
@@ -58,6 +61,33 @@ def test_grades_absent_student(client, seeded):
     body = client.get(grades(ANA), headers=as_service()).get_json()
     p1 = next(e for e in body["exams"] if e["type"] == "PARCIAL_1")
     assert p1["absent"] is True and p1["grade"] is None and body["average"] is None
+
+
+def test_grades_situation_after_recup(client, seeded):
+    """Juan: P1 = 8, P2 = 2 -> debe recuperar P2; con el recuperatorio (6) la cursada es (8 + 6) / 2."""
+    h = as_teacher()
+    exams = {e["type"]: e["id"] for e in client.get("/api/v1/courses/42/exams", headers=h).get_json()}
+    put = lambda eid, g: client.put(  # noqa: E731
+        f"/api/v1/courses/42/exams/{eid}/grades",
+        headers=h,
+        json={"entries": [{"studentId": JUAN, "grade": g}]},
+    )
+    assert put(exams["PARCIAL_2"], 2).status_code == 200
+    s = client.get(grades(JUAN), headers=as_service()).get_json()["situation"]
+    assert s["status"] == "DEBE_RECUPERAR_P2" and s["recovers"] == "P2" and s["recupEnabled"] is True
+    recup = client.post(
+        "/api/v1/courses/42/exams", headers=h, json=exam_body(type="RECUPERATORIO", date="2026-11-02")
+    ).get_json()["id"]
+    assert put(recup, 6).status_code == 200
+    body = client.get(grades(JUAN), headers=as_service()).get_json()
+    s = body["situation"]
+    assert (s["status"], s["p2Effective"], s["cursadaGrade"], body["average"]) == (
+        "PENDIENTE_FINAL",
+        6.0,
+        7.0,
+        7.0,
+    )
+    assert s["finalEnabled"] is True and s["finalGrade"] is None
 
 
 def test_student_can_read_own_data_only(client, seeded):

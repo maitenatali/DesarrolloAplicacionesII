@@ -24,8 +24,11 @@ def test_demo_seed_is_consistent_and_usable(database_url):
         assert _count(Clase, Clase.curso_id == 42) == 10
         assert _count(Clase, Clase.curso_id == 43) == 11
         assert _count(Clase, Clase.curso_id == 30) == 15
-        assert _count(Asistencia) == 10 * 25 + 11 * 20 + 15 * 16
-        assert _count(Examen) == 13
+        assert _count(Clase, Clase.curso_id == 45) == 12
+        assert _count(Clase, Clase.curso_id == 46) == 13
+        assert _count(Clase, Clase.curso_id == 47) == 0  # recién dado de alta
+        assert _count(Asistencia) == 10 * 25 + 11 * 20 + 15 * 16 + 12 * 12 + 13 * 10
+        assert _count(Examen) == 13 + 5 + 4
         assert _count(Calificacion) > 100
 
         actas = {a.numero: a for a in db.session.scalars(select(Acta))}
@@ -49,7 +52,20 @@ def test_demo_seed_is_consistent_and_usable(database_url):
         "Juan Pérez",
         "Sofía Martínez",
     }
+    # Curso 45 (María): cursada aprobada = asistencia >= 75 % Y promedio >= 4 (el recup reemplaza al parcial).
+    r = c.post("/api/v1/actas", headers=as_teacher(), json={"courseId": 45, "type": "CURSADA"})
+    assert r.status_code == 201, r.get_data(as_text=True)
+    assert r.get_json()["number"] == "2026-004"
+    with app.app_context():
+        acta = db.session.scalar(select(Acta).where(Acta.numero == "2026-004"))
+        by_student = {d.alumno_id: d.resultado for d in acta.detalles}
+        ids = fx.IDS_45
+        assert [by_student[s] for s in ids] == [
+            "REGULAR", "REGULAR", "DESAPROBADO", "LIBRE", "REGULAR", "REGULAR",
+            "DESAPROBADO", "LIBRE", "REGULAR", "REGULAR", "REGULAR", "DESAPROBADO",
+        ]  # fmt: skip
+
     carlos = as_teacher(fx.CARLOS)
     r = c.post("/api/v1/actas", headers=carlos, json={"courseId": 43, "type": "CURSADA"})
     assert r.status_code == 201, r.get_data(as_text=True)
-    assert r.get_json()["number"] == "2026-004"
+    assert r.get_json()["number"] == "2026-005"

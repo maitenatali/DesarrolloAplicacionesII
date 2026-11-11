@@ -7,6 +7,7 @@ import { Breadcrumb, CourseHero, CourseLoadState, CourseTabs, courseTrail } from
 import * as I from '../components/icons.generated';
 import { useCourse } from '../lib/courses';
 import { todayDay } from '../lib/format';
+import { filterStudents } from '../lib/studentSearch';
 import useToast from '../lib/useToast';
 import '../styles/pages/07.css';
 
@@ -76,6 +77,7 @@ export default function Attendance() {
           id: s.studentId,
           name: s.profile?.fullName || s.studentId,
           legajo: s.profile?.fileNumber || 'S/D',
+          document: s.profile?.document || '',
           ...(rows[s.studentId] || { state: 'unset', obs: '', obsOpen: false }),
         }))
         .sort((a, b) => a.name.localeCompare(b.name, 'es')),
@@ -122,8 +124,7 @@ export default function Attendance() {
     }
   };
 
-  const term = search.trim().toLowerCase();
-  const filtered = students.filter((s) => !term || s.name.toLowerCase().includes(term) || s.legajo.includes(term));
+  const filtered = filterStudents(students, search, (s) => ({ name: s.name, fileNumber: s.legajo, document: s.document }));
   const count = (st) => students.filter((s) => s.state === st).length;
   const loadingTable = roster.isLoading || record.isFetching;
   const obsLabel = (s) => (s.state === 'justificado' ? 'Justificación' : 'Observación');

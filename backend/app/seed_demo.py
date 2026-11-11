@@ -1,11 +1,13 @@
 """Demo data (MOCK_DATASET=demo): a realistic 2Q 2026 up to late October, plus the closed 1Q course 30.
 
 Deterministic (fixed random seed), so every PC gets the same rows. Matches `integrations/fixtures_demo`:
-- course 42 (María, Mondays): 25 students, 10 classes, PARCIAL_1/PARCIAL_2/RECUP_1 graded, FINAL scheduled.
-- course 43 (Carlos, Tuesdays): 20 students, 11 classes, PARCIAL_1/TP_1 graded, RECUP_1 cancelled,
+- course 42 (María, Mondays): 25 students, 10 classes, PARCIAL_1/PARCIAL_2/RECUPERATORIO graded, FINAL scheduled.
+- course 43 (Carlos, Tuesdays): 20 students, 11 classes, PARCIAL_1/TP_1 graded, RECUPERATORIO cancelled,
   PARCIAL_2 and FINAL scheduled.
 - course 30 (María, 1Q, closed): 16 students, 15 classes, all exams graded, actas 2026-001 CURSADA,
   2026-002 FINAL (ANULADA, typo) and 2026-003 FINAL; SENT outbox history for them.
+- courses 45/46/47 (María, 2Q): 45 = listo para cerrar (todo cargado, SIN acta CURSADA: se genera en la demo),
+  46 = a mitad de cursada, 47 = recién dado de alta (solo inscriptos).
 Acta rows are computed with `services.rules` (same as `acta_service.generate_acta`), never typed by hand.
 Idempotent: skipped if course 42 already has classes.
 """
@@ -29,6 +31,7 @@ from app.services.acta_service import _counts
 from app.services.acta_sync_service import targets_for
 from app.services.event_service import build_envelope
 
+Grade = tuple[Decimal | None, bool]  # (nota, ausente)
 HOLIDAYS = {date(2026, 4, 3), date(2026, 5, 1), date(2026, 8, 17), date(2026, 10, 12)}
 JUSTIFICATIONS = ["Certificado médico", "Constancia laboral", "Trámite personal con constancia"]
 
@@ -136,6 +139,15 @@ class _Course:
                 )
             )
 
+    def situation(self, sid: str) -> rules.Situation:
+        """Situación de cursada (sin FINAL), con las mismas reglas que el acta CURSADA."""
+        marks = [(t, rules.Mark(*g[sid])) for t, g in self.grades.items() if t != "FINAL" and sid in g]
+        return rules.situation_from_marks(marks, passing_grade=_settings().passing_grade)
+
+    def retake(self) -> list[str]:
+        """Quienes tienen exactamente un parcial desaprobado/ausente (los únicos que rinden el recuperatorio)."""
+        return [sid for sid in self.ids if self.situation(sid).recup_enabled]
+
     def random_grades(
         self, fixed: dict[str, tuple[Decimal | None, bool]], absent: int, bonus: float = 0.0, among=None
     ) -> dict[str, tuple[Decimal | None, bool]]:
@@ -178,7 +190,7 @@ def _course_42(rng: random.Random) -> None:
     c.attendance({fx.JUAN: (0, 0), fx.LUCAS: (4, 0), fx.ANA: (0, 1), fx.IDS_42[-1]: (4, 0)}, max_absences=2)
     c.exam("PARCIAL_1", "Primer Parcial", date(2026, 9, 14), time(18), 120, descripcion="Unidades 1 a 3.")
     c.exam("PARCIAL_2", "Segundo Parcial", date(2026, 10, 19), time(18), 120, descripcion="Unidades 4 a 6.")
-    c.exam("RECUP_1", "Recuperatorio Primer Parcial", date(2026, 10, 26), time(18), 120)
+    c.exam("RECUPERATORIO", "Recuperatorio", date(2026, 10, 26), time(18), 120)
     c.exam("FINAL", "Final", date(2026, 12, 3), time(18), 180, descripcion="Turno final diciembre.")
     db.session.flush()
     p1 = c.random_grades(
@@ -196,8 +208,10 @@ def _course_42(rng: random.Random) -> None:
         bonus=0.5,
     )
     c.grade("PARCIAL_2", p2, _at(date(2026, 10, 22), 21))
-    retake = [sid for sid, (nota, ausente) in p1.items() if ausente or (nota is not None and nota < 4)]
-    c.grade("RECUP_1", c.random_grades({}, absent=1, bonus=1.0, among=retake), _at(date(2026, 10, 27), 20))
+    retake = c.retake()  # unos recuperan P1 y otros P2, en el mismo examen
+    c.grade(
+        "RECUPERATORIO", c.random_grades({}, absent=1, bonus=1.0, among=retake), _at(date(2026, 10, 27), 20)
+    )
 
 
 def _course_43(rng: random.Random) -> None:
@@ -206,7 +220,7 @@ def _course_43(rng: random.Random) -> None:
     c.exam("PARCIAL_1", "Primer Parcial", date(2026, 9, 15), time(19), 120, descripcion="Unidades 1 a 3.")
     c.exam("TP_1", "TP1: API REST", date(2026, 10, 6), time(19), 120, descripcion="Entrega y defensa grupal.")
     c.exam(
-        "RECUP_1", "Recuperatorio Primer Parcial", date(2026, 10, 20), time(19), 120, estado="CANCELADO",
+        "RECUPERATORIO", "Recuperatorio", date(2026, 10, 20), time(19), 120, estado="CANCELADO",
         descripcion="Se reprograma por paro de transporte.",
     )  # fmt: skip
     c.exam("PARCIAL_2", "Segundo Parcial", date(2026, 11, 3), time(19), 120, modalidad="VIRTUAL")
@@ -223,14 +237,27 @@ def _course_30(rng: random.Random) -> None:
     c.attendance({sid: (5, 0) for sid, (st, _g) in outcomes.items() if st == "LIBRE"}, max_absences=3)
     c.exam("PARCIAL_1", "Primer Parcial", date(2026, 4, 24), time(8), 120)
     c.exam("PARCIAL_2", "Segundo Parcial", date(2026, 6, 26), time(8), 120)
-    c.exam("RECUP_1", "Recuperatorio Primer Parcial", date(2026, 7, 3), time(8), 120)
+    c.exam("RECUPERATORIO", "Recuperatorio", date(2026, 7, 3), time(8), 120)
     final = c.exam("FINAL", "Final", date(2026, 7, 10), time(9), 180, descripcion="Turno final julio.")
     db.session.flush()
-    p1 = c.random_grades({}, absent=1, bonus=0.5)
+    # Quien cursó (no LIBRE en GA) tiene parciales >= 4: así la regla "asistencia + parciales" del acta
+    # CURSADA reproduce exactamente lo que GA registró (ver guard al final).
+    passing_ids = {sid for sid, (st, _g) in outcomes.items() if st != "LIBRE"}
+
+    def floored(grades: dict[str, tuple[Decimal | None, bool]]) -> dict[str, tuple[Decimal | None, bool]]:
+        return {
+            sid: ((max(n, Decimal("4.00")) if n is not None and sid in passing_ids else n), a)
+            for sid, (n, a) in grades.items()
+        }
+
+    p1 = floored(c.random_grades({}, absent=1, bonus=0.5))
     c.grade("PARCIAL_1", p1, _at(date(2026, 4, 28), 19))
-    c.grade("PARCIAL_2", c.random_grades({}, absent=0, bonus=0.8), _at(date(2026, 6, 30), 19))
-    retake = [sid for sid, (nota, ausente) in p1.items() if ausente or (nota is not None and nota < 4)]
-    c.grade("RECUP_1", c.random_grades({}, absent=0, bonus=1.5, among=retake), _at(date(2026, 7, 6), 19))
+    c.grade("PARCIAL_2", floored(c.random_grades({}, absent=0, bonus=0.8)), _at(date(2026, 6, 30), 19))
+    c.grade(
+        "RECUPERATORIO",
+        floored(c.random_grades({}, absent=0, bonus=1.5, among=c.retake())),
+        _at(date(2026, 7, 6), 19),
+    )
     # FINAL grades straight from the GA outcome: REGULAR = regular who skipped it; LIBRE without grade = absent
     sat = {sid: g for sid, (st, g) in outcomes.items() if g is not None}
     c.grade(
@@ -304,7 +331,14 @@ def _course_30(rng: random.Random) -> None:
         return a
 
     cursada = [
-        (sid, n, leg, None, "REGULAR" if c.condition(sid) == "REGULAR" else "LIBRE") for sid, n, leg in roster
+        (
+            sid,
+            n,
+            leg,
+            None,
+            rules.cursada_result(condition=c.condition(sid), situation=c.situation(sid)).value,
+        )
+        for sid, n, leg in roster
     ]
     acta("2026-001", "CURSADA", date(2026, 7, 3), _at(date(2026, 7, 3), 10, 15), cursada)
 
@@ -361,12 +395,102 @@ def _course_30(rng: random.Random) -> None:
             )
 
 
+def _course_45() -> None:
+    """María, miércoles. LISTO PARA CERRAR: todo cargado, sin acta CURSADA (se genera en la demo).
+
+    Tabla fija (sin azar). Resultado esperado del acta CURSADA con la regla
+    "asistencia >= 75 % y P1/P2 efectivos >= 4" (el recuperatorio reemplaza al parcial que recupera;
+    los TP no cuentan): REGULAR x7, DESAPROBADO x3, LIBRE x2.
+    """
+    ids = fx.IDS_45
+    c = _Course(
+        random.Random(0), 45, fx.MARIA, ids, _weekly(date(2026, 8, 12), date(2026, 10, 28))
+    )  # 12 clases
+    A: Grade = (None, True)  # ausente
+
+    def g(n: str) -> Grade:
+        return Decimal(n).quantize(Decimal("0.01")), False
+
+    # (ausencias, justificadas), PARCIAL_1, PARCIAL_2, TP_1, RECUPERATORIO (None = no hay fila)
+    plan: list[tuple[tuple[int, int], Grade, Grade, Grade, Grade | None]] = [
+        ((0, 0), g("9"), g("8"), g("9"), None),  # regular, cursada 8.5
+        ((1, 0), g("1"), g("4"), g("4"), g("6")),  # recupera P1 (1) con 6 -> cursada 5
+        (
+            (1, 1),
+            g("3"),
+            g("6"),
+            g("5"),
+            A,
+        ),  # asistencia ok, no se presentó al recup -> RECURSA (DESAPROBADO)
+        ((4, 0), g("9"), g("9"), g("10"), None),  # notas altas pero 66.7 % de asistencia -> LIBRE
+        ((3, 0), g("4"), g("4"), g("4"), None),  # justo 75 % y justo 4 -> REGULAR
+        ((3, 1), g("3"), g("4"), g("4"), g("5")),  # 75 % exacto, recupera P1 -> cursada 4.5 REGULAR
+        ((2, 1), g("3"), g("4"), g("4"), g("3")),  # recupera y saca 3 -> RECURSA (DESAPROBADO)
+        ((5, 0), A, A, A, None),  # abandonó: 58 % y sin notas -> LIBRE
+        ((1, 0), g("7"), g("6"), g("8"), None),
+        ((0, 0), g("10"), g("9"), g("10"), None),
+        ((2, 0), A, g("5"), g("6"), g("5")),  # ausente en P1, recupera con 5 -> cursada 5 REGULAR
+        ((2, 0), g("4"), g("3"), g("4"), None),  # debe recuperar P2 y no lo rindió aún -> DESAPROBADO
+    ]
+    c.attendance({sid: row[0] for sid, row in zip(ids, plan, strict=True)}, max_absences=0)
+    c.exam(
+        "PARCIAL_1",
+        "Primer Parcial",
+        date(2026, 9, 16),
+        time(18),
+        120,
+        descripcion="Modelo relacional y SQL.",
+    )
+    c.exam("TP_1", "TP1: Modelado de datos", date(2026, 10, 7), time(18), 120, descripcion="Entrega grupal.")
+    c.exam(
+        "PARCIAL_2",
+        "Segundo Parcial",
+        date(2026, 10, 21),
+        time(18),
+        120,
+        descripcion="Normalización y transacciones.",
+    )
+    c.exam("RECUPERATORIO", "Recuperatorio", date(2026, 10, 28), time(18), 120)
+    c.exam("FINAL", "Final", date(2026, 12, 2), time(18), 180, descripcion="Turno final diciembre.")
+    db.session.flush()
+    by_exam: dict[str, dict[str, Grade]] = {"PARCIAL_1": {}, "PARCIAL_2": {}, "TP_1": {}, "RECUPERATORIO": {}}
+    for sid, (_att, p1, p2, tp, recup) in zip(ids, plan, strict=True):
+        by_exam["PARCIAL_1"][sid], by_exam["PARCIAL_2"][sid], by_exam["TP_1"][sid] = p1, p2, tp
+        if recup is not None:
+            by_exam["RECUPERATORIO"][sid] = recup
+    loaded = {"PARCIAL_1": date(2026, 9, 19), "PARCIAL_2": date(2026, 10, 24),
+              "TP_1": date(2026, 10, 10), "RECUPERATORIO": date(2026, 10, 31)}  # fmt: skip
+    for tipo, values in by_exam.items():
+        c.grade(tipo, values, _at(loaded[tipo], 21))
+
+
+def _course_46(rng: random.Random) -> None:
+    """María, jueves. A MITAD DE CURSADA: P1 y TP1 corregidos, P2 y FINAL por venir."""
+    c = _Course(rng, 46, fx.MARIA, fx.IDS_46, _weekly(date(2026, 8, 13), date(2026, 11, 5)))
+    c.attendance({fx.IDS_46[2]: (5, 0), fx.IDS_46[7]: (4, 1)}, max_absences=2)
+    c.exam("PARCIAL_1", "Primer Parcial", date(2026, 9, 17), time(19), 120, descripcion="Unidades 1 a 3.")
+    c.exam("TP_1", "TP1: API REST", date(2026, 10, 8), time(19), 120, descripcion="Entrega y defensa.")
+    c.exam("PARCIAL_2", "Segundo Parcial", date(2026, 11, 26), time(19), 120, descripcion="Unidades 4 a 6.")
+    c.exam("FINAL", "Final", date(2026, 12, 10), time(19), 180, descripcion="Turno final diciembre.")
+    db.session.flush()
+    c.grade("PARCIAL_1", c.random_grades({}, absent=1), _at(date(2026, 9, 21), 11))
+    c.grade("TP_1", c.random_grades({}, absent=0, bonus=1.0), _at(date(2026, 10, 12), 11))
+
+
 def load_demo_seed() -> bool:
-    if db.session.scalar(select(Clase.id).where(Clase.curso_id == 42)) is not None:
-        return False
-    rng = random.Random(20262)
-    _course_42(rng)
-    _course_43(rng)
-    _course_30(rng)
-    db.session.commit()
-    return True
+    loaded = False
+    if db.session.scalar(select(Clase.id).where(Clase.curso_id == 42)) is None:
+        rng = random.Random(20262)
+        _course_42(rng)
+        _course_43(rng)
+        _course_30(rng)
+        loaded = True
+    # María's extra demo courses (45 listo para cerrar, 46 a mitad de cursada; 47 solo inscriptos).
+    # Separate check + rng so existing databases get them on the next `flask seed`.
+    if db.session.scalar(select(Clase.id).where(Clase.curso_id == 45)) is None:
+        _course_45()
+        _course_46(random.Random(20263))
+        loaded = True
+    if loaded:
+        db.session.commit()
+    return loaded

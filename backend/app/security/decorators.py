@@ -129,6 +129,33 @@ def require_service(fn):
     return wrapper
 
 
+def require_teacher_or_service(fn):
+    """READ routes shared by teachers and allowed service modules (SERVICE_MODULES, e.g. student, analytics,
+    academic). Teachers keep their course-ownership rules; services read any course. Writes never use this."""
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        cfg = _settings()
+        token = _bearer()
+        if token and any(hmac.compare_digest(token.encode(), t.encode()) for t in cfg.service_tokens):
+            _set(
+                Principal(
+                    user_id="service", is_service=True, service="static", roles=frozenset(cfg.service_roles)
+                )
+            )
+            return fn(*args, **kwargs)
+        principal = _authenticate()
+        if principal.is_service:
+            if not _is_allowed_service(principal, cfg):
+                raise Forbidden("Tu módulo no está habilitado para consultar estos datos.", code="FORBIDDEN")
+        elif not (principal.roles & set(cfg.teacher_roles) or principal.roles & set(cfg.admin_roles)):
+            raise Forbidden("No tenés permisos de docente.", code="FORBIDDEN")
+        _set(principal)
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
 def require_service_or_self(fn):
     """Per-student routes (/students/<student_id>/...): an allowed service token (same rules as
     require_service), or the student's own user token (sub == student_id). Anyone else gets 403."""

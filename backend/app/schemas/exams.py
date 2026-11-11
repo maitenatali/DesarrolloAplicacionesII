@@ -11,13 +11,16 @@ from app.constants import ExamPhase, ExamStatus, Modality
 from .common import ApiModel, HHmm, Instant
 
 _TYPE_RE = re.compile(r"^[A-Z0-9_]{1,50}$")
+# RECUP, RECUP_1, RECUP_2, RECUPERATORIO_1... -> RECUPERATORIO: hay un único recuperatorio por cursada
+# (a qué parcial aplica se decide por alumno, ver `rules.academic_situation`).
+_RECUP_RE = re.compile(r"^RECUP(ERATORIO)?(_?\d+)?$")
 
 
 def normalize_exam_type(value: str) -> str:
     v = re.sub(r"[\s\-]+", "_", value.strip().upper())
     if not _TYPE_RE.match(v):
         raise ValueError("El tipo solo admite letras, números y guiones bajos (máx. 50).")
-    return v
+    return "RECUPERATORIO" if _RECUP_RE.match(v) else v
 
 
 class ExamCreateRequest(ApiModel):

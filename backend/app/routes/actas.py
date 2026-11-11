@@ -14,23 +14,21 @@ from app.schemas.actas import (
     SyncResponse,
 )
 from app.schemas.common import json_response
-from app.security.decorators import require_auth, require_teacher
+from app.security.decorators import require_auth, require_teacher, require_teacher_or_service
 from app.services import acta_service
 
 bp = Blueprint("actas", __name__)
 
 
 @bp.get("/actas")
-@require_auth
-@require_teacher
+@require_teacher_or_service
 @spec.validate(query=ActaQuery, resp=resp(HTTP_200=ActaPage), tags=["Actas"])
 def list_actas():
     return json_response(acta_service.list_actas(g.principal, validated().query))
 
 
 @bp.get("/actas/<int:acta_id>")
-@require_auth
-@require_teacher
+@require_teacher_or_service
 @spec.validate(resp=resp(HTTP_200=ActaDto), tags=["Actas"])
 def get_acta(acta_id: int):
     return json_response(acta_service.get_acta(g.principal, acta_id))

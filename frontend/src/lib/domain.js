@@ -18,12 +18,14 @@ export const isActiveCourse = (c) => c?.status === 'EN_CURSO';
 
 export const MODALITY = { PRESENCIAL: 'Presencial', VIRTUAL: 'Virtual', HIBRIDA: 'Híbrida' };
 
-/** Nombre corto del tipo de examen como en los mockups (Parcial 1, Recuperatorio Parcial 1, TP1, Final). */
+/** Nombre corto del tipo de examen como en los mockups (Parcial 1, Recuperatorio, TP1, Final). */
 export const EXAM_TYPE_LABEL = {
   PARCIAL_1: 'Parcial 1',
   PARCIAL_2: 'Parcial 2',
-  RECUP_1: 'Recuperatorio Parcial 1',
-  RECUP_2: 'Recuperatorio Parcial 2',
+  // Un solo recuperatorio por cursada: a qué parcial aplica se decide por alumno (lib/grading.js).
+  RECUPERATORIO: 'Recuperatorio',
+  RECUP_1: 'Recuperatorio', // tipos viejos
+  RECUP_2: 'Recuperatorio',
   TP_1: 'TP1',
   TP_2: 'TP2',
   FINAL: 'Final',

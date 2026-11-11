@@ -15,15 +15,14 @@ from app.schemas.exams import (
     ExamQuery,
     ExamWithCourseList,
 )
-from app.security.decorators import require_auth, require_teacher
+from app.security.decorators import require_auth, require_teacher, require_teacher_or_service
 from app.services import exam_service
 
 bp = Blueprint("exams", __name__)
 
 
 @bp.get("/courses/<int:course_id>/exams")
-@require_auth
-@require_teacher
+@require_teacher_or_service
 @spec.validate(resp=resp(HTTP_200=ExamList), tags=["Exams"])
 def list_exams(course_id: int):
     return json_response(exam_service.list_exams(g.principal, course_id))
@@ -39,8 +38,7 @@ def create_exam(course_id: int):
 
 
 @bp.get("/courses/<int:course_id>/exams/<int:exam_id>")
-@require_auth
-@require_teacher
+@require_teacher_or_service
 @spec.validate(resp=resp(HTTP_200=ExamDetailDto), tags=["Exams"])
 def get_exam(course_id: int, exam_id: int):
     return json_response(exam_service.get_exam(g.principal, course_id, exam_id))

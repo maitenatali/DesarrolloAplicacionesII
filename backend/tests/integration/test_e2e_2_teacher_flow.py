@@ -112,6 +112,21 @@ def _flow(app):
     assert dup.status_code == 409 and dup.get_json()["code"] == "EXAM_TYPE_ALREADY_EXISTS"
     patched = ok(c.patch(f"/api/v1/courses/42/exams/{p1['id']}", json={"name": "Primer Parcial"}, headers=h))
     assert patched["name"] == "Primer Parcial"
+    p2 = ok(
+        c.post(
+            "/api/v1/courses/42/exams",
+            json={**exam_body, "type": "PARCIAL_2", "date": "2026-10-28"},
+            headers=h,
+        ),
+        201,
+    )
+    recup = ok(
+        c.post(
+            "/api/v1/courses/42/exams", json={**exam_body, "type": "recup 1", "date": "2026-11-04"}, headers=h
+        ),
+        201,
+    )
+    assert recup["type"] == "RECUPERATORIO"  # un único recuperatorio por cursada
     tp = ok(c.post("/api/v1/courses/42/exams", json={**exam_body, "type": "TP_1"}, headers=h), 201)
     assert (
         ok(c.post(f"/api/v1/courses/42/exams/{tp['id']}/cancellation", json={}, headers=h))["status"]
@@ -123,10 +138,10 @@ def _flow(app):
         ),
         201,
     )
-    assert len(ok(c.get("/api/v1/courses/42/exams", headers=h))) == 3
+    assert len(ok(c.get("/api/v1/courses/42/exams", headers=h))) == 5
     assert ok(c.get(f"/api/v1/courses/42/exams/{final['id']}", headers=h))["gradingProgress"]["pending"] == 3
     upcoming = ok(c.get("/api/v1/exams?phase=UPCOMING", headers=h))
-    assert {e["id"] for e in upcoming} == {p1["id"], final["id"]}
+    assert {e["id"] for e in upcoming} == {p1["id"], p2["id"], recup["id"], final["id"]}
 
     # ── grades ───────────────────────────────────────────────────────────────────────
     grades = {
@@ -146,6 +161,22 @@ def _flow(app):
     assert bad.status_code == 400
     sheet = ok(c.get(f"/api/v1/courses/42/exams/{p1['id']}/grades", headers=h))
     assert sheet["summary"]["graded"] == 2 and sheet["summary"]["absent"] == 1
+    p2_grades = {"entries": [{"studentId": s, "grade": g} for s, g in ((JUAN, 8), (LUCAS, 9), (ANA, 6))]}
+    ok(c.put(f"/api/v1/courses/42/exams/{p2['id']}/grades", json=p2_grades, headers=h))
+    # Juan aprobó ambos parciales: el recuperatorio no le corresponde. Ana (ausente en P1) recupera P1.
+    no = c.put(
+        f"/api/v1/courses/42/exams/{recup['id']}/grades",
+        json={"entries": [{"studentId": JUAN, "grade": 9}]},
+        headers=h,
+    )
+    assert no.status_code == 409 and no.get_json()["code"] == "RECUP_NOT_ALLOWED"
+    ok(
+        c.put(
+            f"/api/v1/courses/42/exams/{recup['id']}/grades",
+            json={"entries": [{"studentId": ANA, "grade": 4}]},
+            headers=h,
+        )
+    )
     final_grades = {
         "entries": [
             {"studentId": JUAN, "grade": 8, "absent": False},
@@ -155,11 +186,20 @@ def _flow(app):
     }
     ok(c.put(f"/api/v1/courses/42/exams/{final['id']}/grades", json=final_grades, headers=h))
     matrix = ok(c.get("/api/v1/courses/42/grades", headers=h))
-    assert len(matrix["exams"]) == 2 and len(matrix["rows"]) == 3
+    assert len(matrix["exams"]) == 4 and len(matrix["rows"]) == 3
+    sit = {r["studentId"]: r["situation"] for r in matrix["rows"]}
+    assert (sit[JUAN]["status"], sit[JUAN]["finalGrade"]) == ("APROBADA", 8.0)
+    assert (sit[ANA]["status"], sit[ANA]["recovers"], sit[ANA]["cursadaGrade"]) == (
+        "FINAL_DESAPROBADO",
+        "P1",
+        5.0,
+    )
+    assert sit[LUCAS]["status"] == "LIBRE"
 
     # ── actas ───────────────────────────────────────────────────────────────────────
     cursada = ok(c.post("/api/v1/actas", json={"courseId": 42, "type": "CURSADA"}, headers=h), 201)
     res = {r["studentId"]: r["result"] for r in cursada["rows"]}
+    # Ana: ausente en P1 pero lo recuperó con 4 -> REGULAR; Lucas: 50 % de asistencia -> LIBRE
     assert res == {JUAN: "REGULAR", LUCAS: "LIBRE", ANA: "REGULAR"}
     assert cursada["number"] == "2026-001" and cursada["sync"]["ok"] == 3
     locked = c.put(

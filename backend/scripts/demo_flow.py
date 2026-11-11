@@ -56,7 +56,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import datetime
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -138,7 +138,9 @@ def colors_enabled(no_color_flag: bool) -> bool:
 
 # Se reemplazan en main() según los argumentos.
 C = Palette(enabled=False)
-MAX_BODY_LINES = 60  # 0 = sin límite (--full). Solo recorta lo que se MUESTRA; los headers siempre salen completos.
+MAX_BODY_LINES = (
+    60  # 0 = sin límite (--full). Solo recorta lo que se MUESTRA; los headers siempre salen completos.
+)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -155,7 +157,9 @@ def mask_header(name: str, value: str) -> str:
         scheme, token = value.split(" ", 1)
         return f"{scheme} {mask_token(token)}   (token recortado solo para mostrarlo)"
     if name.lower() == "cookie":
-        return "; ".join(f"{k}={mask_token(v)}" for k, v in (c.split("=", 1) for c in value.split("; ") if "=" in c))
+        return "; ".join(
+            f"{k}={mask_token(v)}" for k, v in (c.split("=", 1) for c in value.split("; ") if "=" in c)
+        )
     return value
 
 
@@ -193,13 +197,21 @@ def print_section(label: str) -> None:
 
 # Headers que agrega curl solo (o que no aportan al ejemplo): no se muestran para que el comando quede limpio.
 IMPORTANT_RESPONSE_HEADERS = {
-    "content-type", "set-cookie", "location", "x-correlation-id", "x-request-id", "www-authenticate", "retry-after",
+    "content-type",
+    "set-cookie",
+    "location",
+    "x-correlation-id",
+    "x-request-id",
+    "www-authenticate",
+    "retry-after",
 }
 CURL_HIDDEN_HEADERS = {"user-agent", "accept-encoding", "connection", "content-length"}
 # Claves del JSON que se resaltan con un color propio (según sea una respuesta OK o un error).
 OK_KEYS = {"accessToken": "1;32", "refreshToken": "1;32", "grade": "1;32", "status": "1;35"}
 ERROR_KEYS = {"code": "1;31", "detail": "1;33", "title": "1;33", "correlationId": "1;35", "field": "1;31"}
-JSON_TOKEN = re.compile(r'("(?:\\.|[^"\\])*")(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?')
+JSON_TOKEN = re.compile(
+    r'("(?:\\.|[^"\\])*")(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?'
+)
 JSON_KEY_LINE = re.compile(r'^(\s*)"([^"]+)":\s(.*?)(,?)$')
 
 
@@ -211,7 +223,7 @@ def colorize_json_line(line: str, error: bool) -> str:
         pad, key, value, comma = match.groups()
         code = (ERROR_KEYS if error else OK_KEYS).get(key)
         if code and not value.startswith(("{", "[")):
-            return f'{pad}{C.cyan(chr(34) + key + chr(34))}: {C.paint(code, value)}{comma}'
+            return f"{pad}{C.cyan(chr(34) + key + chr(34))}: {C.paint(code, value)}{comma}"
 
     def paint(token: re.Match[str]) -> str:
         text, colon = token.group(1), token.group(2)
@@ -232,7 +244,9 @@ def print_request(prepared: requests.PreparedRequest) -> None:
     shown_url = f"{parts.scheme}://{C.gray(parts.netloc)}{C.paint('1;36', parts.path)}"
     if parts.query:
         shown_url += C.yellow("?" + parts.query)
-    print(f"{C.bold('curl')} {C.yellow('-i')} {C.yellow('-X')} {C.for_method(method, method)} '{shown_url}'{cont}")
+    print(
+        f"{C.bold('curl')} {C.yellow('-i')} {C.yellow('-X')} {C.for_method(method, method)} '{shown_url}'{cont}"
+    )
     for name, value in prepared.headers.items():
         if name.lower() in CURL_HIDDEN_HEADERS:
             continue
@@ -260,7 +274,9 @@ def print_request(prepared: requests.PreparedRequest) -> None:
         out[-1] += "'"  # la comilla de cierre va pegada a la última llave, como en un curl real: -d '{ ... }'
     out[0] = f"  {C.yellow('-d')} '{out[0]}"
     print("\n".join(out))
-    print(C.gray("# Se omiten User-Agent, Accept-Encoding, Connection y Content-Length (curl los agrega solo)."))
+    print(
+        C.gray("# Se omiten User-Agent, Accept-Encoding, Connection y Content-Length (curl los agrega solo).")
+    )
 
 
 def indent(text: str, spaces: int) -> str:
@@ -305,7 +321,9 @@ def print_response(response: requests.Response, elapsed_ms: float) -> None:
     print_section("RESPONSE")
     print(f"{C.for_status(status, status_text)}   {C.gray(f'({elapsed_ms:.0f} ms)')}")
     print(C.bold("  Headers:"))
-    for name, value in response.raw.headers.items() if hasattr(response.raw, "headers") else response.headers.items():
+    for name, value in (
+        response.raw.headers.items() if hasattr(response.raw, "headers") else response.headers.items()
+    ):
         shown = mask_set_cookie(value) if name.lower() == "set-cookie" else value
         if name.lower() in IMPORTANT_RESPONSE_HEADERS:
             print(f"    {C.cyan(name)}: {C.paint('1', shown)}")
@@ -514,12 +532,13 @@ def run_flow(demo: Demo, email: str, password: str) -> None:
         demo.teacher(f"/courses/{course_id}/attendances"),
         headers=auth,
     ).json()
-    day = attendances[0]["date"] if attendances else date.today().isoformat()
+    day = attendances[0]["date"] if attendances else datetime.now().astimezone().date().isoformat()
     note(f"Clase elegida: {day}.")
 
     # PASO 5 -------------------------------------------------------------------------------------
     records = [
-        {"studentId": s["studentId"], "status": "AUSENTE" if i == 0 else "PRESENTE"} for i, s in enumerate(students)
+        {"studentId": s["studentId"], "status": "AUSENTE" if i == 0 else "PRESENTE"}
+        for i, s in enumerate(students)
     ]
     step(
         demo,
@@ -579,11 +598,15 @@ def run_flow(demo: Demo, email: str, password: str) -> None:
 
 
 def pick_exam(exams: list[dict[str, Any]]) -> dict[str, Any]:
-    """Elige el examen ya rendido (COMPLETED) más reciente; si no hay, el primero disponible."""
+    """Elige el PARCIAL ya rendido (COMPLETED) más reciente; si no hay, el primero disponible.
+
+    Un parcial, porque recuperatorio y final solo aceptan notas de alumnos habilitados
+    (409 RECUP_NOT_ALLOWED / FINAL_NOT_ALLOWED)."""
     if not exams:
         raise DemoError("El curso no tiene exámenes cargados. ¿Se cargó el seed demo?")
-    completed = [e for e in exams if e.get("phase") == "COMPLETED"]
-    return (completed or exams)[-1]
+    parciales = [e for e in exams if str(e.get("type", "")).startswith("PARCIAL")]
+    completed = [e for e in parciales if e.get("phase") == "COMPLETED"]
+    return (completed or parciales or exams)[-1]
 
 
 # --------------------------------------------------------------------------------------------------

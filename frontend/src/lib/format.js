@@ -85,10 +85,11 @@ export function money(value, { sign = false } = {}) {
   return `${prefix}$${s}`;
 }
 
-/** Nota numérica -> "8" / "7,5" / "—" */
+/** Nota numérica -> "8" / "7,5" / "7,87" / "—". Hasta 2 decimales TRUNCADOS (7,875 -> "7,87"), nunca redondeados. */
 export function grade(value) {
   if (value === null || value === undefined || value === '') return '—';
-  const n = Number(value);
+  // Pasar por milésimos redondeados evita errores de float (7.87 * 100 = 786.999...) antes de truncar.
+  const n = Math.trunc(Math.round(Number(value) * 1000) / 10) / 100;
   return Number.isInteger(n) ? String(n) : n.toLocaleString('es-AR', { maximumFractionDigits: 2 });
 }
 

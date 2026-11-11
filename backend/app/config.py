@@ -44,7 +44,8 @@ class Settings:
     jwt_leeway_seconds: int = 30
     teacher_roles: tuple[str, ...] = ("TEACHER",)
     service_roles: tuple[str, ...] = ("SERVICE",)
-    service_modules: tuple[str, ...] = ("student", "analytics")  # service tokens allowed on /results
+    # service tokens allowed on read routes (/results, /students/*, courses attendances/exams/grades, actas)
+    service_modules: tuple[str, ...] = ("student", "analytics", "academic")
     admin_roles: tuple[str, ...] = ("ACADEMIC_ADMIN", "ADMIN_STAFF")
     gateway_hmac_enabled: bool = False
     gateway_hmac_secret: str = ""

@@ -9,6 +9,7 @@ import Pagination, { paginate } from '../components/Pagination';
 import { useCourse } from '../lib/courses';
 import { ATTENDANCE_LABEL } from '../lib/domain';
 import { initials, MONTHS, percent, shortDate } from '../lib/format';
+import { filterStudents } from '../lib/studentSearch';
 import useLockScroll from '../lib/useBodyClass';
 import '../styles/pages/08.css';
 
@@ -122,9 +123,8 @@ export default function AttendanceHistory() {
 
   const filtered = rows.filter((r) => month === 'todo' || r.date.startsWith(month));
   const pager = paginate(filtered, page, PAGE_SIZE);
-  const term = search.trim().toLowerCase();
-  const results = term
-    ? (roster.data || []).filter((s) => (s.profile?.fullName || '').toLowerCase().includes(term) || (s.profile?.fileNumber || '').includes(term)).slice(0, 6)
+  const results = search.trim()
+    ? filterStudents(roster.data || [], search, (s) => ({ ...s.profile, name: s.profile?.fullName })).slice(0, 6)
     : [];
 
   const openStudent = (s) => {
